@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Layout } from '../components/Layout';
 import { VinylCard } from '../components/VinylCard';
 import { AddVinylModal } from '../components/AddVinylModal';
+import { VinylDetailsModal } from '../components/VinylDetailsModal';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function Dashboard() {
@@ -10,6 +11,7 @@ export default function Dashboard() {
     const [vinis, setVinis] = useState([]);
     const [loading, setLoading] = useState(true);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [selectedVinyl, setSelectedVinyl] = useState(null);
 
     const fetchVinis = async () => {
         if (!user?.id) return;
@@ -63,7 +65,11 @@ export default function Dashboard() {
                 <div className="vinyl-grid" style={{ marginTop: '40px' }}>
                     {vinis.length > 0 ? (
                         vinis.map(vinil => (
-                            <VinylCard key={vinil.id} vinil={vinil} onClick={() => console.log('Abrir disco', vinil.id)} />
+                            <VinylCard 
+                                key={vinil.id} 
+                                vinil={vinil} 
+                                onClick={() => setSelectedVinyl(vinil)} 
+                            />
                         ))
                     ) : (
                         <p>Nenhum disco encontrado na sua coleção.</p>
@@ -75,6 +81,12 @@ export default function Dashboard() {
                 isOpen={isAddModalOpen} 
                 onClose={() => setIsAddModalOpen(false)} 
                 onSuccess={fetchVinis} 
+            />
+
+            <VinylDetailsModal 
+                isOpen={!!selectedVinyl}
+                onClose={() => setSelectedVinyl(null)}
+                vinil={selectedVinyl}
             />
         </Layout>
     );

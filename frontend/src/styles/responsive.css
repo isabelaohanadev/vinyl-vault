@@ -142,3 +142,62 @@
         border-left-color: var(--primary-color);
     }
 }
+
+@media (min-width: 1440px) {
+    .main-content {
+        padding: 60px 80px;
+    }
+
+    .vinyl-grid,
+    .market-grid,
+    .users-grid {
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 30px;
+    }
+
+    .timeline-wrapper {
+        max-width: 800px;
+    }
+
+    .profile-container {
+        max-width: 1000px;
+    }
+
+    .about-container {
+        max-width: 1000px;
+    }
+}
+
+@media (min-width: 1920px) {
+    body {
+        font-size: 1.1rem;
+    }
+
+    .sidebar {
+        width: 300px;
+    }
+
+    .main-content {
+        margin-left: 300px;
+        padding: 80px 120px;
+    }
+
+    .global-player {
+        left: 300px;
+    }
+
+    .vinyl-grid,
+    .market-grid,
+    .users-grid {
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 40px;
+    }
+
+    .stat-value {
+        font-size: 2.5rem;
+    }
+
+    .dashboard-title {
+        font-size: 2.2rem;
+    }
+}

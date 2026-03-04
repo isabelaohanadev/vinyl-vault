@@ -5,6 +5,7 @@ import './styles/index.js';
 
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
+import Market from './pages/Market'; // <- Nova importação
 
 function App() {
     return (
@@ -20,6 +21,16 @@ function App() {
                         element={
                             <PrivateRoute>
                                 <Dashboard />
+                            </PrivateRoute>
+                        } 
+                    />
+
+                    {/* <- Nova Rota do Mercado -> */}
+                    <Route 
+                        path="/market" 
+                        element={
+                            <PrivateRoute>
+                                <Market />
                             </PrivateRoute>
                         } 
                     />

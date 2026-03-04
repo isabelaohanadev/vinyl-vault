@@ -1,0 +1,101 @@
+.vinyl-detail-container {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    align-items: center;
+}
+
+.vinyl-visuals {
+    position: relative;
+    width: 300px;
+    height: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.vinyl-sleeve {
+    width: 100%;
+    height: 100%;
+    border-radius: 4px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    z-index: 2;
+    position: absolute;
+    top: 0;
+    left: 0;
+    object-fit: cover;
+}
+
+.vinyl-record {
+    width: 280px;
+    height: 280px;
+    background-color: #111;
+    border-radius: 50%;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 1;
+    transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: inset 0 0 0 10px #222, inset 0 0 0 20px #111, inset 0 0 0 30px #222;
+}
+
+.vinyl-visuals:hover .vinyl-record {
+    transform: translateX(120px) rotate(180deg);
+}
+
+.vinyl-label-center {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background-color: var(--secondary-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-size: cover;
+    background-position: center;
+}
+
+.vinyl-hole {
+    width: 15px;
+    height: 15px;
+    background-color: var(--text-light);
+    border-radius: 50%;
+}
+
+.vinyl-meta {
+    text-align: center;
+    width: 100%;
+}
+
+.vinyl-action-bar {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 20px;
+    width: 100%;
+    flex-wrap: wrap;
+}
+
+.btn-action {
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+}
+
+.btn-play {
+    background-color: var(--spotify-color);
+    color: var(--text-light);
+}
+
+.btn-secondary {
+    background-color: var(--tertiary-color);
+    color: var(--text-light);
+}

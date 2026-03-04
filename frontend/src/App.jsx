@@ -5,7 +5,8 @@ import './styles/index.js';
 
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
-import Market from './pages/Market'; // <- Nova importação
+import Market from './pages/Market';
+import Community from './pages/Community';
 
 function App() {
     return (
@@ -25,12 +26,20 @@ function App() {
                         } 
                     />
 
-                    {/* <- Nova Rota do Mercado -> */}
                     <Route 
                         path="/market" 
                         element={
                             <PrivateRoute>
                                 <Market />
+                            </PrivateRoute>
+                        } 
+                    />
+
+                    <Route 
+                        path="/community" 
+                        element={
+                            <PrivateRoute>
+                                <Community />
                             </PrivateRoute>
                         } 
                     />

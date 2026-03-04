@@ -7,17 +7,24 @@ const vinilRoutes = require('./vinilRoutes');
 const classificadosRoutes = require('./classificadosRoutes');
 const communityRoutes = require('./communityRoutes');
 const socialRoutes = require('./socialRoutes');
+const notificationRoutes = require('./notificationRoutes');
+const chatRoutes = require('./chatRoutes');
+const feedbackRoutes = require('./feedbackRoutes');
 
 const router = express.Router();
 
 router.get('/health', healthController.checkHealth);
 
-router.use('/', authRoutes);
+router.use('/auth', authRoutes);
 router.use('/', passwordRoutes);
 router.use('/usuarios', userRoutes);
 router.use('/vinis', vinilRoutes);
 router.use('/classificados', classificadosRoutes);
 router.use('/comunidade', communityRoutes);
-router.use('/', socialRoutes); 
+router.use('/posts', socialRoutes);
+router.use('/notificacoes', notificationRoutes);
+router.use('/mensagens', chatRoutes);
+router.use('/conversas', chatRoutes);
+router.use('/feedback', feedbackRoutes);
 
 module.exports = router;

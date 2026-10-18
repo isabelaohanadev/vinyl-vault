@@ -1,0 +1,26 @@
+{
+  "name": "vinyl-vault-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Vinyl Vault web app: plain HTML, CSS and JavaScript (no build step).",
+  "scripts": {
+    "dev": "node dev-server.js",
+    "start": "node dev-server.js",
+    "lint": "eslint .",
+    "vendor": "node tools/vendor.js"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/isabelaohanadev/vinyl-vault.git",
+    "directory": "frontend"
+  },
+  "author": "Isabela Ohana",
+  "license": "ISC",
+  "devDependencies": {
+    "chart.js": "^4.5.1",
+    "html2pdf.js": "^0.14.0"
+  }
+}

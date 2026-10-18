@@ -50,6 +50,30 @@ function mensagemDeErro(dados, status) {
 
 let sessaoExpirando = false;
 
+// Hospedagens gratuitas põem a API para dormir quando ninguém a usa, e acordá-la leva até 1 minuto.
+// Se uma chamada demora, o aviso fica na tela (o toast some em 3 s) até a resposta chegar.
+const ESPERA_ATE_AVISAR_MS = 5000;
+let avisoDeLentidao = null;
+
+function mostrarAvisoDeLentidao() {
+    if (avisoDeLentidao) {
+        return;
+    }
+
+    avisoDeLentidao = document.createElement('div');
+    avisoDeLentidao.className = 'aviso-servidor';
+    avisoDeLentidao.setAttribute('role', 'status');
+    avisoDeLentidao.textContent = 'Acordando o servidor gratuito. Isso pode levar cerca de 1 minuto na primeira vez.';
+    document.body.appendChild(avisoDeLentidao);
+}
+
+function esconderAvisoDeLentidao() {
+    if (avisoDeLentidao) {
+        avisoDeLentidao.remove();
+        avisoDeLentidao = null;
+    }
+}
+
 async function requisicaoApi(metodo, caminho, corpo, { autenticada = true } = {}) {
     const cabecalhos = {};
     const token = obterToken();
@@ -63,6 +87,7 @@ async function requisicaoApi(metodo, caminho, corpo, { autenticada = true } = {}
     }
 
     let resposta;
+    const esperaLonga = setTimeout(mostrarAvisoDeLentidao, ESPERA_ATE_AVISAR_MS);
 
     try {
         resposta = await fetch(`${API_URL}${caminho}`, {
@@ -72,6 +97,9 @@ async function requisicaoApi(metodo, caminho, corpo, { autenticada = true } = {}
         });
     } catch (erroDeRede) {
         throw new ApiError(0, 'Erro de conexão com o servidor. Ele está ligado?');
+    } finally {
+        clearTimeout(esperaLonga);
+        esconderAvisoDeLentidao();
     }
 
     let dados = null;

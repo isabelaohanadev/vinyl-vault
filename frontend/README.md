@@ -22,6 +22,7 @@ Em produção quem faz esse papel é o nginx da imagem Docker ([`nginx/`](nginx)
 
 | Arquivo | Responsabilidade |
 | --- | --- |
+| `config.js` | Endereço da API quando ela fica em outro domínio (vazio = `/api` na mesma origem) |
 | `utils.js` | Escape de HTML, de argumentos de `onclick`, de URLs de imagem e de CSS; redimensionamento de fotos |
 | `api.js` | Cliente da API (token, erros, 401) e adaptadores que "achatam" `autor`, `dono` e `ator` |
 | `globals.js` | Estado compartilhado, tema, toasts e navegação entre telas |
@@ -41,10 +42,15 @@ Os scripts são carregados na ordem do `index.html` e compartilham funções glo
 - **O token só vai para a nossa API.** Chamadas ao iTunes usam `fetch` direto, sem `Authorization`.
 - Bibliotecas de terceiros ficam em `vendor/` (com as licenças); `npm run vendor` as copia de `node_modules` de novo depois de uma atualização.
 
+## Publicação estática
+
+`npm run build:static` copia só o que o navegador precisa para `dist/` e escreve o `config.js` a partir de `VINYL_API_URL` (por exemplo `https://minha-api.onrender.com`). É o que a Vercel executa (veja [`../vercel.json`](../vercel.json) e [`../docs/DEPLOY-GRATIS.md`](../docs/DEPLOY-GRATIS.md)).
+
 ## Qualidade
 
 ```bash
 npm run lint       # ESLint
+npm test           # script de build estático
 ```
 
 Os testes da interface ficam em [`../e2e`](../e2e) (Playwright).

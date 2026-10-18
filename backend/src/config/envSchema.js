@@ -14,6 +14,10 @@ const schema = z
         DB_PASSWORD: z.string().default(''),
         DB_NAME: z.string({ error: 'DB_NAME é obrigatório' }).min(1, 'DB_NAME é obrigatório'),
         DB_POOL_SIZE: z.coerce.number().int().positive().default(10),
+        // Managed MySQL services (Aiven, TiDB Cloud...) only accept TLS connections. DB_SSL_CA is the
+        // PEM of the server's CA, needed when it is not one the system already trusts (Aiven's is not).
+        DB_SSL: flag('false'),
+        DB_SSL_CA: z.string().optional(),
 
         JWT_SECRET: z
             .string({ error: 'JWT_SECRET é obrigatório (gere com: openssl rand -hex 32)' })

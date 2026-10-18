@@ -44,6 +44,16 @@ describe('parseEnv', () => {
         assert.doesNotThrow(() => parseEnv({ ...base, NODE_ENV: 'production', EMAIL_USER: 'a', EMAIL_PASS: 'b' }));
     });
 
+    it('keeps TLS to the database off by default and accepts the CA of a managed MySQL', () => {
+        assert.equal(parseEnv(base).DB_SSL, false);
+
+        const env = parseEnv({ ...base, DB_SSL: 'true', DB_SSL_CA: '-----BEGIN CERTIFICATE-----' });
+
+        assert.equal(env.DB_SSL, true);
+        assert.equal(env.DB_SSL_CA, '-----BEGIN CERTIFICATE-----');
+        assert.throws(() => parseEnv({ ...base, DB_SSL: 'yes' }), /DB_SSL/);
+    });
+
     it('treats blank values as unset (as in a copied .env.example or docker-compose)', () => {
         const env = parseEnv({ ...base, EMAIL_USER: '', EMAIL_PASS: '', FEEDBACK_TO: '', PORT: '', DB_PASSWORD: '' });
 

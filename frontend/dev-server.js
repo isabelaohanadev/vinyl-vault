@@ -11,7 +11,7 @@ const API_TARGET = new URL(process.env.API_TARGET || 'http://localhost:3000');
 const ROOT = __dirname;
 
 // Só estas entradas são públicas (nada de package.json, dev-server.js, node_modules...).
-const PUBLICO = new Set(['index.html', 'scripts', 'styles', 'assets', 'vendor']);
+const PUBLICO = new Set(['index.html', 'config.js', 'scripts', 'styles', 'assets', 'vendor']);
 
 const TIPOS = {
     '.html': 'text/html; charset=utf-8',

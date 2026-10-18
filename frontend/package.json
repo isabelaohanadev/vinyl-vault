@@ -7,6 +7,8 @@
     "dev": "node dev-server.js",
     "start": "node dev-server.js",
     "lint": "eslint .",
+    "test": "node --test \"tools/*.test.js\"",
+    "build:static": "node tools/build-static.js",
     "vendor": "node tools/vendor.js"
   },
   "engines": {

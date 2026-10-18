@@ -9,6 +9,7 @@ const postRoutes = require('./postRoutes');
 const commentRoutes = require('./commentRoutes');
 const notificationRoutes = require('./notificationRoutes');
 const chatRoutes = require('./chatRoutes');
+const conversationRoutes = require('./conversationRoutes');
 const feedbackRoutes = require('./feedbackRoutes');
 
 const router = express.Router();
@@ -24,7 +25,7 @@ router.use('/posts', postRoutes);
 router.use('/comentarios', commentRoutes);
 router.use('/notificacoes', notificationRoutes);
 router.use('/mensagens', chatRoutes);
-router.use('/conversas', chatRoutes);
+router.use('/conversas', conversationRoutes);
 router.use('/feedback', feedbackRoutes);
 
 module.exports = router;

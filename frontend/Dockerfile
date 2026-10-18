@@ -10,6 +10,7 @@ COPY nginx/default.conf.template /etc/nginx/templates/default.conf.template
 COPY nginx/security-headers.conf /etc/nginx/snippets/security-headers.conf
 
 COPY index.html /usr/share/nginx/html/index.html
+COPY config.js /usr/share/nginx/html/config.js
 COPY scripts /usr/share/nginx/html/scripts
 COPY styles /usr/share/nginx/html/styles
 COPY assets /usr/share/nginx/html/assets

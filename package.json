@@ -28,6 +28,6 @@
   "author": "Isabela Ohana",
   "license": "ISC",
   "devDependencies": {
-    "concurrently": "^9.2.1"
+    "concurrently": "^10.0.6"
   }
 }

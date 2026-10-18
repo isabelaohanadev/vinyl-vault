@@ -1,0 +1,50 @@
+# Blueprint do Render: sobe só a API (Docker). O MySQL fica no Aiven e a interface na Vercel;
+# o passo a passo está em docs/DEPLOY-GRATIS.md.
+services:
+  - type: web
+    name: vinyl-vault-api
+    runtime: docker
+    plan: free
+    region: virginia
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    healthCheckPath: /api/health
+    autoDeployTrigger: checksPass
+    envVars:
+      # Em production a API exige EMAIL_USER e EMAIL_PASS (a recuperação de senha envia e-mail).
+      # Sem Gmail, troque por development: o e-mail só aparece no log e nada é enviado.
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true
+      # Um proxy (o do Render) entre a internet e a API: sem isso o limite de requisições
+      # trataria todos os visitantes como um único IP.
+      - key: TRUST_PROXY
+        value: "1"
+      - key: DB_SSL
+        value: "true"
+      - key: DB_POOL_SIZE
+        value: "5"
+      # Dados do MySQL (Aiven). O certificado é o conteúdo do ca.pem, com as quebras de linha.
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        sync: false
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: DB_NAME
+        sync: false
+      - key: DB_SSL_CA
+        sync: false
+      # Endereço da interface na Vercel (https://algo.vercel.app, sem barra no fim).
+      - key: CORS_ORIGIN
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+      # Gmail e senha de app (https://myaccount.google.com/apppasswords).
+      - key: EMAIL_USER
+        sync: false
+      - key: EMAIL_PASS
+        sync: false

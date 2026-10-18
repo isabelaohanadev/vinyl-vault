@@ -403,8 +403,14 @@ function fecharModalEncaminhar(eventoOrigem, forcar = false) {
     }
 }
 
+
 function encaminharVinil(amigo_id_alvo, amigo_nome_alvo) {
+    // fecharModalEncaminhar() zera vinilParaEncaminhar; sem guardar o disco antes, ele nunca ia na mensagem.
+    const idDoVinil = vinilParaEncaminhar;
+
     fecharModalEncaminhar(null, true);
+    vinilParaEncaminhar = idDoVinil;
+
     
     abrirChatWidget();
     abrirChat(amigo_id_alvo, amigo_nome_alvo);

@@ -2,6 +2,10 @@
 // the API can never pick up the real backend/.env (database, SMTP credentials).
 process.env.NODE_ENV = 'test';
 
+// Run in a non-UTC zone on purpose: timestamps must stay correct when Node and
+// MySQL disagree about the time zone (they usually do outside of Docker).
+process.env.TZ = 'America/Sao_Paulo';
+
 process.env.DB_HOST = process.env.TEST_DB_HOST || '127.0.0.1';
 process.env.DB_PORT = process.env.TEST_DB_PORT || '3307';
 process.env.DB_USER = process.env.TEST_DB_USER || 'vinyl';

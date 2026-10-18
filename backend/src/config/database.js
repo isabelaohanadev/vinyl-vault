@@ -14,7 +14,15 @@ const pool = mysql.createPool({
     enableKeepAlive: true,
     decimalNumbers: true,
     // Return DATE columns as 'YYYY-MM-DD' strings instead of timezone-shifted Dates.
-    dateStrings: ['DATE']
+    dateStrings: ['DATE'],
+    // TIMESTAMPs are read and written as UTC (see the session time_zone below).
+    timezone: 'Z'
+});
+
+// Pin every session to UTC. Without this, a MySQL server in another zone than the
+// UTC the driver assumes would shift every timestamp (posts shown "in 3 hours").
+pool.pool.on('connection', (connection) => {
+    connection.query("SET time_zone = '+00:00'");
 });
 
 const ping = async () => {

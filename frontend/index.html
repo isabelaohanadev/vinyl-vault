@@ -70,7 +70,7 @@
             <h2 style="letter-spacing: 2px; margin-top: 0; color:var(--primaria);">CRIAR NOVA SENHA</h2>
             <p style="font-size: 0.9rem; color: gray; margin-bottom: 20px;">Digite a sua nova senha abaixo.</p>
             
-            <input type="password" id="reset-nova" placeholder="Nova Senha (Mín. 6 caracteres)">
+            <input type="password" id="reset-nova" placeholder="Nova Senha (Mín. 8 caracteres)">
             <input type="password" id="reset-confirma" placeholder="Confirme a Nova Senha">
             
             <button id="btn-reset" class="nav-btn" style="background:var(--spotify); color:white; width:100%" onclick="salvarNovaSenha()">Atualizar Senha</button>
@@ -84,9 +84,9 @@
                 <input type="text" id="reg-nome" placeholder="Nome Completo">
                 <input type="email" id="reg-email" placeholder="E-mail">
                 <input type="date" id="reg-nasc" placeholder="Data de Nascimento">
-                <input type="text" id="reg-username" placeholder="Nome de usuário (sem espaços)">
+                <input type="text" id="reg-username" placeholder="Nome de usuário (letras, números, _ e .)">
                 <input type="text" id="reg-bio" placeholder="Sua Bio (Opcional)">
-                <input type="password" id="reg-pass" placeholder="Senha (Mín. 6 caracteres)">
+                <input type="password" id="reg-pass" placeholder="Senha (Mín. 8 caracteres)">
                 <input type="password" id="reg-confirm" placeholder="Confirme a Senha">
                 
                 <button class="nav-btn" style="background:var(--terciaria); color:white; width:100%" onclick="nextStepRegister()">Próximo</button>
@@ -684,6 +684,8 @@
     </div>
 </div>
 
+<script src="./scripts/utils.js"></script>
+<script src="./scripts/api.js"></script>
 <script src="./scripts/globals.js"></script>
 <script src="./scripts/auth.js"></script>
 <script src="./scripts/player.js"></script>

@@ -6,13 +6,9 @@ async function definirTocandoAgora(artista, album) {
     const statusTexto = `${artista} - ${album}`;
     
     try {
-        await fetch(`${API_URL}/usuarios/${usuarioAtual.id}/status`, {
-            method: 'PUT',
-            headers: { 
-                'Content-Type': 'application/json' 
-            },
-            body: JSON.stringify({ tocando_agora: statusTexto })
-        });
+        
+        await api.put(`/usuarios/${usuarioAtual.id}/status`, { tocando_agora: statusTexto });
+
         
         // Atualiza os dados no celular do usuário
         usuarioAtual.tocando_agora = statusTexto;
@@ -31,13 +27,9 @@ async function definirTocandoAgora(artista, album) {
 
 async function limparStatus() {
     try {
-        await fetch(`${API_URL}/usuarios/${usuarioAtual.id}/status`, {
-            method: 'PUT',
-            headers: { 
-                'Content-Type': 'application/json' 
-            },
-            body: JSON.stringify({ tocando_agora: null })
-        });
+        
+        await api.put(`/usuarios/${usuarioAtual.id}/status`, { tocando_agora: null });
+
         
         // Remove do celular do usuário
         usuarioAtual.tocando_agora = null;

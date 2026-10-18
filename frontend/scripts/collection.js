@@ -194,7 +194,6 @@ function salvarDisco() {
 
 async function executarEnvioParaAPI(fotoFinalBase64, nome, artista, genero, spotifyUrl, isAdquirido, isNegociavel, urlDeAudioPreview, valorDaNota, btnRef) {
     const payloadDoNovoDisco = { 
-        usuario_id: usuarioAtual.id, 
         foto: fotoFinalBase64, 
         nome: nome, 
         artista: artista, 
@@ -207,13 +206,9 @@ async function executarEnvioParaAPI(fotoFinalBase64, nome, artista, genero, spot
     };
     
     try {
-        await fetch(`${API_URL}/vinis`, { 
-            method: 'POST', 
-            headers: { 
-                'Content-Type': 'application/json' 
-            }, 
-            body: JSON.stringify(payloadDoNovoDisco) 
-        });
+        
+        await api.post('/vinis', payloadDoNovoDisco);
+
         
         btnRef.disabled = false; 
         btnRef.innerHTML = 'SALVAR NA NUVEM'; 
@@ -240,7 +235,7 @@ async function executarEnvioParaAPI(fotoFinalBase64, nome, artista, genero, spot
         carregarDados(); 
         
     } catch(erroDoFetchDisco) { 
-        alert("Houve um erro grave ao tentar salvar no banco de dados!"); 
+        alert(erroDoFetchDisco.message || "Houve um erro grave ao tentar salvar no banco de dados!"); 
         btnRef.disabled = false; 
         btnRef.innerHTML = 'SALVAR NA NUVEM'; 
     }
@@ -256,8 +251,9 @@ async function carregarDados() {
     }
     
     try {
-        const responseVinis = await fetch(`${API_URL}/vinis/${usuarioAtual.id}`); 
-        todosDiscos = await responseVinis.json();
+        
+        todosDiscos = await api.get(`/usuarios/${usuarioAtual.id}/vinis`);
+
         
         atualizarFiltrosEDatalists(); 
         renderizar();
@@ -575,18 +571,14 @@ async function salvarEdicao() {
                 payloadEdicaoDisco.foto = canvasEdit.toDataURL('image/jpeg', 0.8); 
                 
                 try {
-                    await fetch(`${API_URL}/vinis/${discoAtualId}`, { 
-                        method: 'PUT', 
-                        headers: { 'Content-Type': 'application/json' }, 
-                        body: JSON.stringify(payloadEdicaoDisco) 
-                    });
+                    await api.put(`/vinis/${discoAtualId}`, payloadEdicaoDisco);
                     
                     fecharModal(null, true); 
                     showToast("As informações foram salvas com sucesso!"); 
                     carregarDados(); 
                     
                 } catch(errCatch) { 
-                    alert("Falha na atualização do disco via API"); 
+                    alert(errCatch.message || "Falha na atualização do disco via API"); 
                 }
             }; 
             
@@ -596,18 +588,14 @@ async function salvarEdicao() {
         leitorFileEdit.readAsDataURL(arquivoDeEdicao);
     } else {
         try {
-            await fetch(`${API_URL}/vinis/${discoAtualId}`, { 
-                method: 'PUT', 
-                headers: { 'Content-Type': 'application/json' }, 
-                body: JSON.stringify(payloadEdicaoDisco) 
-            });
+            await api.put(`/vinis/${discoAtualId}`, payloadEdicaoDisco);
             
             fecharModal(null, true); 
             showToast("As informações foram salvas com sucesso!"); 
             carregarDados(); 
             
         } catch(errCatchDois) { 
-            alert("Falha na atualização do disco via API sem imagem"); 
+            alert(errCatchDois.message || "Falha na atualização do disco via API sem imagem"); 
         }
     }
 }
@@ -631,18 +619,16 @@ function fecharModal(eventoCliqueModal, forcarFechamentoModal = false) {
 
 async function comprado(identificadorDoVinil) { 
     try {
-        await fetch(`${API_URL}/vinis/${identificadorDoVinil}`, { 
-            method: 'PUT', 
-            headers: { 'Content-Type': 'application/json' }, 
-            body: JSON.stringify({ adquirido: true }) 
-        });
+        
+        await api.put(`/vinis/${identificadorDoVinil}`, { adquirido: true });
+
         
         fecharModal(null, true); 
         showToast("O disco foi movido da wishlist para o seu acervo com sucesso!"); 
         carregarDados(); 
         
     } catch (erroDeCompraAPI) { 
-        alert("Ocorreu um erro ao atualizar o status do seu disco."); 
+        alert(erroDeCompraAPI.message || "Ocorreu um erro ao atualizar o status do seu disco."); 
     }
 }
 
@@ -651,16 +637,16 @@ async function deletar(identificadorDelecao) {
     
     if (confirm(textoDeConfirmacao)) { 
         try {
-            await fetch(`${API_URL}/vinis/${identificadorDelecao}`, { 
-                method: 'DELETE' 
-            });
+            
+            await api.delete(`/vinis/${identificadorDelecao}`);
+
             
             fecharModal(null, true); 
             showToast("Registro do disco removido com sucesso."); 
             carregarDados(); 
             
         } catch (erroNaDelecaoDeVinil) { 
-            alert("Erro de comunicação ao tentar remover o seu disco."); 
+            alert(erroNaDelecaoDeVinil.message || "Erro de comunicação ao tentar remover o seu disco."); 
         }
     } 
 }

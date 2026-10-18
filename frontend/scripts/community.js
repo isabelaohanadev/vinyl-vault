@@ -39,9 +39,14 @@ function alternarAbaComunidade(abaSelecionada) {
     }
 }
 
+
+// Perfil que está aberto na tela de perfil público (usado pelos botões de negociação).
+let perfilPublicoAtual = null;
+
 // ------------------------------------------
 // LÓGICA DE HASHTAGS (REGEX)
 // ------------------------------------------
+
 function formatarLegendaComHashtags(textoOriginal) {
     if (!textoOriginal) {
         return '';
@@ -75,14 +80,15 @@ async function carregarTimeline(hashtagFiltro = null) {
     }
     
     try {
-        let urlServidor = `${API_URL}/timeline?viewer_id=${usuarioAtual.id}`;
         
+        let caminhoTimeline = '/posts?limite=50';
+
         if (hashtagFiltro) {
-            urlServidor += `&hashtag=${encodeURIComponent(hashtagFiltro)}`;
+            caminhoTimeline += `&hashtag=${encodeURIComponent(hashtagFiltro)}`;
         }
 
-        const response = await fetch(urlServidor);
-        const postsTimeline = await response.json();
+        const postsTimeline = (await api.get(caminhoTimeline)).map(adaptar.post);
+
         
         const container = document.getElementById('timeline-container');
         container.innerHTML = '';
@@ -153,8 +159,9 @@ async function carregarComunidade() {
     }
     
     try {
-        const response = await fetch(`${API_URL}/comunidade/${usuarioAtual.id}`);
-        listaComunidade = await response.json();
+        
+        listaComunidade = await api.get('/comunidade?limite=200');
+
         
         renderizarComunidade();
     } catch(erro) {
@@ -238,35 +245,22 @@ function renderizarComunidade() {
 
 async function seguir(seguido_id, event) {
     if (event) {
-        event.stopPropagation(); 
+        event.stopPropagation();
     }
-    
-    const payload = { 
-        seguidor_id: usuarioAtual.id, 
-        seguido_id: seguido_id 
-    };
-    
+
     try {
-        const response = await fetch(`${API_URL}/seguir`, { 
-            method: 'POST', 
-            headers: { 
-                'Content-Type': 'application/json' 
-            }, 
-            body: JSON.stringify(payload) 
-        });
-        
-        if (response.ok) {
-            showToast('Usuário seguido com sucesso!');
-            carregarComunidade(); 
-            
-            const perfilPublicoTab = document.getElementById('tab-public-profile');
-            
-            if (!perfilPublicoTab.classList.contains('hidden')) {
-                abrirPerfilPublico(seguido_id); 
-            }
+        await api.post(`/usuarios/${seguido_id}/seguir`);
+
+        showToast('Usuário seguido com sucesso!');
+        carregarComunidade();
+
+        const perfilPublicoTab = document.getElementById('tab-public-profile');
+
+        if (!perfilPublicoTab.classList.contains('hidden')) {
+            abrirPerfilPublico(seguido_id);
         }
     } catch(erro) {
-        alert("Erro ao tentar seguir o usuário.");
+        alert(erro.message || "Erro ao tentar seguir o usuário.");
     }
 }
 
@@ -274,24 +268,20 @@ async function deixarDeSeguir(seguido_id, event) {
     if (event) {
         event.stopPropagation();
     }
-    
+
     try {
-        const response = await fetch(`${API_URL}/seguir/${usuarioAtual.id}/${seguido_id}`, { 
-            method: 'DELETE' 
-        });
-        
-        if (response.ok) {
-            showToast('Você deixou de seguir este usuário.');
-            carregarComunidade(); 
-            
-            const perfilPublicoTab = document.getElementById('tab-public-profile');
-            
-            if (!perfilPublicoTab.classList.contains('hidden')) {
-                abrirPerfilPublico(seguido_id);
-            }
+        await api.delete(`/usuarios/${seguido_id}/seguir`);
+
+        showToast('Você deixou de seguir este usuário.');
+        carregarComunidade();
+
+        const perfilPublicoTab = document.getElementById('tab-public-profile');
+
+        if (!perfilPublicoTab.classList.contains('hidden')) {
+            abrirPerfilPublico(seguido_id);
         }
     } catch(erro) {
-        alert("Erro ao tentar deixar de seguir o usuário.");
+        alert(erro.message || "Erro ao tentar deixar de seguir o usuário.");
     }
 }
 
@@ -301,8 +291,9 @@ async function deixarDeSeguir(seguido_id, event) {
 
 async function carregarStatsPerfil(user_id, prefixo_elemento) {
     try {
-        const response = await fetch(`${API_URL}/perfil/${user_id}/stats`);
-        const estatisticas = await response.json();
+        
+        const estatisticas = await api.get(`/usuarios/${user_id}/stats`);
+
         
         const elementoSeguidores = document.getElementById(`${prefixo_elemento}-seguidores`);
         const elementoSeguindo = document.getElementById(`${prefixo_elemento}-seguindo`);
@@ -318,7 +309,7 @@ async function carregarStatsPerfil(user_id, prefixo_elemento) {
         const containerSelos = document.getElementById(`${prefixo_elemento}-badges`);
         
         if (containerSelos && typeof gerarHtmlSelos === 'function') {
-            containerSelos.innerHTML = gerarHtmlSelos(estatisticas.total_vinis || 0, estatisticas.seguidores || 0);
+            containerSelos.innerHTML = gerarHtmlSelos((estatisticas.total_vinis || 0) + (estatisticas.total_desejos || 0), estatisticas.seguidores || 0);
         }
 
     } catch(erro) {
@@ -332,13 +323,23 @@ async function abrirPerfilPublico(amigo_id) {
         return;
     }
     
-    await carregarComunidade(); 
     
-    const amigo = listaComunidade.find(usuario => usuario.id === amigo_id);
-    
-    if (!amigo) {
+    let amigo;
+
+    try {
+        const [perfil, estatisticas] = await Promise.all([
+            api.get(`/usuarios/${amigo_id}`),
+            api.get(`/usuarios/${amigo_id}/stats`)
+        ]);
+
+        amigo = { ...perfil, is_seguindo: estatisticas.eu_sigo };
+    } catch (erroPerfil) {
+        showToast(erroPerfil.message || 'Não foi possível abrir este perfil.');
         return;
     }
+
+    perfilPublicoAtual = amigo;
+
 
     document.getElementById('public-nome').innerText = amigo.nome_completo;
     document.getElementById('public-user').innerText = `@${amigo.username}`;
@@ -410,8 +411,9 @@ async function abrirPerfilPublico(amigo_id) {
     `;
 
     try {
-        const resVinis = await fetch(`${API_URL}/vinis/${amigo.id}`);
-        const vinisAmigo = await resVinis.json();
+        
+        const vinisAmigo = await api.get(`/usuarios/${amigo.id}/vinis`);
+
         
         vinisPerfilPublico = vinisAmigo; 
         
@@ -477,8 +479,9 @@ async function abrirPerfilPublico(amigo_id) {
     }
 
     try {
-        const resPosts = await fetch(`${API_URL}/posts/${amigo.id}?viewer_id=${usuarioAtual.id}`);
-        const postsAmigo = await resPosts.json();
+        
+        const postsAmigo = await api.get(`/usuarios/${amigo.id}/posts?limite=50`);
+
         
         const containerPosts = document.getElementById('public-posts');
         containerPosts.innerHTML = '';
@@ -560,7 +563,7 @@ function abrirModalVinilPublico(idDoVinilSelecionado) {
     let stringHtmlAcoes = '';
     
     if (discoAchado.negociavel) {
-        const amigo = listaComunidade.find(usuario => usuario.id === discoAchado.usuario_id);
+        const amigo = perfilPublicoAtual && perfilPublicoAtual.id === discoAchado.usuario_id ? perfilPublicoAtual : null;
         
         if (amigo) {
             stringHtmlAcoes += `
@@ -600,18 +603,19 @@ async function abrirListaUsuarios(tipo_lista, id_alvo) {
         const tituloModal = document.getElementById('modal-usuarios-titulo');
         
         if (tipo_lista === 'seguidores') {
-            urlFetch = `${API_URL}/perfil/${id_alvo}/seguidores`;
+            urlFetch = `/usuarios/${id_alvo}/seguidores?limite=100`;
             tituloModal.innerText = 'Seguidores';
         } else if (tipo_lista === 'seguindo') {
-            urlFetch = `${API_URL}/perfil/${id_alvo}/seguindo`;
+            urlFetch = `/usuarios/${id_alvo}/seguindo?limite=100`;
             tituloModal.innerText = 'Seguindo';
         } else if (tipo_lista === 'curtidas') {
-            urlFetch = `${API_URL}/posts/${id_alvo}/curtidas`;
+            urlFetch = `/posts/${id_alvo}/curtidas`;
             tituloModal.innerText = 'Quem curtiu';
         }
 
-        const response = await fetch(urlFetch);
-        const listaUsuarios = await response.json();
+        
+        const listaUsuarios = await api.get(urlFetch);
+
         
         const containerLista = document.getElementById('modal-usuarios-lista');
         containerLista.innerHTML = '';
@@ -670,55 +674,39 @@ function fecharModalNovoPost(evento, forcar_fechamento = false) {
     }
 }
 
-function salvarNovoPost() {
+async function salvarNovoPost() {
     const inputFoto = document.getElementById('modal-post-foto');
     const arquivoSelecionado = inputFoto.files[0];
     const legendaTexto = document.getElementById('modal-post-legenda').value;
-    
+
     if (!arquivoSelecionado) {
         return alert('Por favor, selecione uma foto do seu vinil para postar no feed!');
     }
-    
+
     inputFoto.disabled = true;
 
-    const leitorDeArquivo = new FileReader();
-    
-    leitorDeArquivo.onload = async function(eventoDeLeitura) {
-        const payloadPost = { 
-            usuario_id: usuarioAtual.id, 
-            foto: eventoDeLeitura.target.result, 
-            legenda: legendaTexto 
-        };
-        
-        try {
-            await fetch(`${API_URL}/posts`, { 
-                method: 'POST', 
-                headers: {
-                    'Content-Type': 'application/json'
-                }, 
-                body: JSON.stringify(payloadPost) 
-            });
-            
-            showToast('Sua publicação foi enviada com sucesso!');
-            
-            fecharModalNovoPost(null, true);
-            
-            const abaPerfilMeu = document.getElementById('tab-profile-community');
-            
-            if (!abaPerfilMeu.classList.contains('hidden')) {
-                renderizarMeusPosts();
-            } else {
-                switchTab('profile-community');
-            }
-            
-        } catch(erro) {
-            alert("Ocorreu um erro ao tentar publicar a sua foto.");
-        } finally {
-            inputFoto.disabled = false;
+    try {
+        // Fotos de celular têm vários MB: reduz antes de enviar.
+        const fotoReduzida = await redimensionarImagem(arquivoSelecionado, 1080, 0.85);
+
+        await api.post('/posts', { foto: fotoReduzida, legenda: legendaTexto });
+
+        showToast('Sua publicação foi enviada com sucesso!');
+
+        fecharModalNovoPost(null, true);
+
+        const abaPerfilMeu = document.getElementById('tab-profile-community');
+
+        if (!abaPerfilMeu.classList.contains('hidden')) {
+            renderizarMeusPosts();
+        } else {
+            switchTab('profile-community');
         }
-    };
-    
-    leitorDeArquivo.readAsDataURL(arquivoSelecionado);
+    } catch(erro) {
+        alert(erro.message || "Ocorreu um erro ao tentar publicar a sua foto.");
+    } finally {
+        inputFoto.disabled = false;
+    }
 }
 
 // ------------------------------------------
@@ -747,8 +735,9 @@ async function abrirPaginaPost(post_id, focarComentario = false) {
     registrarAbaAnteriorParaVoltar();
     
     try {
-        const response = await fetch(`${API_URL}/post/${post_id}?viewer_id=${usuarioAtual.id}`);
-        const postUnico = await response.json();
+        
+        const postUnico = adaptar.post(await api.get(`/posts/${post_id}`));
+
         
         if (!postUnico) {
             return;
@@ -815,76 +804,37 @@ async function abrirPaginaPost(post_id, focarComentario = false) {
         }
     } catch(erro) {
         console.error("Erro ao abrir a página do post:", erro);
+        showToast(erro.message || 'Não foi possível abrir esta publicação.');
     }
 }
 
-async function curtirPostPagina(post_id, dono_post_id) {
-    const payloadCurtida = { 
-        usuario_id: usuarioAtual.id, 
-        post_id: post_id, 
-        dono_post_id: dono_post_id 
-    };
-    
+async function curtirPostPagina(post_id) {
     try {
-        const response = await fetch(`${API_URL}/posts/curtir`, { 
-            method: 'POST', 
-            headers: { 'Content-Type': 'application/json' }, 
-            body: JSON.stringify(payloadCurtida) 
-        });
-        
-        const dados = await response.json();
-        const countSpan = document.getElementById('post-page-like-count');
+        const dados = await api.post(`/posts/${post_id}/curtir`);
         const btnLike = document.getElementById(`btn-like-pagina-${post_id}`);
-        
-        if (countSpan && btnLike) {
-            let currentCount = parseInt(countSpan.innerText);
-            
-            if (dados.acao === 'adicionada') {
-                currentCount++;
-                btnLike.innerHTML = `❤️ <span style="font-size: 1rem; color: var(--primaria);" id="post-page-like-count">${currentCount} curtidas</span>`;
-            } else {
-                currentCount--;
-                btnLike.innerHTML = `🤍 <span style="font-size: 1rem; color: var(--primaria);" id="post-page-like-count">${currentCount} curtidas</span>`;
-            }
+
+        if (btnLike) {
+            const coracao = dados.user_liked ? '❤️' : '🤍';
+            btnLike.innerHTML = `${coracao} <span style="font-size: 1rem; color: var(--primaria);" id="post-page-like-count">${dados.likes_count} curtidas</span>`;
         }
-        
     } catch(erro) {
         console.error("Erro ao tentar curtir a publicação na página:", erro);
+        showToast(erro.message || 'Não foi possível curtir agora.');
     }
 }
 
-async function curtirPostTimeline(post_id, dono_post_id) {
-    const payloadCurtida = { 
-        usuario_id: usuarioAtual.id, 
-        post_id: post_id, 
-        dono_post_id: dono_post_id 
-    };
-    
+async function curtirPostTimeline(post_id) {
     try {
-        const response = await fetch(`${API_URL}/posts/curtir`, { 
-            method: 'POST', 
-            headers: { 'Content-Type': 'application/json' }, 
-            body: JSON.stringify(payloadCurtida) 
-        });
-        
-        const dados = await response.json();
-        const countSpan = document.getElementById(`like-count-${post_id}`);
+        const dados = await api.post(`/posts/${post_id}/curtir`);
         const btnLike = document.getElementById(`btn-like-${post_id}`);
-        
-        if (countSpan && btnLike) {
-            let currentCount = parseInt(countSpan.innerText);
-            
-            if (dados.acao === 'adicionada') {
-                currentCount++;
-                btnLike.innerHTML = `❤️ <span style="font-size: 1rem; color: var(--primaria);" id="like-count-${post_id}">${currentCount} curtidas</span>`;
-            } else {
-                currentCount--;
-                btnLike.innerHTML = `🤍 <span style="font-size: 1rem; color: var(--primaria);" id="like-count-${post_id}">${currentCount} curtidas</span>`;
-            }
+
+        if (btnLike) {
+            const coracao = dados.user_liked ? '❤️' : '🤍';
+            btnLike.innerHTML = `${coracao} <span style="font-size: 1rem; color: var(--primaria);" id="like-count-${post_id}">${dados.likes_count} curtidas</span>`;
         }
-        
     } catch(erro) {
         console.error("Erro ao tentar curtir a publicação na timeline:", erro);
+        showToast(erro.message || 'Não foi possível curtir agora.');
     }
 }
 
@@ -910,8 +860,9 @@ function fecharComentariosMobile() {
 
 async function carregarComentariosDaPagina(post_id) {
     try {
-        const response = await fetch(`${API_URL}/posts/${post_id}/comentarios`);
-        const listaBrutaDeComentarios = await response.json();
+        
+        const listaBrutaDeComentarios = await api.get(`/posts/${post_id}/comentarios`);
+
         
         const containerLista = document.getElementById('post-page-comments');
         containerLista.innerHTML = '';
@@ -1014,19 +965,16 @@ async function apagarComentario(comentario_id, post_id) {
     }
 
     try {
-        const response = await fetch(`${API_URL}/posts/comentarios/${comentario_id}`, {
-            method: 'DELETE'
-        });
         
-        if (response.ok) {
-            showToast("Comentário apagado com sucesso.");
-            carregarComentariosDaPagina(post_id);
-        } else {
-            alert("Não foi possível apagar o comentário.");
-        }
+        await api.delete(`/comentarios/${comentario_id}`);
+
+        showToast("Comentário apagado com sucesso.");
+        carregarComentariosDaPagina(post_id);
     } catch(erro) {
         console.error("Erro ao tentar apagar:", erro);
+        alert(erro.message || "Não foi possível apagar o comentário.");
     }
+
 }
 
 function prepararRespostaDeComentario(comentario_pai_id, username_alvo, usuario_mencionado_id) {
@@ -1040,7 +988,7 @@ function prepararRespostaDeComentario(comentario_pai_id, username_alvo, usuario_
 
 async function enviarComentarioNaPagina() {
     const inputPostId = document.getElementById('post-page-id').value;
-    const inputDonoId = document.getElementById('post-page-dono-id').value;
+    
     const inputTexto = document.getElementById('post-page-comment-input');
     
     const textoDoComentario = inputTexto.value.trim();
@@ -1049,23 +997,17 @@ async function enviarComentarioNaPagina() {
         return;
     }
 
-    const payloadComentario = { 
-        usuario_id: usuarioAtual.id, 
-        post_id: inputPostId, 
-        texto: textoDoComentario, 
-        dono_post_id: inputDonoId,
+    
+    // Quem recebe a notificação é decidido pelo servidor (mencionado, autor do comentário respondido ou dono do post).
+    const payloadComentario = {
+        texto: textoDoComentario,
         parent_id: comentarioPaiIdAtivo,
         usuario_mencionado_id: usuarioMencionadoIdAtivo
     };
 
     try {
-        await fetch(`${API_URL}/posts/comentar`, {
-            method: 'POST', 
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(payloadComentario)
-        });
+        await api.post(`/posts/${inputPostId}/comentarios`, payloadComentario);
+
         
         inputTexto.value = '';
         inputTexto.placeholder = "Adicione um comentário...";
@@ -1076,6 +1018,7 @@ async function enviarComentarioNaPagina() {
         await carregarComentariosDaPagina(inputPostId);
     } catch(erro) {
         console.error("Erro ao tentar enviar o comentário:", erro);
+        alert(erro.message || "Não foi possível enviar o comentário.");
     }
 }
 
@@ -1103,13 +1046,9 @@ async function salvarEdicaoLegenda() {
     };
     
     try {
-        await fetch(`${API_URL}/posts/${inputId}`, { 
-            method: 'PUT', 
-            headers: {
-                'Content-Type': 'application/json'
-            }, 
-            body: JSON.stringify(payloadEdicao) 
-        });
+        
+        await api.put(`/posts/${inputId}`, payloadEdicao);
+
         
         showToast('Legenda atualizada com sucesso!');
         
@@ -1118,14 +1057,15 @@ async function salvarEdicaoLegenda() {
         
         renderizarMeusPosts(); 
     } catch(erro) {
-        alert("Ocorreu um erro ao atualizar a legenda da publicação.");
+        alert(erro.message || "Ocorreu um erro ao atualizar a legenda da publicação.");
     }
 }
 
 async function renderizarMeusPosts() {
     try {
-        const response = await fetch(`${API_URL}/posts/${usuarioAtual.id}?viewer_id=${usuarioAtual.id}`);
-        const meusPostsRecuperados = await response.json();
+        
+        const meusPostsRecuperados = await api.get(`/usuarios/${usuarioAtual.id}/posts?limite=50`);
+
         
         const containerDosMeusPosts = document.getElementById('meus-posts');
         containerDosMeusPosts.innerHTML = '';

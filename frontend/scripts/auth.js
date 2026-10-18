@@ -24,8 +24,8 @@ function nextStepRegister() {
 
     if(!nome || !email || !nasc || !username || !pass || !passConf) return showToast('Preencha os campos obrigatórios!');
     if(!email.includes('@')) return showToast('Digite um e-mail válido!');
-    if(username.includes(' ')) return showToast('Nome de usuário não pode ter espaços!');
-    if(pass.length < 6) return showToast('A senha deve ter pelo menos 6 caracteres!');
+    if(!/^[A-Za-z0-9_.]{3,30}$/.test(username)) return showToast('Usuário: 3 a 30 caracteres, só letras, números, _ e .');
+    if(pass.length < 8) return showToast('A senha deve ter pelo menos 8 caracteres!');
     if(pass !== passConf) return showToast('As senhas não coincidem!');
 
     document.getElementById('register-step-1').classList.add('hidden');
@@ -79,52 +79,34 @@ async function fazerCadastro() {
 
 async function enviarCadastroAPI(payload, btn) {
     try {
-        const response = await fetch(`${API_URL}/register`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
-        const data = await response.json();
-        
-        if(response.ok) {
-            usuarioAtual = data.usuario;
-            localStorage.setItem('vinyl_user', JSON.stringify(usuarioAtual));
-            entrarNoApp();
-            showToast('Conta criada com sucesso!');
-        } else {
-            alert(data.error || 'Erro ao cadastrar');
-        }
+        const data = await api.post('/auth/register', payload, { autenticada: false });
+
+        usuarioAtual = data.usuario;
+        salvarSessao(data.token, usuarioAtual);
+        entrarNoApp();
+        showToast('Conta criada com sucesso!');
     } catch (error) {
-        alert('Erro de conexão com o servidor.');
+        alert(error.message || 'Erro ao cadastrar');
     } finally {
         btn.disabled = false; btn.innerHTML = 'Finalizar Cadastro';
     }
 }
 
-async function fazerLogin() { 
+async function fazerLogin() {
     const username = document.getElementById('username-login').value.trim();
     const pass = document.getElementById('pass-login').value.trim();
 
     if(!username || !pass) return showToast('Preencha usuário e senha!');
 
     try {
-        const response = await fetch(`${API_URL}/login`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, senha: pass })
-        });
-        const data = await response.json();
-        
-        if(response.ok) {
-            usuarioAtual = data.usuario;
-            localStorage.setItem('vinyl_user', JSON.stringify(usuarioAtual));
-            entrarNoApp();
-            showToast('Bem-vindo de volta!');
-        } else {
-            alert(data.error || 'Erro ao logar');
-        }
+        const data = await api.post('/auth/login', { login: username, senha: pass }, { autenticada: false });
+
+        usuarioAtual = data.usuario;
+        salvarSessao(data.token, usuarioAtual);
+        entrarNoApp();
+        showToast('Bem-vindo de volta!');
     } catch (error) {
-        alert('Erro de conexão. Servidor está ligado?');
+        alert(error.message || 'Erro ao logar');
     }
 }
 
@@ -135,12 +117,14 @@ async function enviarLinkReset() {
     btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Enviando...';
 
     try {
-        const response = await fetch(`${API_URL}/forgot-password`, {
-            method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email })
-        });
-        const data = await response.json();
-        if(response.ok) { showToast(data.message); toggleAuthMode('login'); } else { alert(data.error); }
-    } catch (err) { alert('Erro de conexão.'); } finally { btn.disabled = false; btn.innerHTML = 'Enviar Link'; }
+        const data = await api.post('/auth/forgot-password', { email }, { autenticada: false });
+        showToast(data.message);
+        toggleAuthMode('login');
+    } catch (err) {
+        alert(err.message);
+    } finally {
+        btn.disabled = false; btn.innerHTML = 'Enviar Link';
+    }
 }
 
 async function salvarNovaSenha() {
@@ -150,29 +134,28 @@ async function salvarNovaSenha() {
     const confirma = document.getElementById('reset-confirma').value.trim();
 
     if(!novaSenha || !confirma) return showToast('Preencha todos os campos!');
-    if(novaSenha.length < 6) return showToast('A senha deve ter no mínimo 6 caracteres!');
+    if(novaSenha.length < 8) return showToast('A senha deve ter no mínimo 8 caracteres!');
     if(novaSenha !== confirma) return showToast('As senhas não coincidem!');
 
     const btn = document.getElementById('btn-reset');
     btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Atualizando...';
 
     try {
-        const response = await fetch(`${API_URL}/reset-password`, {
-            method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token, novaSenha })
-        });
-        const data = await response.json();
-        if(response.ok) {
-            showToast('Senha alterada com sucesso!');
-            window.history.replaceState({}, document.title, window.location.pathname);
-            toggleAuthMode('login');
-        } else { alert(data.error); }
-    } catch (err) { alert('Erro de conexão.'); } finally { btn.disabled = false; btn.innerHTML = 'Atualizar Senha'; }
+        await api.post('/auth/reset-password', { token, novaSenha }, { autenticada: false });
+        showToast('Senha alterada com sucesso!');
+        window.history.replaceState({}, document.title, window.location.pathname);
+        toggleAuthMode('login');
+    } catch (err) {
+        alert(err.message);
+    } finally {
+        btn.disabled = false; btn.innerHTML = 'Atualizar Senha';
+    }
 }
 
 async function enviarFeedback() {
     const msgInput = document.getElementById('feedback-msg');
     const msg = msgInput.value.trim();
-    
+
     if(!msg) return showToast('Por favor, escreva uma mensagem!');
 
     const btn = document.getElementById('btn-feedback');
@@ -186,13 +169,14 @@ async function enviarFeedback() {
     };
 
     try {
-        const response = await fetch(`${API_URL}/feedback`, {
-            method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
-        });
-        const data = await response.json();
-        
-        if(response.ok) { showToast('Mensagem enviada! Obrigado!'); msgInput.value = ''; } else { alert(data.error); }
-    } catch (err) { alert('Erro ao enviar feedback.'); } finally { btn.disabled = false; btn.innerHTML = 'Enviar Mensagem'; }
+        await api.post('/feedback', payload);
+        showToast('Mensagem enviada! Obrigado!');
+        msgInput.value = '';
+    } catch (err) {
+        alert(err.message || 'Erro ao enviar feedback.');
+    } finally {
+        btn.disabled = false; btn.innerHTML = 'Enviar Mensagem';
+    }
 }
 
 // ==========================================
@@ -254,43 +238,44 @@ function previewNovaFoto(eventoDeUpload) {
 
 async function enviarLinkResetPerfil() {
     if (!usuarioAtual || !usuarioAtual.email) return showToast('E-mail não encontrado.');
-    const botaoResetar = document.getElementById('btn-reset-perfil'); 
+    const botaoResetar = document.getElementById('btn-reset-perfil');
     botaoResetar.disabled = true; botaoResetar.innerHTML = '<span class="spinner"></span> Enviando...';
-    
+
     try {
-        const responseFetch = await fetch(`${API_URL}/forgot-password`, { 
-            method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: usuarioAtual.email }) 
-        });
-        const dataResponse = await responseFetch.json();
-        if (responseFetch.ok) showToast('O Link foi enviado para o seu e-mail!'); else alert(dataResponse.error);
-    } catch (erroDeConexao) { alert('Erro de conexão com o servidor de e-mails.'); } finally { botaoResetar.disabled = false; botaoResetar.innerHTML = 'Receber link de redefinição'; }
+        await api.post('/auth/forgot-password', { email: usuarioAtual.email });
+        showToast('O Link foi enviado para o seu e-mail!');
+    } catch (erro) {
+        alert(erro.message || 'Erro de conexão com o servidor de e-mails.');
+    } finally {
+        botaoResetar.disabled = false; botaoResetar.innerHTML = 'Receber link de redefinição';
+    }
 }
 
 async function salvarPerfil() {
-    const botaoSalvarPerfil = document.getElementById('btn-salvar-perfil'); 
+    const botaoSalvarPerfil = document.getElementById('btn-salvar-perfil');
     botaoSalvarPerfil.disabled = true; botaoSalvarPerfil.innerHTML = '<span class="spinner"></span> Salvando alterações...';
-    
-    const payloadPerfil = { 
-        nome_completo: document.getElementById('edit-perfil-nome').value.trim(), 
-        bio: document.getElementById('edit-perfil-bio').value.trim() 
+
+    const payloadPerfil = {
+        nome_completo: document.getElementById('edit-perfil-nome').value.trim(),
+        bio: document.getElementById('edit-perfil-bio').value.trim()
     };
-    
+
     if (fotoPerfilTempB64) payloadPerfil.foto_perfil = fotoPerfilTempB64;
-    
+
     try {
-        const responseUpdate = await fetch(`${API_URL}/usuarios/${usuarioAtual.id}`, { 
-            method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payloadPerfil) 
-        });
-        
-        if (responseUpdate.ok) {
-            usuarioAtual.nome_completo = payloadPerfil.nome_completo; 
-            usuarioAtual.bio = payloadPerfil.bio; 
-            if (payloadPerfil.foto_perfil) usuarioAtual.foto_perfil = payloadPerfil.foto_perfil;
-            
-            localStorage.setItem('vinyl_user', JSON.stringify(usuarioAtual)); 
-            atualizarAvatarUI(); carregarDadosPerfil(); showToast("Seu perfil foi atualizado com sucesso!");
-        } else { alert("Ocorreu um erro ao tentar salvar o seu perfil."); }
-    } catch(erroConexaoApi) { alert("Erro de conexão ao tentar salvar o perfil."); } finally { botaoSalvarPerfil.disabled = false; botaoSalvarPerfil.innerHTML = 'Salvar Alterações'; }
+        await api.put(`/usuarios/${usuarioAtual.id}`, payloadPerfil);
+
+        usuarioAtual.nome_completo = payloadPerfil.nome_completo;
+        usuarioAtual.bio = payloadPerfil.bio;
+        if (payloadPerfil.foto_perfil) usuarioAtual.foto_perfil = payloadPerfil.foto_perfil;
+
+        localStorage.setItem('vinyl_user', JSON.stringify(usuarioAtual));
+        atualizarAvatarUI(); carregarDadosPerfil(); showToast("Seu perfil foi atualizado com sucesso!");
+    } catch(erro) {
+        alert(erro.message || "Ocorreu um erro ao tentar salvar o seu perfil.");
+    } finally {
+        botaoSalvarPerfil.disabled = false; botaoSalvarPerfil.innerHTML = 'Salvar Alterações';
+    }
 }
 
 async function excluirConta() {
@@ -302,8 +287,11 @@ async function excluirConta() {
         if (confirmacaoDigitada !== "EXCLUIR") return alert("O processo de exclusão foi cancelado.");
         
         try {
-            const responseDelete = await fetch(`${API_URL}/usuarios/${usuarioAtual.id}`, { method: 'DELETE' });
-            if (responseDelete.ok) { alert("Sua conta foi excluída!"); logout(); } else { alert("Erro ao excluir a conta."); }
-        } catch(erroDelete) { alert("Ocorreu um erro de conexão durante a exclusão."); }
+            
+            await api.delete(`/usuarios/${usuarioAtual.id}`);
+            alert("Sua conta foi excluída!");
+            logout();
+        } catch(erroDelete) { alert(erroDelete.message || "Ocorreu um erro durante a exclusão."); }
+
     }
 }

@@ -1,7 +1,7 @@
 // ==========================================
 // CONFIGURAÇÕES GLOBAIS E ESTADO DA APLICAÇÃO
 // ==========================================
-const API_URL = 'http://localhost:3000/api';
+// API_URL, o token e as chamadas ao backend ficam em scripts/api.js
 
 let usuarioAtual = null; 
 let todosDiscos = [];
@@ -88,12 +88,24 @@ document.addEventListener('DOMContentLoaded', () => {
         return; 
     }
 
-    const userSalvo = localStorage.getItem('vinyl_user');
     
-    if (userSalvo) {
-        usuarioAtual = JSON.parse(userSalvo);
+    const userSalvo = localStorage.getItem('vinyl_user');
+
+    // Sem token a sessão não vale (por exemplo, restos da versão anterior do app).
+    if (userSalvo && obterToken()) {
+        try {
+            usuarioAtual = JSON.parse(userSalvo);
+        } catch (erroDeLeitura) {
+            limparSessao();
+            return;
+        }
+
         entrarNoApp();
+        validarSessao();
+    } else {
+        limparSessao();
     }
+
 });
 
 function toggleTheme() {
@@ -298,17 +310,40 @@ function entrarNoApp() {
     showSlides(); 
     
     if (!intervaloNotif) { 
-        intervaloNotif = setInterval(carregarNotificacoes, 10000); 
+        intervaloNotif = setInterval(() => { if (!document.hidden) carregarNotificacoes(); }, 10000); 
     }
     
     if (!intervaloBadgeChat) { 
-        intervaloBadgeChat = setInterval(atualizarBadgeChat, 5000); 
+        intervaloBadgeChat = setInterval(() => { if (!document.hidden) atualizarBadgeChat(); }, 5000); 
     }
 }
 
-function logout() { 
-    usuarioAtual = null; 
-    localStorage.removeItem('vinyl_user');
+
+// Confere o token guardado e atualiza o perfil em cache. Se o token venceu, a api.js já faz o logout.
+async function validarSessao() {
+    try {
+        const { usuario } = await api.get('/auth/me');
+
+        usuarioAtual = { ...usuarioAtual, ...usuario };
+        localStorage.setItem('vinyl_user', JSON.stringify(usuarioAtual));
+        atualizarAvatarUI();
+    } catch (erro) {
+        // sem conexão: segue com o perfil em cache
+    }
+}
+
+function logout() {
+    usuarioAtual = null;
+    limparSessao();
+
+    todosDiscos = [];
+    mensagensAtuaisChat = [];
+    chatAmigoAtivo = null;
+
+    if (typeof pararAudioGlobal === 'function') {
+        pararAudioGlobal();
+    }
+
     
     if (intervaloNotif) {
         clearInterval(intervaloNotif);

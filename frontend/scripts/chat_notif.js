@@ -8,8 +8,9 @@ async function carregarNotificacoes() {
     }
     
     try {
-        const response = await fetch(`${API_URL}/notificacoes/${usuarioAtual.id}`);
-        const notificacoes = await response.json();
+        
+        const notificacoes = (await api.get('/notificacoes')).map(adaptar.notificacao);
+
         
         const naoLidas = notificacoes.filter(n => !n.lida).length;
         const badge = document.getElementById('badge-notif');
@@ -88,9 +89,9 @@ async function carregarNotificacoes() {
 
 async function lerNotificacao(idDaNotificacao, callbackParaRodar) {
     try {
-        await fetch(`${API_URL}/notificacoes/ler/${idDaNotificacao}`, { 
-            method: 'PUT' 
-        });
+        
+        await api.put(`/notificacoes/${idDaNotificacao}/ler`);
+
         
         carregarNotificacoes();
         
@@ -148,8 +149,9 @@ async function atualizarBadgeChat() {
     }
     
     try {
-        const response = await fetch(`${API_URL}/mensagens/naolidas/${usuarioAtual.id}`);
-        const dadosBadge = await response.json();
+        
+        const dadosBadge = await api.get('/mensagens/nao-lidas');
+
         
         const elementoBadge = document.getElementById('chat-unread-badge');
         
@@ -170,8 +172,9 @@ async function carregarConversas() {
     }
     
     try {
-        const response = await fetch(`${API_URL}/conversas/${usuarioAtual.id}`);
-        const listaDeConversas = await response.json();
+        
+        const listaDeConversas = await api.get('/conversas');
+
         
         const containerAbaSocial = document.getElementById('conversas-container');
         const containerWidgetChat = document.getElementById('chat-list-view');
@@ -253,11 +256,9 @@ async function abrirChat(amigo_id_selecionado, nome_do_amigo) {
     
     await carregarMensagens(amigo_id_selecionado);
     
-    await fetch(`${API_URL}/mensagens/ler`, { 
-        method: 'PUT', 
-        headers:{ 'Content-Type':'application/json' }, 
-        body: JSON.stringify({ meu_id: usuarioAtual.id, amigo_id: amigo_id_selecionado }) 
-    });
+    
+    await api.put('/mensagens/ler', { amigo_id: amigo_id_selecionado }).catch(() => {});
+
     
     if (intervaloChat) {
         clearInterval(intervaloChat);
@@ -268,8 +269,9 @@ async function abrirChat(amigo_id_selecionado, nome_do_amigo) {
 
 async function carregarMensagens(amigo_id_pesquisa, fazerScroll = true) {
     try {
-        const response = await fetch(`${API_URL}/mensagens/${usuarioAtual.id}/${amigo_id_pesquisa}`);
-        const mensagensRecebidas = await response.json();
+        
+        const mensagensRecebidas = await api.get(`/mensagens/${amigo_id_pesquisa}?limite=200`);
+
         
         if (JSON.stringify(mensagensRecebidas) === JSON.stringify(mensagensAtuaisChat)) {
             return;
@@ -334,19 +336,17 @@ async function enviarMensagem() {
         idDoVinil = vinilParaEncaminhar;
     }
     
-    const payloadEnvio = { 
-        remetente_id: usuarioAtual.id, 
-        destinatario_id: chatAmigoAtivo, 
-        texto: textoLimpo, 
-        vinil_id: idDoVinil 
-    };
     
+    // O remetente é sempre o usuário logado (o servidor lê do token).
+    const payloadEnvio = {
+        destinatario_id: chatAmigoAtivo,
+        texto: textoLimpo,
+        vinil_id: idDoVinil
+    };
+
     try {
-        await fetch(`${API_URL}/mensagens`, { 
-            method: 'POST', 
-            headers:{ 'Content-Type':'application/json' }, 
-            body: JSON.stringify(payloadEnvio) 
-        });
+        await api.post('/mensagens', payloadEnvio);
+
         
         inputDaMensagem.value = '';
         vinilParaEncaminhar = null;
@@ -354,6 +354,7 @@ async function enviarMensagem() {
         carregarMensagens(chatAmigoAtivo, true);
     } catch(erro) {
         console.error("Erro ao enviar mensagem:", erro);
+        showToast(erro.message || 'Não foi possível enviar a mensagem.');
     }
 }
 

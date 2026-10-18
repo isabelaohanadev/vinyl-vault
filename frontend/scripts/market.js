@@ -10,8 +10,9 @@ async function carregarClassificados() {
     }
     
     try {
-        const response = await fetch(`${API_URL}/classificados/${usuarioAtual.id}`);
-        listaClassificados = await response.json();
+        
+        listaClassificados = (await api.get('/classificados?limite=200')).map(adaptar.classificado);
+
         
         renderizarClassificados();
     } catch(erro) {

@@ -117,7 +117,6 @@ async function salvarRecomendacaoNaWishlist(nome, artista, genero, urlDaCapa, id
             const base64Final = canvasRender.toDataURL('image/jpeg', 0.8);
 
             const payloadWishlist = {
-                usuario_id: usuarioAtual.id,
                 nome: nome,
                 artista: artista,
                 genero: genero,
@@ -129,11 +128,16 @@ async function salvarRecomendacaoNaWishlist(nome, artista, genero, urlDaCapa, id
                 foto: base64Final
             };
 
-            await fetch(`${API_URL}/vinis`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payloadWishlist)
-            });
+            
+            try {
+                await api.post('/vinis', payloadWishlist);
+            } catch (erroApi) {
+                alert(erroApi.message || "Erro ao adicionar à wishlist.");
+                botaoClicado.disabled = false;
+                botaoClicado.innerHTML = '+ Adicionar à Wishlist';
+                return;
+            }
+
 
             botaoClicado.innerHTML = '✅ NA WISHLIST';
             botaoClicado.style.background = '#27ae60';

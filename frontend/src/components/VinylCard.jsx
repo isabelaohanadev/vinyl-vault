@@ -2,7 +2,7 @@ export const VinylCard = ({ vinil, onClick }) => {
     return (
         <div className="vinyl-card" onClick={onClick}>
             <img 
-                src={vinil.foto || '/assets/default-cover.jpg'} 
+                src={vinil.foto || '/assets/default-cover.svg'} 
                 alt={vinil.nome} 
                 className="vinyl-cover" 
             />

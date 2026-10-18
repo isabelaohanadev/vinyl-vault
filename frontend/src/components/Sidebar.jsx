@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 
 export const Sidebar = () => {
     const { logout } = useAuth();
@@ -9,7 +9,7 @@ export const Sidebar = () => {
 
     return (
         <aside className="sidebar">
-            <img src="/assets/logo.png" alt="Vinyl Vault" className="sidebar-logo" />
+            <img src="/assets/logo.svg" alt="Vinyl Vault" className="sidebar-logo" />
             <nav className="nav-menu">
                 <Link to="/dashboard" className={`nav-item ${isActive('/dashboard')}`}>
                     <i className="fas fa-home"></i>

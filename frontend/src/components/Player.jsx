@@ -6,7 +6,7 @@ export const Player = () => {
     return (
         <div className="global-player">
             <div className="player-info">
-                <img src="/assets/default-cover.jpg" alt="Capa" className="player-cover" />
+                <img src="/assets/default-cover.svg" alt="Capa" className="player-cover" />
                 <div className="player-track-details">
                     <span className="player-title">Selecione um disco</span>
                     <span className="player-artist">Para ouvir o preview</span>

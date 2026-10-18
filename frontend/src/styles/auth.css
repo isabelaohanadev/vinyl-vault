@@ -71,8 +71,36 @@
     gap: 10px;
 }
 
-.auth-links span {
+.auth-links span,
+.auth-links a {
     color: var(--secondary-color);
     font-weight: 600;
     cursor: pointer;
+}
+
+.auth-links a:hover {
+    text-decoration: underline;
+}
+
+.auth-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.form-error {
+    color: var(--secondary-color);
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+.form-success {
+    color: #27ae60;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+.auth-hint {
+    font-size: 0.9rem;
+    color: var(--tertiary-color);
+    text-align: center;
 }

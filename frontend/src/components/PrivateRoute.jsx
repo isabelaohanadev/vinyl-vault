@@ -1,19 +1,17 @@
-import { Navigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import { Navigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
+import { FullScreenLoader } from './FullScreenLoader';
 
 export const PrivateRoute = ({ children }) => {
     const { signed, loading } = useAuth();
+    const location = useLocation();
 
     if (loading) {
-        return (
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: 'var(--primary-color)', color: 'white' }}>
-                <h2>Carregando o cofre...</h2>
-            </div>
-        );
+        return <FullScreenLoader />;
     }
 
     if (!signed) {
-        return <Navigate to="/login" />;
+        return <Navigate to="/login" replace state={{ from: location }} />;
     }
 
     return children;

@@ -4,7 +4,7 @@ import { Layout } from '../components/Layout';
 import { VinylCard } from '../components/VinylCard';
 import { AddVinylModal } from '../components/AddVinylModal';
 import { VinylDetailsModal } from '../components/VinylDetailsModal';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 
 export default function Dashboard() {
     const { user } = useAuth();

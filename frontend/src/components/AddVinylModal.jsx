@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 
 export const AddVinylModal = ({ isOpen, onClose, onSuccess }) => {
     const { user } = useAuth();

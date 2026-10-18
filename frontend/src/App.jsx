@@ -1,6 +1,7 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './contexts/AuthContext';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './contexts/AuthProvider';
 import { PrivateRoute } from './components/PrivateRoute';
+import { PublicOnlyRoute } from './components/PublicOnlyRoute';
 import './styles/index.js';
 
 import Login from './pages/Login';
@@ -9,64 +10,26 @@ import Market from './pages/Market';
 import Community from './pages/Community';
 import Profile from './pages/Profile';
 
-function App() {
+const priv = (page) => <PrivateRoute>{page}</PrivateRoute>;
+const publicOnly = (page) => <PublicOnlyRoute>{page}</PublicOnlyRoute>;
+
+export default function App() {
     return (
         <AuthProvider>
-            <Router>
+            <BrowserRouter>
                 <Routes>
-                    <Route path="/" element={<Navigate to="/login" />} />
-                    
-                    <Route path="/login" element={<Login />} />
-                    
-                    <Route 
-                        path="/dashboard" 
-                        element={
-                            <PrivateRoute>
-                                <Dashboard />
-                            </PrivateRoute>
-                        } 
-                    />
+                    <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
-                    <Route 
-                        path="/market" 
-                        element={
-                            <PrivateRoute>
-                                <Market />
-                            </PrivateRoute>
-                        } 
-                    />
+                    <Route path="/login" element={publicOnly(<Login />)} />
 
-                    <Route 
-                        path="/community" 
-                        element={
-                            <PrivateRoute>
-                                <Community />
-                            </PrivateRoute>
-                        } 
-                    />
+                    <Route path="/dashboard" element={priv(<Dashboard />)} />
+                    <Route path="/market" element={priv(<Market />)} />
+                    <Route path="/community" element={priv(<Community />)} />
+                    <Route path="/profile" element={priv(<Profile />)} />
+
+                    <Route path="*" element={<Navigate to="/dashboard" replace />} />
                 </Routes>
-            </Router>
-        </AuthProvider>
-    );
-}
-
-export default App;
-
-function App() {
-    return (
-        <AuthProvider>
-            <Router>
-                <Routes>
-                    <Route path="/" element={<Navigate to="/login" />} />
-                    <Route path="/login" element={<Login />} />
-                    
-                    <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
-                    <Route path="/market" element={<PrivateRoute><Market /></PrivateRoute>} />
-                    <Route path="/community" element={<PrivateRoute><Community /></PrivateRoute>} />
-                  
-                    <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
-                </Routes>
-            </Router>
+            </BrowserRouter>
         </AuthProvider>
     );
 }

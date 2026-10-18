@@ -14,12 +14,12 @@ export const VinylDetailsModal = ({ isOpen, onClose, vinil }) => {
                 <div className="vinyl-detail-container">
                     <div className="vinyl-visuals">
                         <div className="vinyl-record">
-                            <div className="vinyl-label-center" style={{ backgroundImage: `url(${vinil.foto || '/assets/default-cover.jpg'})` }}>
+                            <div className="vinyl-label-center" style={{ backgroundImage: `url(${vinil.foto || '/assets/default-cover.svg'})` }}>
                                 <div className="vinyl-hole"></div>
                             </div>
                         </div>
                         <img 
-                            src={vinil.foto || '/assets/default-cover.jpg'} 
+                            src={vinil.foto || '/assets/default-cover.svg'} 
                             alt={vinil.nome} 
                             className="vinyl-sleeve" 
                         />

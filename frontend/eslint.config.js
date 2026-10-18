@@ -26,4 +26,9 @@ export default defineConfig([
       'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
     },
   },
+  {
+    // Tool configuration runs in Node, not in the browser.
+    files: ['*.config.js'],
+    languageOptions: { globals: globals.node },
+  },
 ])

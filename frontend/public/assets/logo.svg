@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 240" role="img" aria-label="Vinyl Vault">
+  <title>Vinyl Vault</title>
+  <circle cx="110" cy="98" r="86" fill="#2d3436"/>
+  <circle cx="110" cy="98" r="70" fill="none" stroke="#434b4d" stroke-width="1.6"/>
+  <circle cx="110" cy="98" r="58" fill="none" stroke="#434b4d" stroke-width="1.6"/>
+  <circle cx="110" cy="98" r="46" fill="none" stroke="#434b4d" stroke-width="1.6"/>
+  <circle cx="110" cy="98" r="30" fill="#d63031"/>
+  <circle cx="110" cy="98" r="6" fill="#fff"/>
+  <path d="M42 56a80 80 0 0 1 46-34" fill="none" stroke="#fff" stroke-opacity=".3" stroke-width="5" stroke-linecap="round"/>
+  <text x="110" y="214" text-anchor="middle" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="30" font-weight="700" fill="#2d3436" letter-spacing="1">Vinyl Vault</text>
+  <text x="110" y="232" text-anchor="middle" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" fill="#636e72" letter-spacing="4">PREMIUM COLLECTION</text>
+</svg>

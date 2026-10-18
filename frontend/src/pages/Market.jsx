@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Layout } from '../components/Layout';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 
 export default function Market() {
     const { user } = useAuth();
@@ -48,7 +48,7 @@ export default function Market() {
                             <div className="market-card" key={item.id} onClick={() => console.log('Propor troca', item.id)}>
                                 <div className="market-badge">Troca</div>
                                 <img 
-                                    src={item.foto || '/assets/default-cover.jpg'} 
+                                    src={item.foto || '/assets/default-cover.svg'} 
                                     alt={item.nome} 
                                     className="market-cover" 
                                 />

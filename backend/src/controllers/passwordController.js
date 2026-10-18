@@ -1,77 +1,61 @@
-const db = require('../config/db');
-const crypto = require('crypto');
 const bcrypt = require('bcrypt');
-const nodemailer = require('nodemailer');
+const { pool } = require('../config/database');
+const env = require('../config/env');
+const mailer = require('../config/mailer');
+const logger = require('../utils/logger');
+const { generateResetToken, hashToken } = require('../utils/token');
+const { badRequest } = require('../utils/httpError');
 
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-    }
-});
+const RESET_TTL_MINUTES = 60;
 
-const forgotPassword = (req, res) => {
-    const { email } = req.body;
+// The answer is identical whether or not the e-mail exists, so the endpoint
+// cannot be used to discover who has an account.
+const forgotPassword = async (req, res) => {
+    const { email } = req.valid.body;
 
-    db.query('SELECT id FROM usuarios WHERE email = ?', [email], (err, results) => {
-        if (err) {
-            return res.status(500).json({ error: 'Erro interno do servidor.' });
-        }
+    const [rows] = await pool.execute('SELECT id FROM usuarios WHERE email = ?', [email]);
 
-        if (results.length === 0) {
-            return res.status(404).json({ error: 'Este e-mail não está cadastrado.' });
-        }
+    if (rows.length > 0) {
+        const { token, hash } = generateResetToken();
 
-        const token = crypto.randomBytes(20).toString('hex');
+        await pool.execute(
+            'UPDATE usuarios SET reset_token = ?, reset_token_expires = DATE_ADD(NOW(), INTERVAL ? MINUTE) WHERE id = ?',
+            [hash, RESET_TTL_MINUTES, rows[0].id]
+        );
 
-        db.query('UPDATE usuarios SET reset_token = ?, reset_token_expires = DATE_ADD(NOW(), INTERVAL 1 HOUR) WHERE email = ?', [token, email], (updateErr) => {
-            if (updateErr) {
-                return res.status(500).json({ error: 'Erro ao gerar token de recuperação.' });
-            }
+        const link = `${env.FRONTEND_URL.replace(/\/$/, '')}/reset-password?token=${token}`;
 
-            const linkReset = `http://127.0.0.1:5500/index.html?token=${token}`;
-
-            transporter.sendMail({
-                from: process.env.EMAIL_USER,
+        // Not awaited on purpose: waiting on SMTP would make existing accounts slower to answer.
+        mailer
+            .send({
                 to: email,
-                subject: 'Redefinição de Senha - Vinyl Vault',
-                html: `<a href="${linkReset}">Redefinir Senha</a>`
-            }, (mailErr) => {
-                if (mailErr) {
-                    return res.status(500).json({ error: 'Erro de comunicação no envio do e-mail.' });
-                }
-                res.status(200).json({ message: 'Link enviado!' });
-            });
-        });
-    });
+                subject: 'Redefinição de senha - Vinyl Vault',
+                html: `<p>Recebemos um pedido para redefinir sua senha.</p>
+<p><a href="${link}">Clique aqui para escolher uma nova senha</a>. O link vale por ${RESET_TTL_MINUTES} minutos.</p>
+<p>Se não foi você, ignore este e-mail.</p>`
+            })
+            .catch((error) => logger.error('Falha ao enviar e-mail de recuperação:', error.message));
+    }
+
+    res.status(200).json({ message: 'Se este e-mail estiver cadastrado, enviaremos um link para redefinir a senha.' });
 };
 
-const resetPassword = (req, res) => {
-    const { token, novaSenha } = req.body;
+const resetPassword = async (req, res) => {
+    const { token, novaSenha } = req.valid.body;
 
-    db.query('SELECT id FROM usuarios WHERE reset_token = ? AND reset_token_expires > NOW()', [token], async (err, results) => {
-        if (err) {
-            return res.status(500).json({ error: 'Erro interno do servidor.' });
-        }
+    const hashedPassword = await bcrypt.hash(novaSenha, env.BCRYPT_ROUNDS);
 
-        if (results.length === 0) {
-            return res.status(400).json({ error: 'Token inválido ou expirado.' });
-        }
+    // A single conditional UPDATE consumes the token atomically: it cannot be used twice.
+    const [result] = await pool.execute(
+        'UPDATE usuarios SET senha = ?, reset_token = NULL, reset_token_expires = NULL WHERE reset_token = ? AND reset_token_expires > NOW()',
+        [hashedPassword, hashToken(token)]
+    );
 
-        try {
-            const hashedPassword = await bcrypt.hash(novaSenha, 10);
+    if (result.affectedRows === 0) {
+        throw badRequest('Token inválido ou expirado.');
+    }
 
-            db.query('UPDATE usuarios SET senha = ?, reset_token = NULL, reset_token_expires = NULL WHERE id = ?', [hashedPassword, results[0].id], (updateErr) => {
-                if (updateErr) {
-                    return res.status(500).json({ error: 'Erro ao redefinir a senha.' });
-                }
-                res.status(200).json({ message: 'Senha redefinida!' });
-            });
-        } catch (hashErr) {
-            res.status(500).json({ error: 'Erro no processamento de segurança.' });
-        }
-    });
+    res.status(200).json({ message: 'Senha redefinida!' });
 };
 
 module.exports = {

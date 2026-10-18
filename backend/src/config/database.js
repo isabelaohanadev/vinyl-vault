@@ -12,7 +12,9 @@ const pool = mysql.createPool({
     connectionLimit: env.DB_POOL_SIZE,
     queueLimit: 0,
     enableKeepAlive: true,
-    decimalNumbers: true
+    decimalNumbers: true,
+    // Return DATE columns as 'YYYY-MM-DD' strings instead of timezone-shifted Dates.
+    dateStrings: ['DATE']
 });
 
 const ping = async () => {

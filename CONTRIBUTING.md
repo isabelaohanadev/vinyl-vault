@@ -21,6 +21,7 @@ Detalhes e solução de problemas no [README](README.md#como-rodar).
 ```bash
 npm run lint
 npm test            # API, contra um MySQL real
+npm run test:frontend
 npm run test:e2e    # interface, em navegador real (precisa do app rodando, veja o README)
 ```
 

@@ -81,7 +81,7 @@
 | Interface | HTML, CSS e JavaScript puros (sem etapa de build), Chart.js e html2pdf.js (embutidos em `frontend/vendor`), API pública do iTunes |
 | Backend | Node.js 22+, Express 5, `mysql2` (pool), JWT, bcrypt, Zod, Helmet, `express-rate-limit`, Nodemailer |
 | Banco | MySQL 8.4 |
-| Testes | `node:test` + Supertest (API, contra MySQL real) · Playwright (interface, 44 testes em navegador real) |
+| Testes | `node:test` + Supertest (API, contra MySQL real) · Playwright (interface, 47 testes em navegador real) |
 | Infra | Docker, Docker Compose, nginx, GitHub Actions, GitHub Container Registry |
 
 ## Arquitetura
@@ -165,6 +165,7 @@ Variáveis do backend (`backend/.env`; modelo em [`backend/.env.example`](backen
 | --- | --- | --- |
 | `JWT_SECRET` | – (**obrigatória**) | Segredo de assinatura dos tokens, com 32+ caracteres |
 | `DB_HOST` · `DB_PORT` · `DB_USER` · `DB_PASSWORD` · `DB_NAME` | `localhost` · `3306` · – · vazio · – | Conexão com o MySQL (`DB_USER` e `DB_NAME` são obrigatórias) |
+| `DB_SSL` · `DB_SSL_CA` | `false` · vazio | TLS na conexão com o MySQL, exigido por bancos gerenciados (Aiven, TiDB Cloud…). `DB_SSL_CA` é o conteúdo do certificado (`ca.pem`) do provedor, quando ele não é um CA público |
 | `PORT` | `3000` | Porta da API |
 | `NODE_ENV` | `development` | Em `production`, `EMAIL_USER`/`EMAIL_PASS` passam a ser obrigatórios e o segredo de exemplo é recusado |
 | `JWT_EXPIRES_IN` | `7d` | Validade do token |
@@ -176,14 +177,15 @@ Variáveis do backend (`backend/.env`; modelo em [`backend/.env.example`](backen
 | `EMAIL_USER` · `EMAIL_PASS` | vazio | Gmail e **senha de app** para enviar e-mails |
 | `FEEDBACK_TO` | `EMAIL_USER` | Destino das mensagens do formulário de feedback |
 
-A interface não precisa de configuração. Ela chama a API em `/api` na mesma origem; para uma API em outro domínio, defina `window.VINYL_API_URL` antes de carregar `scripts/api.js`. Para o Docker Compose, veja o [`.env.example`](.env.example) da raiz.
+A interface não precisa de configuração. Ela chama a API em `/api` na mesma origem. Para uma API em outro domínio, o endereço vai em [`frontend/config.js`](frontend/config.js) (`window.VINYL_API_URL`); numa hospedagem estática, o build gera esse arquivo a partir da variável `VINYL_API_URL` (veja [Publicar de graça](#publicar-de-graça-portfólio)). Para o Docker Compose, veja o [`.env.example`](.env.example) da raiz.
 
 ## Testes e qualidade
 
 ```bash
 npm run lint        # ESLint no backend e no frontend
 npm test            # API: 128 testes de integração contra um MySQL real
-npm run test:e2e    # interface: 44 testes em navegador real (precisa do app rodando)
+npm run test:frontend  # script de build estático da interface
+npm run test:e2e    # interface: 47 testes em navegador real (precisa do app rodando)
 ```
 
 - **API**: Supertest contra um **MySQL real**. Os testes aplicam o `schema.sql` de verdade e cobrem autenticação, regras de posse (inclusive tentativas de acesso a recursos de outras pessoas), validação, paginação, limites de requisição e notificações. Por padrão usam `127.0.0.1:3307` com o usuário `vinyl`; `npm run db:up` já cria o banco `vinylvault_test` (na primeira vez, com o volume vazio). Variáveis `TEST_DB_*` permitem apontar para outro MySQL.
@@ -230,7 +232,7 @@ Tudo roda no GitHub Actions ([`.github/workflows`](.github/workflows)):
 
 | Workflow | Quando | O que faz |
 | --- | --- | --- |
-| **CI** (`ci.yml`) | Pull requests e pushes na `main` | testes da API (Node 22 e 24, MySQL 8.4 real), ESLint do backend e do front, lint, testes e build do `frontend-react`, e a **stack Docker completa** com a suíte E2E de 44 testes em navegador real |
+| **CI** (`ci.yml`) | Pull requests e pushes na `main` | testes da API (Node 22 e 24, MySQL 8.4 real), ESLint, testes e build estático do front, lint, testes e build do `frontend-react`, e a **stack Docker completa** com a suíte E2E de 47 testes em navegador real |
 | **Publish images** (`publish.yml`) | CI verde na `main` | Publica as imagens multi-arquitetura (amd64/arm64) no GitHub Container Registry |
 | **Release** (`release.yml`) | Tag `v*.*.*` | Repete o CI, publica as imagens versionadas e cria a *GitHub Release* com notas geradas |
 
@@ -258,7 +260,11 @@ O caminho mais direto é um servidor (VPS) com Docker, rodando o Compose atrás 
    Como agora há **dois** proxies (Caddy e o nginx do projeto), defina `TRUST_PROXY=2`; do contrário o limite de requisições enxerga todos os visitantes como um único IP.
 4. Faça **backup** do volume do MySQL (`mysqldump`) regularmente.
 
-Como a interface é só arquivos estáticos, ela também pode ficar em qualquer hospedagem estática, com a API em outro domínio: defina `window.VINYL_API_URL` e inclua a origem do site em `CORS_ORIGIN`.
+Como a interface é só arquivos estáticos, ela também pode ficar em qualquer hospedagem estática, com a API em outro domínio: `npm --prefix frontend run build:static` (com `VINYL_API_URL` definida) monta a pasta `frontend/dist`, e a origem do site entra em `CORS_ORIGIN`.
+
+### Publicar de graça (portfólio)
+
+Para mostrar o projeto no ar sem pagar nada (e sem cartão), o repositório já vem pronto para **Vercel** (interface), **Render** (API, via [`render.yaml`](render.yaml)) e **Aiven** (MySQL). É uma configuração de demonstração: o plano gratuito da API dorme e a primeira visita leva cerca de 1 minuto, com um aviso na tela. Passo a passo em **[docs/DEPLOY-GRATIS.md](docs/DEPLOY-GRATIS.md)**.
 
 ## Estrutura do projeto
 
@@ -271,18 +277,22 @@ vinyl-vault/
 │   ├── assets/              logo, banners
 │   ├── vendor/              Chart.js e html2pdf.js (com as licenças)
 │   ├── nginx/               configuração do servidor de produção (proxy /api, CSP)
+│   ├── config.js            endereço da API quando ela fica em outro domínio
+│   ├── tools/               build estático (para a Vercel e similares)
 │   └── dev-server.js        servidor de desenvolvimento (estático + proxy /api)
 ├── backend/                 API Express
 │   ├── src/                 config, middlewares, schemas (Zod), controllers, rotas, serviços
-│   ├── scripts/seed.js      dados de demonstração
+│   ├── scripts/             seed.js (dados de demonstração) e apply-schema.js (cria as tabelas)
 │   └── tests/               unitários e de integração
 ├── e2e/                     Testes de ponta a ponta (Playwright)
 ├── database/
 │   ├── schema.sql           schema completo (idempotente)
 │   └── migrations/          migração de bancos da versão anterior
 ├── frontend-react/          Migração para React (experimental, não é o app principal)
-├── docs/                    API.md e capturas de tela
+├── docs/                    API.md, DEPLOY-GRATIS.md e capturas de tela
 ├── .github/                 workflows, Dependabot, template de PR
+├── render.yaml              blueprint do Render (API)
+├── vercel.json              build e cabeçalhos da Vercel (interface)
 └── docker-compose.yml
 ```
 

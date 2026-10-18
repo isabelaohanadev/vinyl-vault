@@ -107,3 +107,19 @@
     text-transform: uppercase;
     font-size: 0.85rem;
 }
+
+.user-avatar-large {
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.btn-follow:disabled,
+.btn-unfollow:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.btn-unfollow:hover {
+    background-color: var(--secondary-color);
+    color: var(--text-light);
+}

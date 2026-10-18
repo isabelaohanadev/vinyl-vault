@@ -11,7 +11,7 @@
 /* =========================================
    PESQUISA E ESTATÍSTICAS
    ========================================= */
-.search-area { max-width: 900px; margin: 40px auto 0; padding: 0 20px; } 
+.search-area { max-width: 900px; margin: 40px auto 0; padding: 0 20px; box-sizing: border-box; } 
 .search-input { width: 100%; padding: 12px 20px; border-radius: 25px; border: 1px solid var(--quaternaria); outline: none; font-family: serif; font-size: 1rem; box-sizing: border-box; background: white; }
 .filter-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px; }
 

@@ -155,6 +155,22 @@
 }
 
 /* --- 480px e abaixo (Smartphones Padrão) --- */
+/* Celulares: a barra de navegação não cabe em uma linha (só telas de até 320px eram tratadas),
+   o que gerava rolagem horizontal na página inteira. */
+@media (max-width: 600px) {
+    nav {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .nav-group {
+        width: 100%;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}
+
 @media (max-width: 480px) {
     nav {
         padding: 10px 15px;

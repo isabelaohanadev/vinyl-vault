@@ -1,18 +1,44 @@
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const routes = require('./routes');
-require('./config/db');
+let env;
 
-const app = express();
+try {
+    env = require('./config/env');
+} catch (error) {
+    console.error(error.message);
+    process.exit(1);
+}
 
-app.use(cors());
-app.use(express.json({ limit: '10mb' }));
+const app = require('./app');
+const database = require('./config/database');
+const logger = require('./utils/logger');
 
-app.use('/api', routes);
+const SHUTDOWN_TIMEOUT_MS = 10000;
 
-const port = process.env.PORT || 3000;
+const start = async () => {
+    try {
+        await database.ping();
+        logger.info('✅ Conectado ao MySQL');
+    } catch (error) {
+        logger.error(`❌ Não foi possível conectar ao MySQL em ${env.DB_HOST}:${env.DB_PORT}: ${error.message}`);
+        process.exit(1);
+    }
 
-app.listen(port, () => {
-    console.log(`Server running on port ${port}`);
-});
+    const server = app.listen(env.PORT, () => {
+        logger.info(`🎵 Vinyl Vault API rodando na porta ${env.PORT} (${env.NODE_ENV})`);
+    });
+
+    const shutdown = (signal) => {
+        logger.info(`${signal} recebido, encerrando...`);
+
+        server.close(async () => {
+            await database.close();
+            process.exit(0);
+        });
+
+        setTimeout(() => process.exit(1), SHUTDOWN_TIMEOUT_MS).unref();
+    };
+
+    process.on('SIGTERM', () => shutdown('SIGTERM'));
+    process.on('SIGINT', () => shutdown('SIGINT'));
+};
+
+start();

@@ -72,7 +72,9 @@ const getStatsPerfil = async (req, res) => {
         `SELECT
             (SELECT COUNT(*) FROM seguidores WHERE seguido_id = u.id) AS seguidores,
             (SELECT COUNT(*) FROM seguidores WHERE seguidor_id = u.id) AS seguindo,
-            (SELECT COUNT(*) FROM vinis WHERE usuario_id = u.id) AS total_vinis,
+            (SELECT COUNT(*) FROM vinis WHERE usuario_id = u.id AND adquirido = 1) AS total_vinis,
+            (SELECT COUNT(*) FROM vinis WHERE usuario_id = u.id AND adquirido = 0) AS total_desejos,
+            (SELECT COUNT(*) FROM vinis WHERE usuario_id = u.id AND negociavel = 1) AS total_trocas,
             (SELECT COUNT(*) FROM posts WHERE usuario_id = u.id) AS total_posts,
             EXISTS(SELECT 1 FROM seguidores WHERE seguidor_id = ? AND seguido_id = u.id) AS eu_sigo
          FROM usuarios u
@@ -90,6 +92,8 @@ const getStatsPerfil = async (req, res) => {
         seguidores: Number(stats.seguidores),
         seguindo: Number(stats.seguindo),
         total_vinis: Number(stats.total_vinis),
+        total_desejos: Number(stats.total_desejos),
+        total_trocas: Number(stats.total_trocas),
         total_posts: Number(stats.total_posts),
         eu_sigo: Boolean(stats.eu_sigo)
     });

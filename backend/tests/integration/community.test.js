@@ -82,16 +82,18 @@ describe('community', () => {
     });
 
     describe('profile stats and relations', () => {
-        it('counts followers, following, vinyls and posts, and tells if I follow', async () => {
+        it('counts followers, following, owned vinyls, wishlist, tradable records and posts, and tells if I follow', async () => {
             await follow(ana, bruno);
             await follow(carla, bruno);
             await follow(bruno, ana);
-            await request(app).post('/api/vinis').set(asUser(bruno)).send({ nome: 'A', artista: 'B' });
+            await request(app).post('/api/vinis').set(asUser(bruno)).send({ nome: 'A', artista: 'B', negociavel: true });
+            await request(app).post('/api/vinis').set(asUser(bruno)).send({ nome: 'C', artista: 'D' });
+            await request(app).post('/api/vinis').set(asUser(bruno)).send({ nome: 'E', artista: 'F', adquirido: false });
             await request(app).post('/api/posts').set(asUser(bruno)).send({ legenda: 'oi' });
 
             const res = await request(app).get(`/api/usuarios/${bruno.id}/stats`).set(asUser(ana));
 
-            assert.deepEqual(res.body, { seguidores: 2, seguindo: 1, total_vinis: 1, total_posts: 1, eu_sigo: true });
+            assert.deepEqual(res.body, { seguidores: 2, seguindo: 1, total_vinis: 2, total_desejos: 1, total_trocas: 1, total_posts: 1, eu_sigo: true });
         });
 
         it('lists followers and following as public profiles', async () => {

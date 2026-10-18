@@ -1,36 +1,23 @@
-import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { useMemo, useState } from 'react';
 import { Layout } from '../components/Layout';
-import { useAuth } from '../hooks/useAuth';
+import { Avatar } from '../components/Avatar';
+import { CoverImage } from '../components/CoverImage';
+import { VinylDetailsModal } from '../components/VinylDetailsModal';
+import { useDebouncedValue } from '../hooks/useDebouncedValue';
+import { useFetch } from '../hooks/useFetch';
+import { keyboardActivate } from '../lib/a11y';
 
 export default function Market() {
-    const { user } = useAuth();
-    const [marketItems, setMarketItems] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [search, setSearch] = useState('');
+    const busca = useDebouncedValue(search.trim(), 300);
+    const [selected, setSelected] = useState(null);
 
-    useEffect(() => {
-        const fetchMarket = async () => {
-            try {
-                // Aqui batemos na rota do backend que traz todos os vinis marcados para troca
-                const response = await axios.get('http://localhost:3000/api/mercado');
-                
-                // Filtramos para não mostrar os próprios discos do usuário logado na vitrine de trocas
-                const filteredItems = response.data.filter(item => item.usuario_id !== user.id);
-                setMarketItems(filteredItems);
-            } catch (error) {
-                console.error("Erro ao buscar classificados:", error);
-                // Caso a rota /api/mercado ainda não exista no seu backend, deixamos um mock de fallback para você ver a tela:
-                setMarketItems([
-                    { id: 991, nome: 'Dark Side of the Moon', artista: 'Pink Floyd', foto: '', dono_nome: 'Carlos' },
-                    { id: 992, nome: 'Abbey Road', artista: 'The Beatles', foto: '', dono_nome: 'Ana' }
-                ]);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchMarket();
-    }, [user.id]);
+    const { data, status, error, retry } = useFetch('/classificados', {
+        params: { busca: busca || undefined },
+        fallbackError: 'Não foi possível carregar os classificados.'
+    });
+    const items = useMemo(() => data ?? [], [data]);
+    const playlist = useMemo(() => items.filter((item) => item.preview_url), [items]);
 
     return (
         <Layout>
@@ -39,37 +26,62 @@ export default function Market() {
                 <p className="market-subtitle">Encontre raridades e proponha trocas com outros colecionadores.</p>
             </div>
 
-            {loading ? (
-                <p>Carregando vitrine...</p>
-            ) : (
-                <div className="market-grid">
-                    {marketItems.length > 0 ? (
-                        marketItems.map(item => (
-                            <div className="market-card" key={item.id} onClick={() => console.log('Propor troca', item.id)}>
-                                <div className="market-badge">Troca</div>
-                                <img 
-                                    src={item.foto || '/assets/default-cover.svg'} 
-                                    alt={item.nome} 
-                                    className="market-cover" 
-                                />
-                                <div className="market-info">
-                                    <h3 className="market-album">{item.nome}</h3>
-                                    <p className="market-artist">{item.artista}</p>
-                                    
-                                    <div className="market-owner">
-                                        <div className="market-owner-avatar">
-                                            {item.dono_nome?.charAt(0).toUpperCase() || 'U'}
-                                        </div>
-                                        <span className="market-owner-name">{item.dono_nome || 'Usuário Oculto'}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        ))
-                    ) : (
-                        <p>Nenhum disco disponível para troca no momento.</p>
-                    )}
+            <input
+                type="search"
+                className="search-bar"
+                placeholder="Buscar por disco ou artista..."
+                aria-label="Buscar nos classificados"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                style={{ marginBottom: '30px' }}
+            />
+
+            {status === 'loading' && <p className="state-box">Carregando vitrine...</p>}
+
+            {status === 'error' && (
+                <div className="state-box" role="alert">
+                    <p>{error}</p>
+                    <button type="button" className="btn-primary" onClick={retry}>
+                        Tentar novamente
+                    </button>
                 </div>
             )}
+
+            {status === 'ready' && items.length === 0 && (
+                <div className="state-box">
+                    <p>{busca ? 'Nenhum disco encontrado para essa busca.' : 'Nenhum disco disponível para troca no momento.'}</p>
+                </div>
+            )}
+
+            {items.length > 0 && (
+                <div className="market-grid">
+                    {items.map((item) => (
+                        <div
+                            className="market-card"
+                            key={item.id}
+                            role="button"
+                            tabIndex={0}
+                            aria-label={`${item.nome}, de ${item.artista}, de ${item.dono.nome_completo}`}
+                            onClick={() => setSelected(item)}
+                            onKeyDown={keyboardActivate(() => setSelected(item))}
+                        >
+                            <div className="market-badge">Troca</div>
+                            <CoverImage src={item.foto} alt="" className="market-cover" />
+                            <div className="market-info">
+                                <h3 className="market-album">{item.nome}</h3>
+                                <p className="market-artist">{item.artista}</p>
+
+                                <div className="market-owner">
+                                    <Avatar src={item.dono.foto_perfil} name={item.dono.nome_completo} className="market-owner-avatar" />
+                                    <span className="market-owner-name">{item.dono.nome_completo}</span>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
+
+            {selected && <VinylDetailsModal vinil={selected} playlist={playlist} onClose={() => setSelected(null)} />}
         </Layout>
     );
 }

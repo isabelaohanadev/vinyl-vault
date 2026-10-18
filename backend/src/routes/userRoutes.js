@@ -1,5 +1,6 @@
 const express = require('express');
 const userController = require('../controllers/userController');
+const vinilController = require('../controllers/vinilController');
 const validate = require('../middlewares/validate');
 const { requireAuth, requireSelf } = require('../middlewares/auth');
 const { idParam } = require('../schemas/common');
@@ -10,6 +11,7 @@ const router = express.Router();
 router.use(requireAuth);
 
 router.get('/:id', validate({ params: idParam }), userController.getProfile);
+router.get('/:id/vinis', validate({ params: idParam }), vinilController.getVinisUsuario);
 
 // Only the owner may change or delete an account.
 router.put('/:id', validate({ params: idParam }), requireSelf(), validate({ body: updateProfileBody }), userController.updateProfile);

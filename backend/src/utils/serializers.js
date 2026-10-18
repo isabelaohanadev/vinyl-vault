@@ -20,4 +20,23 @@ const serializePublicUser = (row) => ({
     tocando_agora: row.tocando_agora ?? null
 });
 
-module.exports = { serializeUser, serializePublicUser };
+// MySQL returns TINYINT(1) as 0/1; the API speaks real booleans.
+const serializeVinil = (row) => ({
+    id: row.id,
+    usuario_id: row.usuario_id,
+    nome: row.nome,
+    artista: row.artista,
+    genero: row.genero ?? null,
+    ano: row.ano ?? null,
+    spotify: row.spotify ?? null,
+    adquirido: Boolean(row.adquirido),
+    foto: row.foto ?? null,
+    negociavel: Boolean(row.negociavel),
+    preview_url: row.preview_url ?? null,
+    nota: row.nota ?? 0,
+    estado_capa: row.estado_capa ?? null,
+    estado_disco: row.estado_disco ?? null,
+    criadoEm: row.criadoEm
+});
+
+module.exports = { serializeUser, serializePublicUser, serializeVinil };

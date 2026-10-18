@@ -1,37 +1,33 @@
-const db = require('../config/db');
+const { pool } = require('../config/database');
+const logger = require('../utils/logger');
 
-const criarNotificacao = (usuario_id, ator_id, tipo, post_id = null) => {
-    if (usuario_id === ator_id) {
+// Notifications are a side effect: a failure here is logged and never breaks
+// the request that triggered it.
+const criarNotificacao = async (usuarioId, atorId, tipo, postId = null) => {
+    if (!usuarioId || Number(usuarioId) === Number(atorId)) {
         return;
     }
 
-    const sql = 'INSERT INTO notificacoes (usuario_id, ator_id, tipo, post_id) VALUES (?, ?, ?, ?)';
-    
-    db.query(sql, [usuario_id, ator_id, tipo, post_id], (err) => {
-        if (err) {
-            console.error(err);
-        }
-    });
+    try {
+        await pool.execute('INSERT INTO notificacoes (usuario_id, ator_id, tipo, post_id) VALUES (?, ?, ?, ?)', [usuarioId, atorId, tipo, postId]);
+    } catch (error) {
+        logger.error('Falha ao criar notificação:', error.message);
+    }
 };
 
-const verificarMatchWishlist = (dono_id, nome_disco) => {
-    const sql = `
-        SELECT DISTINCT usuario_id 
-        FROM vinis 
-        WHERE (adquirido = 0 OR adquirido = FALSE) 
-        AND TRIM(LOWER(nome)) = TRIM(LOWER(?)) 
-        AND usuario_id != ?
-    `;
-    
-    db.query(sql, [nome_disco, dono_id], (err, results) => {
-        if (err) {
-            return console.error(err);
-        }
-        
-        results.forEach(row => {
-            criarNotificacao(row.usuario_id, dono_id, 'match');
-        });
-    });
+// Tells every collector who has this record on their wishlist that someone just
+// put it up for trade.
+const verificarMatchWishlist = async (donoId, nomeDisco) => {
+    try {
+        const [rows] = await pool.execute(
+            'SELECT DISTINCT usuario_id FROM vinis WHERE adquirido = 0 AND TRIM(LOWER(nome)) = TRIM(LOWER(?)) AND usuario_id <> ?',
+            [nomeDisco, donoId]
+        );
+
+        await Promise.all(rows.map((row) => criarNotificacao(row.usuario_id, donoId, 'match')));
+    } catch (error) {
+        logger.error('Falha ao verificar match de wishlist:', error.message);
+    }
 };
 
 module.exports = {

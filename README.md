@@ -81,7 +81,7 @@
 | Interface | HTML, CSS e JavaScript puros (sem etapa de build), Chart.js e html2pdf.js (embutidos em `frontend/vendor`), API pública do iTunes |
 | Backend | Node.js 22+, Express 5, `mysql2` (pool), JWT, bcrypt, Zod, Helmet, `express-rate-limit`, Nodemailer |
 | Banco | MySQL 8.4 |
-| Testes | `node:test` + Supertest (API, contra MySQL real) · Playwright (interface, 42 testes em navegador real) |
+| Testes | `node:test` + Supertest (API, contra MySQL real) · Playwright (interface, 44 testes em navegador real) |
 | Infra | Docker, Docker Compose, nginx, GitHub Actions, GitHub Container Registry |
 
 ## Arquitetura
@@ -183,7 +183,7 @@ A interface não precisa de configuração. Ela chama a API em `/api` na mesma o
 ```bash
 npm run lint        # ESLint no backend e no frontend
 npm test            # API: 128 testes de integração contra um MySQL real
-npm run test:e2e    # interface: 42 testes em navegador real (precisa do app rodando)
+npm run test:e2e    # interface: 44 testes em navegador real (precisa do app rodando)
 ```
 
 - **API**: Supertest contra um **MySQL real**. Os testes aplicam o `schema.sql` de verdade e cobrem autenticação, regras de posse (inclusive tentativas de acesso a recursos de outras pessoas), validação, paginação, limites de requisição e notificações. Por padrão usam `127.0.0.1:3307` com o usuário `vinyl`; `npm run db:up` já cria o banco `vinylvault_test` (na primeira vez, com o volume vazio). Variáveis `TEST_DB_*` permitem apontar para outro MySQL.
@@ -230,7 +230,7 @@ Tudo roda no GitHub Actions ([`.github/workflows`](.github/workflows)):
 
 | Workflow | Quando | O que faz |
 | --- | --- | --- |
-| **CI** (`ci.yml`) | Pull requests e pushes na `main` | testes da API (Node 22 e 24, MySQL 8.4 real), ESLint do backend e do front, lint, testes e build do `frontend-react`, e a **stack Docker completa** com a suíte E2E de 42 testes em navegador real |
+| **CI** (`ci.yml`) | Pull requests e pushes na `main` | testes da API (Node 22 e 24, MySQL 8.4 real), ESLint do backend e do front, lint, testes e build do `frontend-react`, e a **stack Docker completa** com a suíte E2E de 44 testes em navegador real |
 | **Publish images** (`publish.yml`) | CI verde na `main` | Publica as imagens multi-arquitetura (amd64/arm64) no GitHub Container Registry |
 | **Release** (`release.yml`) | Tag `v*.*.*` | Repete o CI, publica as imagens versionadas e cria a *GitHub Release* com notas geradas |
 

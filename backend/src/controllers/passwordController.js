@@ -23,7 +23,8 @@ const forgotPassword = async (req, res) => {
             [hash, RESET_TTL_MINUTES, rows[0].id]
         );
 
-        const link = `${env.FRONTEND_URL.replace(/\/$/, '')}/reset-password?token=${token}`;
+        // The web app reads ?token= on its root page and opens the "new password" form.
+        const link = `${env.FRONTEND_URL.replace(/\/$/, '')}/?token=${token}`;
 
         // Not awaited on purpose: waiting on SMTP would make existing accounts slower to answer.
         mailer

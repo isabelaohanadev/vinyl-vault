@@ -39,8 +39,9 @@ Base URL: `/api` (por exemplo `http://localhost:3000/api`). Todas as requisiçõ
 
 | Escopo | Limite |
 | --- | --- |
-| API inteira | 600 / 15 min |
-| `register`, `login`, `reset-password` | 20 / 15 min (logins bem-sucedidos não contam) |
+| API inteira | 1500 / 15 min **por usuário** logado (por IP para quem não está logado) |
+| `login`, `register`, `reset-password` | 20 / 15 min (só as tentativas que falham contam) |
+| `register` | 10 / hora (conta todas as tentativas) |
 | `forgot-password`, `feedback` | 5 / hora |
 
 **Paginação.** Listas aceitam `limite` e `offset`. Os padrões e máximos variam: classificados e comunidade (100, máx. 200), posts (20, máx. 50), seguidores/seguindo (50, máx. 100), notificações (`limite`, 30, máx. 100) e mensagens (`limite` 100, máx. 200, com `antes=<id>` para páginas anteriores).

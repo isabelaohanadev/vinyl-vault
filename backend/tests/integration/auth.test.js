@@ -176,7 +176,7 @@ describe('auth', () => {
             await requestReset(user.email);
 
             const token = tokenFrom(sent[0]);
-            assert.match(sent[0].html, /^[\s\S]*http:\/\/localhost:5173\/reset-password\?token=/);
+            assert.match(sent[0].html, /^[\s\S]*href="http:\/\/localhost:5173\/\?token=[0-9a-f]{64}"/);
 
             const [[row]] = await database.pool.query('SELECT reset_token, reset_token_expires FROM usuarios WHERE id = ?', [user.id]);
             assert.notEqual(row.reset_token, token);

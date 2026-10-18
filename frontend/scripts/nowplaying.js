@@ -55,9 +55,11 @@ function atualizarSidebarStatus() {
         container.innerHTML = `
             <div class="sidebar-status">
                 <span class="spin-disc">💿</span> 
+                
                 <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px;">
-                    ${usuarioAtual.tocando_agora}
+                    ${escapeHtml(usuarioAtual.tocando_agora)}
                 </span>
+
                 <span class="clear-status-btn" onclick="limparStatus()" title="Limpar status">✖</span>
             </div>
         `;

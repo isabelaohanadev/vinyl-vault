@@ -6,14 +6,19 @@ let audioGlobal = new Audio();
 let playerInterval = null;
 let isPlayingPreview = false;
 
-function gerarHtmlPlayer(previewUrl) {
+
+function gerarHtmlPlayer(previewUrlBruta) {
+    // Só toca áudio http(s): o endereço vai para dentro de um onclick.
+    const previewUrl = urlAudioSegura(previewUrlBruta);
+
     if (!previewUrl) {
-        return ''; 
+        return '';
     }
+
     
     return `
         <div class="custom-audio-player">
-            <button id="btn-play-preview" class="player-play-btn" onclick="togglePlayPreview('${previewUrl}')">▶</button>
+            <button id="btn-play-preview" class="player-play-btn" onclick="togglePlayPreview(${jsArg(previewUrl)})">▶</button>
             <div id="playing-indicator" class="playing-waves hidden">
                 <div class="wave"></div><div class="wave"></div><div class="wave"></div>
             </div>

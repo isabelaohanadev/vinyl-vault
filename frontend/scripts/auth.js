@@ -199,7 +199,7 @@ function carregarDadosPerfil() {
     const previewDaFoto = document.getElementById('perfil-avatar-preview');
     
     if (usuarioAtual.foto_perfil) { 
-        previewDaFoto.style.backgroundImage = `url(${usuarioAtual.foto_perfil})`; 
+        previewDaFoto.style.backgroundImage = cssUrl(usuarioAtual.foto_perfil); 
         previewDaFoto.innerText = ''; 
         previewDaFoto.style.backgroundColor = 'transparent'; 
     } else { 
@@ -228,7 +228,7 @@ function previewNovaFoto(eventoDeUpload) {
             fotoPerfilTempB64 = canvasDesenho.toDataURL('image/jpeg', 0.8);
             
             const previewAtualizado = document.getElementById('perfil-avatar-preview'); 
-            previewAtualizado.style.backgroundImage = `url(${fotoPerfilTempB64})`; 
+            previewAtualizado.style.backgroundImage = cssUrl(fotoPerfilTempB64); 
             previewAtualizado.innerText = '';
         };
         imagemOriginal.src = eventoLeitura.target.result;

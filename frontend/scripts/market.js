@@ -42,11 +42,11 @@ function renderizarClassificados() {
         let avatarHtml = '';
         
         if (vinil.foto_perfil) {
-            avatarHtml = `<div class="profile-avatar" style="width: 26px; height: 26px; font-size: 0.8rem; border-width: 1px; background-image: url('${vinil.foto_perfil}');"></div>`;
+            avatarHtml = `<div class="profile-avatar" style="width: 26px; height: 26px; font-size: 0.8rem; border-width: 1px; background-image: ${cssUrl(vinil.foto_perfil)};"></div>`;
         } else {
             let corFundo = gerarCorHex(vinil.username);
             let primeiraLetra = vinil.username.charAt(0).toUpperCase();
-            avatarHtml = `<div class="profile-avatar" style="width: 26px; height: 26px; font-size: 0.8rem; border-width: 1px; background-color: ${corFundo};">${primeiraLetra}</div>`;
+            avatarHtml = `<div class="profile-avatar" style="width: 26px; height: 26px; font-size: 0.8rem; border-width: 1px; background-color: ${corFundo};">${escapeHtml(primeiraLetra)}</div>`;
         }
         
         let seloEstrelas = '';
@@ -59,12 +59,14 @@ function renderizarClassificados() {
             <div class="card market-card" onclick="abrirModalClassificado(${vinil.id})">
                 ${seloEstrelas}
                 <div class="market-badge">Negociável</div>
-                <img src="${vinil.foto}" alt="${vinil.nome}">
-                <h4>${vinil.nome}</h4>
-                <p>${vinil.artista}</p>
+                
+                <img src="${imgSrc(vinil.foto)}" alt="${escapeHtml(vinil.nome)}">
+                <h4>${escapeHtml(vinil.nome)}</h4>
+                <p>${escapeHtml(vinil.artista)}</p>
                 <div class="market-owner">
                     ${avatarHtml}
-                    <span>@${vinil.username}</span>
+                    <span>@${escapeHtml(vinil.username)}</span>
+
                 </div>
             </div>
         `;
@@ -87,7 +89,7 @@ function abrirModalClassificado(idDoVinil) {
     const modalEditDiv = document.getElementById('modal-edit');
     modalEditDiv.classList.add('hidden');
     
-    document.getElementById('modal-img').src = vinilAchado.foto; 
+    document.getElementById('modal-img').src = urlImagemSegura(vinilAchado.foto); 
     document.getElementById('modal-nome').innerText = vinilAchado.nome; 
     document.getElementById('modal-artista').innerText = vinilAchado.artista;
 
@@ -108,7 +110,7 @@ function abrirModalClassificado(idDoVinil) {
     const vinylLabel = document.getElementById('modal-vinyl-label');
     
     if (vinylLabel) {
-        vinylLabel.style.backgroundImage = `url('${vinilAchado.foto}')`;
+        vinylLabel.style.backgroundImage = cssUrl(urlImagemSegura(vinilAchado.foto));
     }
     
     if (vinylWrapper) {
@@ -122,8 +124,10 @@ function abrirModalClassificado(idDoVinil) {
     let stringHtmlAcoes = '';
     
     stringHtmlAcoes += `
-        <button class="modal-btn" style="background:var(--secundaria); color:white;" onclick="iniciarNegociacao(${vinilAchado.usuario_id}, '${vinilAchado.nome_completo}', '${vinilAchado.nome}')">
-            💬 CHAMAR @${vinilAchado.username} NO CHAT
+        <button class="modal-btn" style="background:var(--secundaria); color:white;" 
+onclick="iniciarNegociacao(${vinilAchado.usuario_id}, ${jsArg(vinilAchado.nome_completo)}, ${jsArg(vinilAchado.nome)})">
+            💬 CHAMAR @${escapeHtml(vinilAchado.username)} NO CHAT
+
         </button>
     `;
     

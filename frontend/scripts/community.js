@@ -51,8 +51,18 @@ function formatarLegendaComHashtags(textoOriginal) {
     if (!textoOriginal) {
         return '';
     }
-    
-    return textoOriginal.replace(/#([\wÀ-ÿ]+)/g, `<span class="hashtag" onclick="filtrarTimelinePorHashtag('$1', event)">#$1</span>`);
+
+    // O texto é escapado pedaço a pedaço: só as hashtags (letras, números e _) viram elementos.
+    return String(textoOriginal)
+        .split(/(#[\wÀ-ÿ]+)/g)
+        .map((parte) => {
+            if (/^#[\wÀ-ÿ]+$/.test(parte)) {
+                return `<span class="hashtag" onclick="filtrarTimelinePorHashtag(${jsArg(parte.slice(1))}, event)">${escapeHtml(parte)}</span>`;
+            }
+
+            return escapeHtml(parte);
+        })
+        .join('');
 }
 
 function filtrarTimelinePorHashtag(hashtagTexto, evento) {
@@ -96,7 +106,7 @@ async function carregarTimeline(hashtagFiltro = null) {
         if (hashtagFiltro) {
             container.innerHTML += `
                 <div class="active-filter-banner">
-                    <span>Mostrando resultados para: <b>#${hashtagFiltro}</b></span>
+                    <span>Mostrando resultados para: <b>#${escapeHtml(hashtagFiltro)}</b></span>
                     <button class="btn-clear-filter" onclick="limparFiltroTimeline()">✖ Limpar Filtro</button>
                 </div>
             `;
@@ -115,11 +125,11 @@ async function carregarTimeline(hashtagFiltro = null) {
             let avatarHtml = '';
             
             if (post.foto_perfil) {
-                avatarHtml = `<img src="${post.foto_perfil}">`;
+                avatarHtml = `<img src="${imgSrc(post.foto_perfil)}">`;
             } else {
                 let corFundo = gerarCorHex(post.username);
                 let inicial = post.username.charAt(0).toUpperCase();
-                avatarHtml = `<div class="profile-avatar" style="width:40px; height:40px; font-size:1rem; background-color:${corFundo}">${inicial}</div>`;
+                avatarHtml = `<div class="profile-avatar" style="width:40px; height:40px; font-size:1rem; background-color:${corFundo}">${escapeHtml(inicial)}</div>`;
             }
             
             let heartIcon = post.user_liked === 1 ? '❤️' : '🤍';
@@ -129,9 +139,11 @@ async function carregarTimeline(hashtagFiltro = null) {
                 <div class="post-card">
                     <div class="post-header" onclick="abrirPerfilPublico(${post.usuario_id})">
                         ${avatarHtml}
-                        <b>${post.nome_completo}</b>
+                        
+                        <b>${escapeHtml(post.nome_completo)}</b>
                     </div>
-                    <img class="post-card-img" src="${post.foto}" onclick="abrirPaginaPost(${post.id})">
+                    <img class="post-card-img" src="${imgSrc(post.foto)}" onclick="abrirPaginaPost(${post.id})">
+
                     <p class="post-legenda">${legendaComLinks}</p>
                     
                     <div class="post-actions">
@@ -190,7 +202,7 @@ function renderizarComunidade() {
         let letra = '';
 
         if (usuario.foto_perfil) {
-            avatarStyle = `background-image: url('${usuario.foto_perfil}')`;
+            avatarStyle = `background-image: ${cssUrl(usuario.foto_perfil)}`;
         } else {
             avatarStyle = `background-color: ${gerarCorHex(usuario.username)}`;
             letra = usuario.username.charAt(0).toUpperCase();
@@ -221,7 +233,7 @@ function renderizarComunidade() {
             tocandoAgoraHtml = `
                 <div class="now-playing-badge" style="margin-bottom: 10px; font-size: 0.7rem; padding: 4px 8px;">
                     <span class="spin-disc">💿</span>
-                    <span class="now-playing-text"><b>${usuario.tocando_agora}</b></span>
+                    <span class="now-playing-text"><b>${escapeHtml(usuario.tocando_agora)}</b></span>
                 </div>
             `;
         }
@@ -229,12 +241,14 @@ function renderizarComunidade() {
         container.innerHTML += `
             <div class="user-card" style="cursor:pointer;" onclick="abrirPerfilPublico(${usuario.id})">
                 <div class="profile-avatar user-avatar-large" style="${avatarStyle}">
-                    ${letra}
+                    
+                    ${escapeHtml(letra)}
                 </div>
-                <h4>${usuario.nome_completo}</h4>
-                <span style="margin-bottom: 5px; display:block;">@${usuario.username}</span>
+                <h4>${escapeHtml(usuario.nome_completo)}</h4>
+                <span style="margin-bottom: 5px; display:block;">@${escapeHtml(usuario.username)}</span>
                 ${tocandoAgoraHtml}
-                <p>"${bioTexto}"</p>
+                <p>"${escapeHtml(bioTexto)}"</p>
+
                 <div style="display:flex; width:100%;">
                     ${botaoSeguirHtml}
                 </div>
@@ -353,7 +367,7 @@ async function abrirPerfilPublico(amigo_id) {
     const avatar = document.getElementById('public-avatar');
     
     if (amigo.foto_perfil) { 
-        avatar.style.backgroundImage = `url('${amigo.foto_perfil}')`; 
+        avatar.style.backgroundImage = cssUrl(amigo.foto_perfil); 
         avatar.innerText = ''; 
     } else { 
         avatar.style.backgroundImage = 'none'; 
@@ -368,7 +382,7 @@ async function abrirPerfilPublico(amigo_id) {
         containerNowPlaying.innerHTML = `
             <div class="now-playing-badge" style="margin-top: 15px;">
                 <span class="spin-disc">💿</span>
-                <span class="now-playing-text">Ouvindo agora: <b>${amigo.tocando_agora}</b></span>
+                <span class="now-playing-text">Ouvindo agora: <b>${escapeHtml(amigo.tocando_agora)}</b></span>
             </div>
         `;
     } else {
@@ -405,7 +419,7 @@ async function abrirPerfilPublico(amigo_id) {
 
     document.getElementById('public-actions').innerHTML = `
         ${botaoSeguir}
-        <button class="nav-btn" onclick="abrirChatEspecialParaPerfil(${amigo.id}, '${primeiroNome}')" style="background:var(--secundaria); color:white;">
+        <button class="nav-btn" onclick="abrirChatEspecialParaPerfil(${amigo.id}, ${jsArg(primeiroNome)})" style="background:var(--secundaria); color:white;">
             Mensagem
         </button>
     `;
@@ -439,9 +453,11 @@ async function abrirPerfilPublico(amigo_id) {
                     <div class="card market-card" onclick="abrirModalVinilPublico(${vinil.id})">
                         ${seloEstrelas}
                         <div class="market-badge">Negociável</div>
-                        <img src="${vinil.foto}" alt="${vinil.nome}">
-                        <h4>${vinil.nome}</h4>
-                        <p>${vinil.artista}</p>
+                        
+<img src="${imgSrc(vinil.foto)}" alt="${escapeHtml(vinil.nome)}">
+<h4>${escapeHtml(vinil.nome)}</h4>
+<p>${escapeHtml(vinil.artista)}</p>
+
                     </div>
                 `; 
             });
@@ -467,9 +483,11 @@ async function abrirPerfilPublico(amigo_id) {
                     <div class="card" style="position:relative;" onclick="abrirModalVinilPublico(${vinil.id})">
                         ${seloEstrelas}
                         ${seloNegociacao}
-                        <img src="${vinil.foto}" alt="${vinil.nome}">
-                        <h4>${vinil.nome}</h4>
-                        <p>${vinil.artista}</p>
+                        
+<img src="${imgSrc(vinil.foto)}" alt="${escapeHtml(vinil.nome)}">
+<h4>${escapeHtml(vinil.nome)}</h4>
+<p>${escapeHtml(vinil.artista)}</p>
+
                     </div>
                 `; 
             });
@@ -493,7 +511,7 @@ async function abrirPerfilPublico(amigo_id) {
             containerPosts.style.display = 'grid'; 
             postsAmigo.forEach(post => {
                 containerPosts.innerHTML += `
-                    <img src="${post.foto}" alt="Post" onclick="abrirPaginaPost(${post.id})">
+                    <img src="${imgSrc(post.foto)}" alt="Post" onclick="abrirPaginaPost(${post.id})">
                 `;
             });
         }
@@ -522,9 +540,9 @@ function abrirModalVinilPublico(idDoVinilSelecionado) {
     const modalEditDiv = document.getElementById('modal-edit');
     modalEditDiv.classList.add('hidden');
     
-    document.getElementById('modal-img').src = discoAchado.foto; 
+    document.getElementById('modal-img').src = urlImagemSegura(discoAchado.foto); 
     
-    let tituloNome = discoAchado.nome;
+    let tituloNome = escapeHtml(discoAchado.nome);
     
     if (discoAchado.negociavel) {
         tituloNome += ` <span style="font-size:0.8rem; color:var(--secundaria);">(Disponível para Negociação)</span>`;
@@ -549,7 +567,7 @@ function abrirModalVinilPublico(idDoVinilSelecionado) {
     const vinylLabel = document.getElementById('modal-vinyl-label');
     
     if (vinylLabel) {
-        vinylLabel.style.backgroundImage = `url('${discoAchado.foto}')`;
+        vinylLabel.style.backgroundImage = cssUrl(urlImagemSegura(discoAchado.foto));
     }
     
     if (vinylWrapper) {
@@ -567,7 +585,7 @@ function abrirModalVinilPublico(idDoVinilSelecionado) {
         
         if (amigo) {
             stringHtmlAcoes += `
-                <button class="modal-btn" style="background:var(--secundaria); color:white;" onclick="iniciarNegociacao(${amigo.id}, '${amigo.nome_completo}', '${discoAchado.nome}')">
+                <button class="modal-btn" style="background:var(--secundaria); color:white;" onclick="iniciarNegociacao(${amigo.id}, ${jsArg(amigo.nome_completo)}, ${jsArg(discoAchado.nome)})">
                     💬 CHAMAR NO CHAT PARA NEGOCIAR
                 </button>
             `;
@@ -576,7 +594,7 @@ function abrirModalVinilPublico(idDoVinilSelecionado) {
 
     if (discoAchado.spotify) {
         stringHtmlAcoes += `
-            <a href="${discoAchado.spotify}" target="_blank" class="modal-btn" style="background:var(--spotify); color:white; text-decoration:none; display:flex; align-items:center; justify-content:center; margin-top:10px;">
+            <a href="${hrefSeguro(discoAchado.spotify)}" target="_blank" rel="noopener noreferrer" class="modal-btn" style="background:var(--spotify); color:white; text-decoration:none; display:flex; align-items:center; justify-content:center; margin-top:10px;">
                 <img src="./assets/spotify.svg" style="width:20px; margin-right:10px;" alt="Spotify Icon">
                 OUVIR NO SPOTIFY
             </a>
@@ -627,19 +645,21 @@ async function abrirListaUsuarios(tipo_lista, id_alvo) {
                 let avatarHtml = '';
                 
                 if (usuario.foto_perfil) {
-                    avatarHtml = `<img src="${usuario.foto_perfil}" style="width:40px;height:40px;border-radius:50%;object-fit:cover; border: 2px solid var(--quaternaria);">`;
+                    avatarHtml = `<img src="${imgSrc(usuario.foto_perfil)}" style="width:40px;height:40px;border-radius:50%;object-fit:cover; border: 2px solid var(--quaternaria);">`;
                 } else {
                     let corFundo = gerarCorHex(usuario.username);
                     let primeiraLetra = usuario.username.charAt(0).toUpperCase();
-                    avatarHtml = `<div class="profile-avatar" style="width:40px;height:40px;font-size:1rem;background-color:${corFundo}">${primeiraLetra}</div>`;
+                    avatarHtml = `<div class="profile-avatar" style="width:40px;height:40px;font-size:1rem;background-color:${corFundo}">${escapeHtml(primeiraLetra)}</div>`;
                 }
                 
                 containerLista.innerHTML += `
                     <div class="user-list-item" onclick="fecharModalUsuarios(null, true); abrirPerfilPublico(${usuario.id});">
                         ${avatarHtml}
                         <div style="display:flex; flex-direction:column;">
-                            <b style="color:var(--primaria); font-size:0.95rem;">${usuario.nome_completo}</b>
-                            <span style="font-size:0.8rem; color:gray;">@${usuario.username}</span>
+                            
+<b style="color:var(--primaria); font-size:0.95rem;">${escapeHtml(usuario.nome_completo)}</b>
+<span style="font-size:0.8rem; color:gray;">@${escapeHtml(usuario.username)}</span>
+
                         </div>
                     </div>
                 `;
@@ -746,7 +766,7 @@ async function abrirPaginaPost(post_id, focarComentario = false) {
         document.getElementById('post-page-id').value = post_id;
         document.getElementById('post-page-dono-id').value = postUnico.usuario_id;
         
-        document.getElementById('post-page-img').src = postUnico.foto;
+        document.getElementById('post-page-img').src = urlImagemSegura(postUnico.foto);
         document.getElementById('post-page-user').innerText = postUnico.nome_completo;
         
         document.getElementById('post-page-legenda').innerHTML = formatarLegendaComHashtags(postUnico.legenda);
@@ -754,7 +774,7 @@ async function abrirPaginaPost(post_id, focarComentario = false) {
         const headerAvatar = document.getElementById('post-page-avatar');
         
         if (postUnico.foto_perfil) {
-            headerAvatar.src = postUnico.foto_perfil;
+            headerAvatar.src = urlImagemSegura(postUnico.foto_perfil);
         } else {
             headerAvatar.src = './assets/VinylVault.png'; 
         }
@@ -899,14 +919,16 @@ async function carregarComentariosDaPagina(post_id) {
             divPai.style.marginBottom = '0'; 
             
             divPai.innerHTML = `
-                <img src="${fotoAvatarPai}" class="comment-avatar">
-                <div style="flex: 1;">
-                    <div class="comment-content">
-                        <strong>@${comentarioPai.username}</strong>
-                        <p>${comentarioPai.texto}</p>
+                
+<img src="${imgSrc(fotoAvatarPai)}" class="comment-avatar">
+<div style="flex: 1;">
+    <div class="comment-content">
+        <strong>@${escapeHtml(comentarioPai.username)}</strong>
+        <p>${escapeHtml(comentarioPai.texto)}</p>
+
                     </div>
                     <div class="comment-actions-bar">
-                        <button class="comment-action-btn" onclick="prepararRespostaDeComentario(${comentarioPai.id}, '${comentarioPai.username}', ${comentarioPai.usuario_id})">Responder</button>
+                        <button class="comment-action-btn" onclick="prepararRespostaDeComentario(${comentarioPai.id}, ${jsArg(comentarioPai.username)}, ${comentarioPai.usuario_id})">Responder</button>
                         ${btnApagarPaiHtml}
                     </div>
                 </div>
@@ -931,11 +953,13 @@ async function carregarComentariosDaPagina(post_id) {
                     divFilho.className = 'comment-child-wrapper';
                     
                     divFilho.innerHTML = `
-                        <img src="${fotoAvatarFilho}" class="comment-avatar" style="width: 30px; height: 30px;">
-                        <div style="flex: 1;">
-                            <div class="comment-content">
-                                <strong>@${resposta.username}</strong>
-                                <p>${resposta.texto}</p>
+                        
+<img src="${imgSrc(fotoAvatarFilho)}" class="comment-avatar" style="width: 30px; height: 30px;">
+<div style="flex: 1;">
+    <div class="comment-content">
+        <strong>@${escapeHtml(resposta.username)}</strong>
+        <p>${escapeHtml(resposta.texto)}</p>
+
                             </div>
                             <div class="comment-actions-bar">
                                 ${btnApagarFilhoHtml}
@@ -1080,7 +1104,7 @@ async function renderizarMeusPosts() {
         
         meusPostsRecuperados.forEach(postagem => {
             containerDosMeusPosts.innerHTML += `
-                <img src="${postagem.foto}" alt="Minha Publicação" onclick="abrirPaginaPost(${postagem.id})">
+                <img src="${imgSrc(postagem.foto)}" alt="Minha Publicação" onclick="abrirPaginaPost(${postagem.id})">
             `;
         });
     } catch(erro) {

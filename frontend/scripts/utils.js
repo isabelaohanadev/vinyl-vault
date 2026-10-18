@@ -9,6 +9,8 @@
 //   jsArg(x)       -> argumento de uma chamada JS dentro de onclick="..."
 //   cssUrl(x)      -> valor de background-image
 //   imgSrc(x)      -> atributo src de <img> (só aceita http(s), data:image e ./assets)
+//   hrefSeguro(x)  -> atributo href de links externos (só http/https)
+//   urlImagemSegura(x), urlAudioSegura(x) -> a URL "crua" (sem escape), para atribuir a .src
 
 const IMAGEM_PADRAO = './assets/VinylVault.png';
 
@@ -27,7 +29,7 @@ function escapeHtml(valor) {
 // Gera um literal JS válido (string ou número) já escapado para viver dentro de um atributo HTML:
 //   onclick="abrirChat(${jsArg(id)}, ${jsArg(nome)})"
 function jsArg(valor) {
-    return escapeHtml(JSON.stringify(valor));
+    return escapeHtml(JSON.stringify(valor === undefined ? null : valor));
 }
 
 // url('...') seguro: aspas, parênteses, barras, espaços e sinais de HTML viram %XX,
@@ -42,10 +44,30 @@ function cssUrl(endereco) {
 
 const IMAGEM_PERMITIDA = /^(https?:\/\/|data:image\/(png|jpe?g|webp|gif);base64,|\.\/assets\/)/i;
 
-function imgSrc(endereco) {
+function urlImagemSegura(endereco) {
     const texto = String(endereco ?? '');
 
-    return escapeHtml(IMAGEM_PERMITIDA.test(texto) ? texto : IMAGEM_PADRAO);
+    return IMAGEM_PERMITIDA.test(texto) ? texto : IMAGEM_PADRAO;
+}
+
+function imgSrc(endereco) {
+    return escapeHtml(urlImagemSegura(endereco));
+}
+
+const URL_WEB = /^https?:\/\//i;
+
+// Links externos (por exemplo o do Spotify) só podem ser http(s): nada de javascript:.
+function hrefSeguro(endereco) {
+    const texto = String(endereco ?? '');
+
+    return URL_WEB.test(texto) ? escapeHtml(texto) : '#';
+}
+
+// Prévia de áudio: só http(s). Devolve null quando não serve.
+function urlAudioSegura(endereco) {
+    const texto = String(endereco ?? '');
+
+    return URL_WEB.test(texto) ? texto : null;
 }
 
 // Reduz uma foto escolhida pelo usuário (câmeras de celular geram arquivos de vários MB) e a

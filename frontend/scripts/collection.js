@@ -36,18 +36,19 @@ async function buscarAlbumAPI() {
 
         dadosDaApi.results.forEach(album => {
             const capaEmAltaResolucao = album.artworkUrl100.replace('100x100bb', '600x600bb');
-            const nomeAlbumTratado = album.collectionName.replace(/'/g, "\\'");
-            const nomeArtistaTratado = album.artistName.replace(/'/g, "\\'");
-            const nomeGeneroTratado = album.primaryGenreName.replace(/'/g, "\\'");
-            const idDoAlbum = album.collectionId; 
+            
+            const idDoAlbum = Number(album.collectionId);
+ 
 
             containerResultados.innerHTML += `
-                <div class="album-result-card" onclick="selecionarAlbumAPI('${nomeAlbumTratado}', '${nomeArtistaTratado}', '${nomeGeneroTratado}', '${capaEmAltaResolucao}', ${idDoAlbum})">
-                    <img src="${album.artworkUrl100}" alt="Miniatura">
+                
+                <div class="album-result-card" onclick="selecionarAlbumAPI(${jsArg(album.collectionName)}, ${jsArg(album.artistName)}, ${jsArg(album.primaryGenreName)}, ${jsArg(capaEmAltaResolucao)}, ${idDoAlbum})">
+                    <img src="${imgSrc(album.artworkUrl100)}" alt="Miniatura">
                     <div class="album-result-info">
-                        <b>${album.collectionName}</b>
-                        <span>${album.artistName}</span>
+                        <b>${escapeHtml(album.collectionName)}</b>
+                        <span>${escapeHtml(album.artistName)}</span>
                     </div>
+
                 </div>
             `;
         });
@@ -285,7 +286,7 @@ function atualizarFiltrosEDatalists() {
     seletorArtista.innerHTML = '<option value="">Todos os Artistas</option>'; 
     
     artistasUnicosFiltrados.forEach(artistaLocal => { 
-        seletorArtista.innerHTML += `<option value="${artistaLocal}">${artistaLocal}</option>`; 
+        seletorArtista.innerHTML += `<option value="${escapeHtml(artistaLocal)}">${escapeHtml(artistaLocal)}</option>`; 
     }); 
     
     seletorArtista.value = valorAtualArtista;
@@ -293,7 +294,7 @@ function atualizarFiltrosEDatalists() {
     seletorGenero.innerHTML = '<option value="">Todos os Gêneros</option>'; 
     
     generosUnicosFiltrados.forEach(generoLocal => { 
-        seletorGenero.innerHTML += `<option value="${generoLocal}">${generoLocal}</option>`; 
+        seletorGenero.innerHTML += `<option value="${escapeHtml(generoLocal)}">${escapeHtml(generoLocal)}</option>`; 
     }); 
     
     seletorGenero.value = valorAtualGenero;
@@ -301,13 +302,13 @@ function atualizarFiltrosEDatalists() {
     listaDeDataArtista.innerHTML = ''; 
     
     artistasUnicosFiltrados.forEach(artistaLocalLista => { 
-        listaDeDataArtista.innerHTML += `<option value="${artistaLocalLista}">`; 
+        listaDeDataArtista.innerHTML += `<option value="${escapeHtml(artistaLocalLista)}">`; 
     }); 
     
     listaDeDataGenero.innerHTML = ''; 
     
     generosUnicosFiltrados.forEach(generoLocalLista => { 
-        listaDeDataGenero.innerHTML += `<option value="${generoLocalLista}">`; 
+        listaDeDataGenero.innerHTML += `<option value="${escapeHtml(generoLocalLista)}">`; 
     });
 }
 
@@ -351,7 +352,7 @@ function renderizar() {
             }, {});
             
             Object.keys(gruposPorGeneros).sort().forEach(chaveDoGenero => {
-                let stringHtmlSecao = `<div class="genero-title">${chaveDoGenero.toUpperCase()}</div><div class="grid">`;
+                let stringHtmlSecao = `<div class="genero-title">${escapeHtml(chaveDoGenero.toUpperCase())}</div><div class="grid">`;
                 
                 gruposPorGeneros[chaveDoGenero].forEach(vinilDaVez => { 
                     let seloNegociacao = '';
@@ -370,9 +371,11 @@ function renderizar() {
                         <div class="card" style="position:relative;" onclick="abrirModal(${vinilDaVez.id})">
                             ${seloEstrelas}
                             ${seloNegociacao}
-                            <img src="${vinilDaVez.foto}" alt="${vinilDaVez.nome}">
-                            <h4>${vinilDaVez.nome}</h4>
-                            <p>${vinilDaVez.artista}</p>
+                            
+                            <img src="${imgSrc(vinilDaVez.foto)}" alt="${escapeHtml(vinilDaVez.nome)}">
+                            <h4>${escapeHtml(vinilDaVez.nome)}</h4>
+                            <p>${escapeHtml(vinilDaVez.artista)}</p>
+
                         </div>
                     `; 
                 });
@@ -399,9 +402,9 @@ function abrirModal(idDoVinilSelecionado) {
     const modalEditDiv = document.getElementById('modal-edit');
     modalEditDiv.classList.add('hidden');
     
-    document.getElementById('modal-img').src = discoAchado.foto; 
+    document.getElementById('modal-img').src = urlImagemSegura(discoAchado.foto); 
     
-    let tituloNome = discoAchado.nome;
+    let tituloNome = escapeHtml(discoAchado.nome);
     
     if (discoAchado.negociavel) {
         tituloNome += ` <span style="font-size:0.8rem; color:var(--secundaria);">(Disponível em Classificados)</span>`;
@@ -426,7 +429,7 @@ function abrirModal(idDoVinilSelecionado) {
     const vinylLabel = document.getElementById('modal-vinyl-label');
     
     if (vinylLabel) {
-        vinylLabel.style.backgroundImage = `url('${discoAchado.foto}')`;
+        vinylLabel.style.backgroundImage = cssUrl(urlImagemSegura(discoAchado.foto));
     }
     
     if (vinylWrapper) {
@@ -441,11 +444,10 @@ function abrirModal(idDoVinilSelecionado) {
     
     // MÁGICA: BOTÃO DE "TOCANDO AGORA"
     if (discoAchado.adquirido) {
-        const artistaLimpo = discoAchado.artista.replace(/'/g, "\\'");
-        const nomeLimpo = discoAchado.nome.replace(/'/g, "\\'");
         
         stringHtmlAcoes += `
-            <button onclick="definirTocandoAgora('${artistaLimpo}', '${nomeLimpo}')" class="modal-btn" style="background:#1DB954; color:white; margin-top:10px; border-radius: 20px;">
+            <button onclick="definirTocandoAgora(${jsArg(discoAchado.artista)}, ${jsArg(discoAchado.nome)})"
+ class="modal-btn" style="background:#1DB954; color:white; margin-top:10px; border-radius: 20px;">
                 🎧 DEFINIR COMO "TOCANDO AGORA"
             </button>
         `;
@@ -453,7 +455,7 @@ function abrirModal(idDoVinilSelecionado) {
     
     if (discoAchado.spotify) {
         stringHtmlAcoes += `
-            <a href="${discoAchado.spotify}" target="_blank" class="modal-btn" style="background:var(--spotify); color:white; text-decoration:none; display:flex; align-items:center; justify-content:center; margin-top:10px;">
+            <a href="${hrefSeguro(discoAchado.spotify)}" target="_blank" rel="noopener noreferrer" class="modal-btn" style="background:var(--spotify); color:white; text-decoration:none; display:flex; align-items:center; justify-content:center; margin-top:10px;">
                 <img src="./assets/spotify.svg" style="width:20px; margin-right:10px;" alt="Spotify Icon">
                 OUVIR NO SPOTIFY
             </a>

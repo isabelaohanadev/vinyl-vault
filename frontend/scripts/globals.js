@@ -192,7 +192,7 @@ function atualizarCabecalhoPerfilComunidade() {
     const previewDaFotoComunidade = document.getElementById('meu-avatar-comunidade');
     
     if (usuarioAtual.foto_perfil) { 
-        previewDaFotoComunidade.style.backgroundImage = `url(${usuarioAtual.foto_perfil})`; 
+        previewDaFotoComunidade.style.backgroundImage = cssUrl(usuarioAtual.foto_perfil); 
         previewDaFotoComunidade.innerText = ''; 
         previewDaFotoComunidade.style.backgroundColor = 'transparent'; 
     } else { 
@@ -403,13 +403,13 @@ function atualizarAvatarUI() {
     
     if (usuarioAtual.foto_perfil) {
         if (navAvatar) {
-            navAvatar.style.backgroundImage = `url(${usuarioAtual.foto_perfil})`; 
+            navAvatar.style.backgroundImage = cssUrl(usuarioAtual.foto_perfil); 
             navAvatar.innerText = ''; 
             navAvatar.style.backgroundColor = 'transparent';
         }
         
         if (sidebarAvatar) {
-            sidebarAvatar.style.backgroundImage = `url(${usuarioAtual.foto_perfil})`; 
+            sidebarAvatar.style.backgroundImage = cssUrl(usuarioAtual.foto_perfil); 
             sidebarAvatar.innerText = ''; 
             sidebarAvatar.style.backgroundColor = 'transparent';
         }

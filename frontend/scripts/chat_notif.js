@@ -40,19 +40,19 @@ async function carregarNotificacoes() {
                 let acaoAoClicar = `lerNotificacao(${notif.id})`;
 
                 if (notif.tipo === 'seguir') {
-                    textoDeNotificacao = `<b>@${notif.username}</b> começou a seguir você.`;
+                    textoDeNotificacao = `<b>@${escapeHtml(notif.username)}</b> começou a seguir você.`;
                     acaoAoClicar = `lerNotificacao(${notif.id}, () => abrirPerfilPublico(${notif.ator_id}))`;
                 } else if (notif.tipo === 'curtida') {
-                    textoDeNotificacao = `<b>@${notif.username}</b> curtiu sua publicação.`;
+                    textoDeNotificacao = `<b>@${escapeHtml(notif.username)}</b> curtiu sua publicação.`;
                     acaoAoClicar = `lerNotificacao(${notif.id}, () => abrirPaginaPost(${notif.post_id}))`;
                 } else if (notif.tipo === 'comentario') {
-                    textoDeNotificacao = `<b>@${notif.username}</b> comentou na sua publicação.`;
+                    textoDeNotificacao = `<b>@${escapeHtml(notif.username)}</b> comentou na sua publicação.`;
                     acaoAoClicar = `lerNotificacao(${notif.id}, () => abrirPaginaPost(${notif.post_id}, true))`;
                 } else if (notif.tipo === 'mensagem') {
-                    textoDeNotificacao = `<b>@${notif.username}</b> enviou uma nova mensagem.`;
-                    acaoAoClicar = `lerNotificacao(${notif.id}, () => { abrirChatWidget(); abrirChat(${notif.ator_id}, '${notif.username}'); })`;
+                    textoDeNotificacao = `<b>@${escapeHtml(notif.username)}</b> enviou uma nova mensagem.`;
+                    acaoAoClicar = `lerNotificacao(${notif.id}, () => { abrirChatWidget(); abrirChat(${notif.ator_id}, ${jsArg(notif.username)}); })`;
                 } else if (notif.tipo === 'match') {
-                    textoDeNotificacao = `✨ <b>MATCH! @${notif.username}</b> disponibilizou para troca um disco da sua Wishlist!`;
+                    textoDeNotificacao = `✨ <b>MATCH! @${escapeHtml(notif.username)}</b> disponibilizou para troca um disco da sua Wishlist!`;
                     acaoAoClicar = `lerNotificacao(${notif.id}, () => switchTab('market'))`;
                 }
 
@@ -67,11 +67,11 @@ async function carregarNotificacoes() {
                 let htmlDoAvatar = '';
                 
                 if (notif.foto_perfil) {
-                    htmlDoAvatar = `<img src="${notif.foto_perfil}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; flex-shrink: 0; border: 2px solid var(--quaternaria);">`;
+                    htmlDoAvatar = `<img src="${imgSrc(notif.foto_perfil)}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; flex-shrink: 0; border: 2px solid var(--quaternaria);">`;
                 } else {
                     let letraInicial = notif.username.charAt(0).toUpperCase();
                     let corFundo = gerarCorHex(notif.username);
-                    htmlDoAvatar = `<div class="profile-avatar" style="width: 40px; height: 40px; font-size: 1rem; flex-shrink: 0; background-color:${corFundo}">${letraInicial}</div>`;
+                    htmlDoAvatar = `<div class="profile-avatar" style="width: 40px; height: 40px; font-size: 1rem; flex-shrink: 0; background-color:${corFundo}">${escapeHtml(letraInicial)}</div>`;
                 }
 
                 container.innerHTML += `
@@ -188,11 +188,11 @@ async function carregarConversas() {
                 let htmlAvatarConversa = '';
                 
                 if (conversaUnica.foto_perfil) {
-                    htmlAvatarConversa = `<img src="${conversaUnica.foto_perfil}" style="width:45px;height:45px;border-radius:50%;object-fit:cover;">`;
+                    htmlAvatarConversa = `<img src="${imgSrc(conversaUnica.foto_perfil)}" style="width:45px;height:45px;border-radius:50%;object-fit:cover;">`;
                 } else {
                     let inicialNome = conversaUnica.username.charAt(0).toUpperCase();
                     let corGerada = gerarCorHex(conversaUnica.username);
-                    htmlAvatarConversa = `<div class="profile-avatar" style="width:45px;height:45px;font-size:1.2rem;background-color:${corGerada}">${inicialNome}</div>`;
+                    htmlAvatarConversa = `<div class="profile-avatar" style="width:45px;height:45px;font-size:1.2rem;background-color:${corGerada}">${escapeHtml(inicialNome)}</div>`;
                 }
                 
                 // MÁGICA DO TOCANDO AGORA: Aparece embaixo do nome na lista de chat!
@@ -201,17 +201,19 @@ async function carregarConversas() {
                     tocandoAgoraHtml = `
                         <div style="font-size: 0.75rem; color: #1DB954; display: flex; align-items: center; gap: 4px; margin-top: 2px;">
                             <span class="spin-disc" style="font-size: 0.8rem;">💿</span>
-                            <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px;">${conversaUnica.tocando_agora}</span>
+                            <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px;">${escapeHtml(conversaUnica.tocando_agora)}</span>
                         </div>
                     `;
                 }
                 
                 htmlDeConversas += `
-                    <div class="conversa-item" onclick="abrirChatWidget(); abrirChat(${conversaUnica.id}, '${conversaUnica.nome_completo}')" style="display:flex; align-items:center; gap:15px; padding:10px; border-bottom:1px solid #eee; cursor:pointer;">
+                    <div class="conversa-item" onclick="abrirChatWidget(); abrirChat(${conversaUnica.id}, ${jsArg(conversaUnica.nome_completo)})" style="display:flex; align-items:center; gap:15px; padding:10px; border-bottom:1px solid #eee; cursor:pointer;">
                         ${htmlAvatarConversa}
                         <div style="flex: 1; overflow: hidden;">
-                            <b style="color:var(--primaria);">${conversaUnica.nome_completo}</b><br>
-                            <span style="font-size:0.8rem; color:gray;">@${conversaUnica.username}</span>
+                            
+<b style="color:var(--primaria);">${escapeHtml(conversaUnica.nome_completo)}</b><br>
+<span style="font-size:0.8rem; color:gray;">@${escapeHtml(conversaUnica.username)}</span>
+
                             ${tocandoAgoraHtml}
                         </div>
                     </div>
@@ -298,9 +300,9 @@ async function carregarMensagens(amigo_id_pesquisa, fazerScroll = true) {
             if (msg.vinil_id) {
                 htmlCardVinil = `
                     <div style="background:rgba(255,255,255,0.8); padding:5px; border-radius:4px; margin-bottom:5px; display:flex; gap:10px; align-items:center;">
-                        <img src="${msg.vinil_foto}" style="width:40px; height:40px; border-radius:4px; object-fit:cover;">
+                        <img src="${imgSrc(msg.vinil_foto)}" style="width:40px; height:40px; border-radius:4px; object-fit:cover;">
                         <div style="font-size:0.75rem;">
-                            <b>${msg.vinil_nome}</b><br>${msg.vinil_artista}
+                            <b>${escapeHtml(msg.vinil_nome)}</b><br>${escapeHtml(msg.vinil_artista)}
                         </div>
                     </div>
                 `;
@@ -308,8 +310,7 @@ async function carregarMensagens(amigo_id_pesquisa, fazerScroll = true) {
 
             caixaDeMensagens.innerHTML += `
                 <div style="max-width: 80%; padding: 10px 15px; border-radius: 12px; margin-bottom: 10px; font-size: 0.9rem; ${estiloDeAlinhamento}">
-                    ${htmlCardVinil}
-                    ${msg.texto}
+                    ${htmlCardVinil} ${escapeHtml(msg.texto)}
                 </div>
             `;
         });
@@ -377,15 +378,15 @@ async function abrirModalEncaminhar(idDoVinil) {
             let avatarDoAmigo = '';
             
             if (userAmigo.foto_perfil) {
-                avatarDoAmigo = `<img src="${userAmigo.foto_perfil}" style="width:30px;height:30px;border-radius:50%; object-fit:cover;">`;
+                avatarDoAmigo = `<img src="${imgSrc(userAmigo.foto_perfil)}" style="width:30px;height:30px;border-radius:50%; object-fit:cover;">`;
             } else {
-                avatarDoAmigo = `<div class="profile-avatar" style="width:30px;height:30px;font-size:0.8rem;background-color:${gerarCorHex(userAmigo.username)}">${userAmigo.username.charAt(0).toUpperCase()}</div>`;
+                avatarDoAmigo = `<div class="profile-avatar" style="width:30px;height:30px;font-size:0.8rem;background-color:${gerarCorHex(userAmigo.username)}">${escapeHtml(userAmigo.username.charAt(0).toUpperCase())}</div>`;
             }
             
             listaHtmlEncaminhar.innerHTML += `
-                <div onclick="encaminharVinil(${userAmigo.id}, '${userAmigo.nome_completo}')" style="display:flex; align-items:center; gap:10px; padding:10px; border:1px solid #ccc; border-radius:4px; cursor:pointer;">
+                <div onclick="encaminharVinil(${userAmigo.id}, ${jsArg(userAmigo.nome_completo)})" style="display:flex; align-items:center; gap:10px; padding:10px; border:1px solid #ccc; border-radius:4px; cursor:pointer;">
                     ${avatarDoAmigo}
-                    <b>${userAmigo.nome_completo}</b>
+                    <b>${escapeHtml(userAmigo.nome_completo)}</b>
                 </div>
             `;
         });

@@ -31,7 +31,7 @@ async function abrirDescobrir() {
     // 2. Identifica o Gênero Favorito (Top 1)
     const generoFavorito = Object.keys(contagemDeGeneros).reduce((a, b) => contagemDeGeneros[a] > contagemDeGeneros[b] ? a : b);
 
-    subtitulo.innerHTML = `Percebemos que você tem muito <b>${generoFavorito.toUpperCase()}</b> no acervo. Aqui estão algumas joias para a sua coleção:`;
+    subtitulo.innerHTML = `Percebemos que você tem muito <b>${escapeHtml(generoFavorito.toUpperCase())}</b> no acervo. Aqui estão algumas joias para a sua coleção:`;
 
     // 3. Busca álbuns famosos na API do iTunes para esse gênero
     try {
@@ -55,19 +55,20 @@ async function abrirDescobrir() {
         containerResultados.innerHTML = '';
         
         recomendacoesFinais.forEach(album => {
+            
             const capaEmAltaQualidade = album.artworkUrl100.replace('100x100bb', '600x600bb');
-            const nomeAlbumLimpo = album.collectionName.replace(/'/g, "\\'");
-            const nomeArtistaLimpo = album.artistName.replace(/'/g, "\\'");
-            const generoLimpo = album.primaryGenreName.replace(/'/g, "\\'");
-            const idColecao = album.collectionId;
+            const idColecao = Number(album.collectionId);
+
 
             containerResultados.innerHTML += `
                 <div class="discover-card">
-                    <img src="${capaEmAltaQualidade}" alt="${album.collectionName}">
+                    
+                    <img src="${imgSrc(capaEmAltaQualidade)}" alt="${escapeHtml(album.collectionName)}">
                     <div class="discover-info">
-                        <h4>${album.collectionName}</h4>
-                        <p>${album.artistName}</p>
-                        <button class="btn-add-wishlist" onclick="salvarRecomendacaoNaWishlist('${nomeAlbumLimpo}', '${nomeArtistaLimpo}', '${generoLimpo}', '${capaEmAltaQualidade}', ${idColecao}, this)">
+                        <h4>${escapeHtml(album.collectionName)}</h4>
+                        <p>${escapeHtml(album.artistName)}</p>
+                        <button class="btn-add-wishlist" onclick="salvarRecomendacaoNaWishlist(${jsArg(album.collectionName)}, ${jsArg(album.artistName)}, ${jsArg(album.primaryGenreName)}, ${jsArg(capaEmAltaQualidade)}, ${idColecao}, this)">
+
                             + Adicionar à Wishlist
                         </button>
                     </div>

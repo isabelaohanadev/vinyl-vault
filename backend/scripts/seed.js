@@ -16,8 +16,9 @@ const DEMO_DOMAIN = '@demo.vinylvault.test';
 const DEMO_PASSWORD = 'demo1234';
 
 // Placeholder artwork from picsum.photos (random photos, not real covers).
-const cover = (seed) => `https://picsum.photos/seed/${seed}/480/480`;
-const avatar = (seed) => `https://picsum.photos/seed/${seed}/240/240`;
+// The seed goes into a URL path, so it is encoded ("Getz/Gilberto" must not add a path segment).
+const cover = (seed) => `https://picsum.photos/seed/${encodeURIComponent(seed)}/480/480`;
+const avatar = (seed) => `https://picsum.photos/seed/${encodeURIComponent(seed)}/240/240`;
 
 const users = [
     { key: 'ana', username: 'ana.souza', nome: 'Ana Souza', bio: 'Jazz, bossa nova e uma estante que não para de crescer.', nascimento: '1992-03-14' },

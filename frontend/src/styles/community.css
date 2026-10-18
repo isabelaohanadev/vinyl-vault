@@ -85,6 +85,15 @@
     line-height: 1.4;
 }
 
+.user-card .btn-follow,
+.user-card .btn-unfollow {
+    margin-top: auto;
+}
+
+.user-card .user-bio {
+    flex: 1;
+}
+
 .btn-follow {
     width: 100%;
     padding: 10px;

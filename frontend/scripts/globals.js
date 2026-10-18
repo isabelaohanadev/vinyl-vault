@@ -65,6 +65,19 @@ function updateCarousel() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    // A foto de "Sobre Nós" não é versionada: sem o arquivo, a imagem some em vez de aparecer quebrada.
+    const fotoSobre = document.querySelector('.aboutus-img');
+
+    if (fotoSobre) {
+        const esconder = () => { fotoSobre.style.display = 'none'; };
+
+        fotoSobre.addEventListener('error', esconder);
+
+        if (fotoSobre.complete && fotoSobre.naturalWidth === 0) {
+            esconder();
+        }
+    }
+
     const temaSalvo = localStorage.getItem('tema');
     const checkboxTheme = document.getElementById('checkbox-theme');
     

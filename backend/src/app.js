@@ -25,9 +25,13 @@ if (env.NODE_ENV !== 'test') {
     app.use(morgan(env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 }
 
+// Rate limiting comes before body parsing, so a flood of large payloads is rejected
+// before the server spends time parsing them.
+app.use('/api', apiLimiter);
+
 app.use(express.json({ limit: env.JSON_LIMIT }));
 
-app.use('/api', apiLimiter, routes);
+app.use('/api', routes);
 
 app.use(notFoundHandler);
 app.use(errorHandler);

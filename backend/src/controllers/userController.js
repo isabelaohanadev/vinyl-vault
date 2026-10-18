@@ -1,63 +1,68 @@
-const db = require('../config/db');
 const bcrypt = require('bcrypt');
+const { pool } = require('../config/database');
+const env = require('../config/env');
+const { badRequest, notFound } = require('../utils/httpError');
+const { serializeUser, serializePublicUser } = require('../utils/serializers');
+
+const getProfile = async (req, res) => {
+    const [rows] = await pool.execute('SELECT * FROM usuarios WHERE id = ?', [req.valid.params.id]);
+
+    if (rows.length === 0) {
+        throw notFound('Usuário não encontrado.');
+    }
+
+    res.status(200).json(serializePublicUser(rows[0]));
+};
 
 const updateProfile = async (req, res) => {
-    const { id } = req.params;
-    const { nome_completo, bio, foto_perfil, senha } = req.body;
+    const { id } = req.valid.params;
+    const { nome_completo, bio, foto_perfil, senha, senha_atual } = req.valid.body;
 
-    let sql = 'UPDATE usuarios SET nome_completo = ?, bio = ?';
-    let params = [nome_completo, bio];
+    const columns = [];
+    const params = [];
+    const set = (column, value) => {
+        columns.push(`${column} = ?`);
+        params.push(value);
+    };
 
-    if (foto_perfil) {
-        sql += ', foto_perfil = ?';
-        params.push(foto_perfil);
+    if (nome_completo !== undefined) set('nome_completo', nome_completo);
+    if (bio !== undefined) set('bio', bio);
+    if (foto_perfil !== undefined) set('foto_perfil', foto_perfil);
+
+    if (senha !== undefined) {
+        const [[current]] = await pool.execute('SELECT senha FROM usuarios WHERE id = ?', [id]);
+
+        if (!current || !(await bcrypt.compare(senha_atual, current.senha))) {
+            throw badRequest('Senha atual incorreta.');
+        }
+
+        set('senha', await bcrypt.hash(senha, env.BCRYPT_ROUNDS));
     }
 
-    if (senha) {
-        try {
-            const hashedPassword = await bcrypt.hash(senha, 10);
-            sql += ', senha = ?';
-            params.push(hashedPassword);
-        } catch (hashErr) {
-            return res.status(500).json({ error: 'Erro no processamento de segurança.' });
-        }
+    if (columns.length > 0) {
+        await pool.execute(`UPDATE usuarios SET ${columns.join(', ')} WHERE id = ?`, [...params, id]);
     }
 
-    sql += ' WHERE id = ?';
-    params.push(id);
+    const [rows] = await pool.execute('SELECT * FROM usuarios WHERE id = ?', [id]);
 
-    db.query(sql, params, (err) => {
-        if (err) {
-            return res.status(500).json({ error: 'Erro ao atualizar os dados do perfil.' });
-        }
-        res.status(200).json({ message: 'Perfil atualizado!' });
-    });
+    res.status(200).json({ message: 'Perfil atualizado!', usuario: serializeUser(rows[0]) });
 };
 
-const deleteAccount = (req, res) => {
-    const { id } = req.params;
+const deleteAccount = async (req, res) => {
+    // Foreign keys cascade: the user's vinyls, posts, follows, messages and notifications go too.
+    await pool.execute('DELETE FROM usuarios WHERE id = ?', [req.valid.params.id]);
 
-    db.query('DELETE FROM usuarios WHERE id = ?', [id], (err) => {
-        if (err) {
-            return res.status(500).json({ error: 'Erro ao processar a exclusão da conta.' });
-        }
-        res.status(200).json({ message: 'Conta excluída!' });
-    });
+    res.status(200).json({ message: 'Conta excluída!' });
 };
 
-const updateStatus = (req, res) => {
-    const { id } = req.params;
-    const { tocando_agora } = req.body;
+const updateStatus = async (req, res) => {
+    await pool.execute('UPDATE usuarios SET tocando_agora = ? WHERE id = ?', [req.valid.body.tocando_agora ?? null, req.valid.params.id]);
 
-    db.query('UPDATE usuarios SET tocando_agora = ? WHERE id = ?', [tocando_agora, id], (err) => {
-        if (err) {
-            return res.status(500).json({ error: 'Erro ao atualizar o status atual.' });
-        }
-        res.status(200).json({ message: 'Status atualizado com sucesso!' });
-    });
+    res.status(200).json({ message: 'Status atualizado com sucesso!' });
 };
 
 module.exports = {
+    getProfile,
     updateProfile,
     deleteAccount,
     updateStatus

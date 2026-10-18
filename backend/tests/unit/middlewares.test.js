@@ -51,6 +51,21 @@ describe('validate middleware', () => {
         assert.equal(byField.email, 'E-mail inválido.');
     });
 
+    it('can be chained: later calls keep what earlier ones parsed', async () => {
+        const chained = buildApp((a) => {
+            a.post(
+                '/items/:id',
+                validate({ params: z.object({ id: z.coerce.number() }) }),
+                validate({ body: z.object({ nome: z.string() }) }),
+                (req, res) => res.json(req.valid)
+            );
+        });
+
+        const res = await request(chained).post('/items/3').send({ nome: 'x' });
+
+        assert.deepEqual(res.body, { params: { id: 3 }, body: { nome: 'x' } });
+    });
+
     it('treats a missing body as an empty object', async () => {
         const res = await request(app).post('/items/1');
 

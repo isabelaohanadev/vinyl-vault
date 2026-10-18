@@ -33,7 +33,8 @@ const validate = (schemas) => (req, res, next) => {
         return next(badRequest('Dados inválidos.', issues));
     }
 
-    req.valid = valid;
+    // Merge so several validate() calls can be chained on one route.
+    req.valid = { ...req.valid, ...valid };
     return next();
 };
 

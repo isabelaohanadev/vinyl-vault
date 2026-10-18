@@ -7,8 +7,8 @@ const notFoundHandler = (req, res) => {
 
 // Express 5 forwards rejected promises from async handlers here, so controllers
 // do not need try/catch blocks.
-// eslint-disable-next-line no-unused-vars
-const errorHandler = (err, req, res, next) => {
+// Express recognises error handlers by their four arguments, so _next must stay.
+const errorHandler = (err, req, res, _next) => {
     if (err instanceof HttpError) {
         const body = { error: err.message };
         if (err.details) {

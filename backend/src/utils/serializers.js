@@ -39,4 +39,23 @@ const serializeVinil = (row) => ({
     criadoEm: row.criadoEm
 });
 
-module.exports = { serializeUser, serializePublicUser, serializeVinil };
+// Expects rows from the post queries, which alias the author as autor_* and
+// add likes_count / comments_count / user_liked.
+const serializePost = (row) => ({
+    id: row.id,
+    usuario_id: row.usuario_id,
+    foto: row.foto ?? null,
+    legenda: row.legenda ?? null,
+    criado_em: row.criado_em,
+    likes_count: Number(row.likes_count),
+    comments_count: Number(row.comments_count),
+    user_liked: Boolean(row.user_liked),
+    autor: {
+        id: row.usuario_id,
+        username: row.autor_username,
+        nome_completo: row.autor_nome_completo,
+        foto_perfil: row.autor_foto_perfil ?? null
+    }
+});
+
+module.exports = { serializeUser, serializePublicUser, serializeVinil, serializePost };

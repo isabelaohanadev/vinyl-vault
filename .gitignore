@@ -1,2 +1,25 @@
+# Dependencies
 node_modules/
+
+# Environment (never commit real secrets; keep *.example)
 .env
+.env.*
+!.env.example
+
+# Build output & coverage
+dist/
+dist-ssr/
+build/
+coverage/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# OS / editors
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp

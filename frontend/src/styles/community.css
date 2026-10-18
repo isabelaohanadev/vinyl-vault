@@ -85,6 +85,15 @@
     line-height: 1.4;
 }
 
+.user-card .btn-follow,
+.user-card .btn-unfollow {
+    margin-top: auto;
+}
+
+.user-card .user-bio {
+    flex: 1;
+}
+
 .btn-follow {
     width: 100%;
     padding: 10px;
@@ -106,4 +115,20 @@
     font-weight: 600;
     text-transform: uppercase;
     font-size: 0.85rem;
+}
+
+.user-avatar-large {
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.btn-follow:disabled,
+.btn-unfollow:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.btn-unfollow:hover {
+    background-color: var(--secondary-color);
+    color: var(--text-light);
 }

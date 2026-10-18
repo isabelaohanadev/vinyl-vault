@@ -1,29 +1,33 @@
 {
   "name": "vinyl-vault",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "private": true,
+  "description": "Vinyl Vault: organize your vinyl collection, follow other collectors and trade records.",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "install:all": "npm --prefix backend ci && npm --prefix frontend ci",
+    "dev": "concurrently -k -n api,web -c blue,magenta \"npm --prefix backend run dev\" \"npm --prefix frontend run dev\"",
+    "db:up": "docker compose up -d mysql",
+    "db:down": "docker compose stop mysql",
+    "seed": "npm --prefix backend run seed",
+    "lint": "npm --prefix backend run lint && npm --prefix frontend run lint",
+    "test": "npm --prefix backend test && npm --prefix frontend test",
+    "build": "npm --prefix frontend run build"
+  },
+  "engines": {
+    "node": ">=22"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/isabelaohanadev/vinyl-vault.git"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
   "bugs": {
     "url": "https://github.com/isabelaohanadev/vinyl-vault/issues"
   },
   "homepage": "https://github.com/isabelaohanadev/vinyl-vault#readme",
-  "dependencies": {
-    "bcrypt": "^6.0.0",
-    "cors": "^2.8.6",
-    "dotenv": "^17.3.1",
-    "express": "^5.2.1",
-    "mysql2": "^3.18.2",
-    "nodemailer": "^8.0.1"
+  "keywords": ["vinyl", "music", "collection", "react", "express", "mysql"],
+  "author": "Isabela Ohana",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^9.2.1"
   }
 }

@@ -1,72 +1,56 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './contexts/AuthContext';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './contexts/AuthProvider';
+import { PlayerProvider } from './contexts/PlayerProvider';
+import { useAuth } from './hooks/useAuth';
 import { PrivateRoute } from './components/PrivateRoute';
+import { PublicOnlyRoute } from './components/PublicOnlyRoute';
 import './styles/index.js';
 
 import Login from './pages/Login';
+import Register from './pages/Register';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 import Dashboard from './pages/Dashboard';
+import Feed from './pages/Feed';
 import Market from './pages/Market';
 import Community from './pages/Community';
 import Profile from './pages/Profile';
 
-function App() {
+// Remounted when the user changes (login/logout), which stops playback and clears the queue,
+// so a new session never inherits the previous user's audio.
+const SessionPlayer = ({ children }) => {
+    const { user } = useAuth();
+
+    return <PlayerProvider key={user?.id ?? 'guest'}>{children}</PlayerProvider>;
+};
+
+const priv = (page) => <PrivateRoute>{page}</PrivateRoute>;
+const publicOnly = (page) => <PublicOnlyRoute>{page}</PublicOnlyRoute>;
+
+export default function App() {
     return (
         <AuthProvider>
-            <Router>
-                <Routes>
-                    <Route path="/" element={<Navigate to="/login" />} />
-                    
-                    <Route path="/login" element={<Login />} />
-                    
-                    <Route 
-                        path="/dashboard" 
-                        element={
-                            <PrivateRoute>
-                                <Dashboard />
-                            </PrivateRoute>
-                        } 
-                    />
+            <SessionPlayer>
+                <BrowserRouter>
+                    <Routes>
+                        <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
-                    <Route 
-                        path="/market" 
-                        element={
-                            <PrivateRoute>
-                                <Market />
-                            </PrivateRoute>
-                        } 
-                    />
+                        <Route path="/login" element={publicOnly(<Login />)} />
+                        <Route path="/register" element={publicOnly(<Register />)} />
+                        <Route path="/forgot-password" element={publicOnly(<ForgotPassword />)} />
+                        <Route path="/reset-password" element={<ResetPassword />} />
 
-                    <Route 
-                        path="/community" 
-                        element={
-                            <PrivateRoute>
-                                <Community />
-                            </PrivateRoute>
-                        } 
-                    />
-                </Routes>
-            </Router>
-        </AuthProvider>
-    );
-}
+                        <Route path="/dashboard" element={priv(<Dashboard />)} />
+                        <Route path="/feed" element={priv(<Feed />)} />
+                        <Route path="/market" element={priv(<Market />)} />
+                        <Route path="/community" element={priv(<Community />)} />
+                        <Route path="/profile" element={priv(<Profile />)} />
+                        <Route path="/users/:id" element={priv(<Profile />)} />
 
-export default App;
-
-function App() {
-    return (
-        <AuthProvider>
-            <Router>
-                <Routes>
-                    <Route path="/" element={<Navigate to="/login" />} />
-                    <Route path="/login" element={<Login />} />
-                    
-                    <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
-                    <Route path="/market" element={<PrivateRoute><Market /></PrivateRoute>} />
-                    <Route path="/community" element={<PrivateRoute><Community /></PrivateRoute>} />
-                  
-                    <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
-                </Routes>
-            </Router>
+                        <Route path="*" element={<Navigate to="/dashboard" replace />} />
+                    </Routes>
+                </BrowserRouter>
+            </SessionPlayer>
         </AuthProvider>
     );
 }

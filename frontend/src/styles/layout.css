@@ -84,3 +84,34 @@
     font-weight: bold;
     object-fit: cover;
 }
+
+.fullscreen-loader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: var(--primary-color);
+    color: var(--text-light);
+}
+
+/* Room for the fixed global player so it never covers the last row of content. */
+.main-content {
+    padding-bottom: 110px;
+}
+
+
+.nav-logout {
+    margin-top: auto;
+    color: var(--secondary-color);
+    width: 100%;
+    text-align: left;
+    font-size: inherit;
+}
+
+.nav-logout:hover {
+    color: var(--text-light);
+}
+
+.user-profile-mini {
+    text-decoration: none;
+}

@@ -47,3 +47,15 @@ input, textarea {
 .hidden {
     display: none !important;
 }
+
+/* Visible keyboard focus for clickable cards and controls. */
+:focus-visible {
+    outline: 3px solid var(--secondary-color);
+    outline-offset: 2px;
+}
+
+.auth-input:focus-visible,
+.input-field:focus-visible,
+.search-bar:focus-visible {
+    outline-offset: 0;
+}

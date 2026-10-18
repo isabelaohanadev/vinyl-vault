@@ -1,0 +1,11 @@
+node_modules
+.env
+.env.*
+Dockerfile
+.dockerignore
+dev-server.js
+tools
+package.json
+package-lock.json
+eslint.config.js
+README.md

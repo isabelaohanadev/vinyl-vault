@@ -104,3 +104,26 @@
     color: var(--tertiary-color);
     text-align: center;
 }
+
+.form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-field-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.form-field-hint {
+    font-size: 0.8rem;
+    color: var(--tertiary-color);
+}
+
+.auth-title {
+    text-align: center;
+    font-size: 1.3rem;
+    color: var(--primary-color);
+}

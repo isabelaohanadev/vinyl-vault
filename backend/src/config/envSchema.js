@@ -10,12 +10,14 @@ const schema = z
 
         DB_HOST: z.string().min(1).default('localhost'),
         DB_PORT: z.coerce.number().int().positive().default(3306),
-        DB_USER: z.string().min(1, 'DB_USER é obrigatório'),
+        DB_USER: z.string({ error: 'DB_USER é obrigatório' }).min(1, 'DB_USER é obrigatório'),
         DB_PASSWORD: z.string().default(''),
-        DB_NAME: z.string().min(1, 'DB_NAME é obrigatório'),
+        DB_NAME: z.string({ error: 'DB_NAME é obrigatório' }).min(1, 'DB_NAME é obrigatório'),
         DB_POOL_SIZE: z.coerce.number().int().positive().default(10),
 
-        JWT_SECRET: z.string().min(32, 'JWT_SECRET precisa ter pelo menos 32 caracteres (gere com: openssl rand -hex 32)'),
+        JWT_SECRET: z
+            .string({ error: 'JWT_SECRET é obrigatório (gere com: openssl rand -hex 32)' })
+            .min(32, 'JWT_SECRET precisa ter pelo menos 32 caracteres (gere com: openssl rand -hex 32)'),
         JWT_EXPIRES_IN: z.string().min(1).default('7d'),
         BCRYPT_ROUNDS: z.coerce.number().int().min(4).max(15).default(12),
 

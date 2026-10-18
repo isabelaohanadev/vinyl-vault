@@ -11,7 +11,7 @@ server {
     gzip_types text/css application/javascript application/json image/svg+xml;
     gzip_min_length 1024;
 
-    # The API. The path is kept as is (/api/...), so the frontend can use a relative "/api".
+    # The API. The path is kept as is (/api/...), so the app can use a relative "/api".
     location /api/ {
         proxy_pass ${API_UPSTREAM};
         proxy_http_version 1.1;
@@ -22,17 +22,17 @@ server {
         client_max_body_size 6m;
     }
 
-    # Vite fingerprints these files (name-<hash>.ext), so they can be cached forever.
-    location ~* "^/assets/.+-[A-Za-z0-9_-]{8}\.(js|css|woff2?|ttf)$" {
+    # Third-party libraries and images rarely change; scripts, styles and the page are always revalidated.
+    location ~* ^/(assets|vendor)/ {
         include /etc/nginx/snippets/security-headers.conf;
-        add_header Cache-Control "public, max-age=31536000, immutable";
+        add_header Cache-Control "public, max-age=3600";
         try_files $uri =404;
     }
 
-    # Single-page app: unknown paths are routes handled by React Router.
+    # One page (index.html); the recovery link is "/?token=...".
     location / {
         include /etc/nginx/snippets/security-headers.conf;
         add_header Cache-Control "no-cache";
-        try_files $uri /index.html;
+        try_files $uri $uri/ =404;
     }
 }

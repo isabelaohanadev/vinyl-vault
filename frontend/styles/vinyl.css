@@ -1,0 +1,96 @@
+/* =========================================
+   ANIMAÇÃO 3D DO VINIL (CAPA E DISCO)
+   ========================================= */
+
+.vinyl-modal-container {
+    position: relative;
+    width: 220px;
+    height: 220px;
+    margin: 0 auto 30px;
+    z-index: 1;
+}
+
+/* A Capa do Disco (Sleeve) */
+.vinyl-sleeve {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 3;
+    border-radius: 4px;
+    box-shadow: -5px 5px 15px rgba(0,0,0,0.4);
+    object-fit: cover;
+}
+
+/* O "Carrinho" que empurra o disco para o lado */
+.vinyl-wrapper {
+    position: absolute;
+    top: 2%;
+    left: 0;
+    width: 96%;
+    height: 96%;
+    z-index: 2;
+    transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.vinyl-wrapper.slide-out {
+    transform: translateX(45%); /* Desliza quase até a metade para fora */
+}
+
+/* O Disco Preto de Vinil com Textura de Sulcos */
+.vinyl-record {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background-color: #111;
+    background-image: repeating-radial-gradient(
+        #111, 
+        #111 4px, 
+        #1a1a1a 5px, 
+        #111 6px
+    );
+    box-shadow: 0 0 10px rgba(0,0,0,0.8), inset 0 0 10px rgba(255,255,255,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    animation: spin-record 3s linear infinite;
+    animation-play-state: paused; /* Fica parado até a música tocar */
+}
+
+.vinyl-record.is-playing {
+    animation-play-state: running; /* Começa a girar */
+}
+
+/* O Selo Central (Label) que terá a imagem do álbum */
+.vinyl-label {
+    width: 40%;
+    height: 40%;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    border: 2px solid #111;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* O Furo do Vinil */
+.vinyl-hole {
+    width: 8px;
+    height: 8px;
+    background: var(--quinta); 
+    border-radius: 50%;
+    border: 1px solid #111;
+}
+
+body.dark-mode .vinyl-hole {
+    background: #172B1F; /* Acompanha a cor de fundo do modal escuro */
+}
+
+@keyframes spin-record {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}

@@ -1,9 +1,11 @@
 node_modules
-dist
 .env
 .env.*
-!.env.example
-coverage
-npm-debug.log
 Dockerfile
 .dockerignore
+dev-server.js
+tools
+package.json
+package-lock.json
+eslint.config.js
+README.md

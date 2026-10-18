@@ -1,5 +1,6 @@
-const rateLimit = require('express-rate-limit');
+const { rateLimit, ipKeyGenerator } = require('express-rate-limit');
 const env = require('../config/env');
+const { verifyToken } = require('../utils/token');
 
 const createLimiter = (options, enabled = env.RATE_LIMIT_ENABLED) => {
     if (!enabled) {
@@ -14,14 +15,35 @@ const createLimiter = (options, enabled = env.RATE_LIMIT_ENABLED) => {
     });
 };
 
+// Signed-in users get their own budget (people behind one office or school IP must not
+// share it); everybody else is counted per IP. An invalid token falls back to the IP, so
+// it cannot be used to dodge the limit.
+const keyByUserOrIp = (req) => {
+    const [scheme, token] = (req.headers.authorization || '').split(' ');
+
+    if (scheme === 'Bearer' && token) {
+        try {
+            return `user:${verifyToken(token).sub}`;
+        } catch {
+            // fall through to the IP
+        }
+    }
+
+    return `ip:${ipKeyGenerator(req.ip)}`;
+};
+
 const MINUTE = 60 * 1000;
 
 module.exports = {
     createLimiter,
-    // Whole API, per IP.
-    apiLimiter: createLimiter({ windowMs: 15 * MINUTE, limit: 600 }),
-    // Login / register / reset: brute-force protection. Successful logins do not count.
+    keyByUserOrIp,
+    // Whole API. The web app polls notifications and chat every few seconds, hence the
+    // generous per-user budget.
+    apiLimiter: createLimiter({ windowMs: 15 * MINUTE, limit: 1500, keyGenerator: keyByUserOrIp }),
+    // Login / reset: brute-force protection. Successful requests do not count.
     authLimiter: createLimiter({ windowMs: 15 * MINUTE, limit: 20, skipSuccessfulRequests: true }),
+    // Sign-up counts every attempt: successful ones must not be unlimited either.
+    registerLimiter: createLimiter({ windowMs: 60 * MINUTE, limit: 10 }),
     // Endpoints that send e-mail.
     emailLimiter: createLimiter({ windowMs: 60 * MINUTE, limit: 5 })
 };

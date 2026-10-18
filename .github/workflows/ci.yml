@@ -60,7 +60,7 @@ jobs:
   frontend:
     name: Frontend
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
     defaults:
       run:
         working-directory: frontend
@@ -73,17 +73,36 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
       - run: npm ci
       - run: npm run lint
+
+  frontend-react:
+    name: Frontend (React rewrite)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: frontend-react
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: frontend-react/package-lock.json
+      - run: npm ci
+      - run: npm run lint
       - run: npm test
       - run: npm run build
 
-  # Builds both images and boots the whole stack, so a broken Dockerfile, nginx
-  # config or schema is caught before it reaches main.
+  # Builds both images, boots the whole stack and drives it in a real browser, so a broken
+  # Dockerfile, nginx config or Content-Security-Policy, schema or screen fails the pipeline.
   stack:
-    name: Docker stack
+    name: Docker stack and end-to-end tests
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     env:
       JWT_SECRET: ci-only-secret-ci-only-secret-0123456789
+      # The suite creates many accounts from one IP; the limiter is on everywhere else.
+      RATE_LIMIT_ENABLED: 'false'
     steps:
       - uses: actions/checkout@v7
       - name: Start the stack
@@ -92,7 +111,33 @@ jobs:
         run: |
           curl -fsS http://localhost:8080/api/health
           curl -fsS http://localhost:8080/ | grep -q "Vinyl Vault"
-          curl -fsS -o /dev/null http://localhost:8080/community
+          curl -fsS -o /dev/null http://localhost:8080/assets/VinylVault.png
+          curl -fsS -o /dev/null http://localhost:8080/vendor/chart.umd.min.js
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: e2e/package-lock.json
+      - name: Install the browser
+        working-directory: e2e
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+      - name: End-to-end tests
+        working-directory: e2e
+        env:
+          BASE_URL: http://localhost:8080
+          E2E_BACKEND_LOGS_COMMAND: docker compose --project-directory .. logs --no-color backend
+        run: npx playwright test
+      - name: Upload the Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report
+          path: |
+            e2e/playwright-report
+            e2e/test-results
+          retention-days: 7
       - name: Show logs on failure
         if: failure()
         run: docker compose logs --no-color

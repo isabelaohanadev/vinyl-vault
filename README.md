@@ -1,22 +1,21 @@
 <div align="center">
 
-<img src="frontend/public/assets/logo.svg" alt="Vinyl Vault" width="140" />
+<img src="frontend/assets/VinylVault.png" alt="Vinyl Vault" width="220" />
 
 # Vinyl Vault
 
-**Organize sua coleção de discos de vinil, descubra outros colecionadores e troque raridades.**
+**Onde cada disco conta uma história.** Organize sua coleção de discos de vinil, descubra novos álbuns, toque prévias, conheça outros colecionadores e troque raridades.
 
 [![CI](https://github.com/isabelaohanadev/vinyl-vault/actions/workflows/ci.yml/badge.svg)](https://github.com/isabelaohanadev/vinyl-vault/actions/workflows/ci.yml)
 ![Node](https://img.shields.io/badge/node-%E2%89%A522-339933?logo=node.js&logoColor=white)
-![React](https://img.shields.io/badge/react-19-61DAFB?logo=react&logoColor=white)
 ![MySQL](https://img.shields.io/badge/mysql-8.4-4479A1?logo=mysql&logoColor=white)
+![Playwright](https://img.shields.io/badge/e2e-playwright-2EAD33?logo=playwright&logoColor=white)
 ![Licença](https://img.shields.io/badge/licen%C3%A7a-ISC-blue)
 
 </div>
 
 <p align="center">
-  <img src="docs/screenshots/dashboard.png" alt="Meu acervo" width="49%" />
-  <img src="docs/screenshots/vinyl-details.png" alt="Detalhes de um disco" width="49%" />
+  <img src="docs/screenshots/acervo-topo.png" alt="Meu acervo" width="100%" />
 </p>
 
 ## Sumário
@@ -25,59 +24,82 @@
 
 ## Funcionalidades
 
-- **Acervo pessoal**: cadastre discos com capa, ano, gênero, estado da capa e da mídia (escala M/NM/VG+/VG/G/P), nota de 0 a 5 estrelas, link do Spotify e preview de áudio. Edite, exclua, busque e mantenha uma **lista de desejos**.
-- **Player de áudio global**: toque o preview de um disco e continue navegando; fila, barra de progresso, volume e controle por teclado.
-- **Classificados**: veja os discos que outros colecionadores colocaram para troca, com busca por título ou artista.
-- **Comunidade**: encontre colecionadores, siga e deixe de seguir, e visite o perfil de cada um (acervo, publicações, estatísticas e conquistas).
-- **Feed**: publique fotos e textos, curta, comente e filtre por `#hashtags`.
-- **Conta completa**: cadastro, login por e-mail ou usuário, recuperação de senha por e-mail, edição de perfil, troca de senha e exclusão de conta.
-- **Mensagens e notificações**: a API já entrega conversas privadas, notificações (curtidas, comentários, seguidores, mensagens e *matches* de lista de desejos). A interface dessas duas telas está no [roadmap](#roadmap).
+**Acervo**
+- Discos em duas prateleiras, **Wishlist** e **Meu Acervo**, agrupados por gênero, com nota de 1 a 5 estrelas e selo **T/V** (troca/venda).
+- Busca por nome e filtros por artista e gênero; contadores de discos, desejos e acervo.
+- **Busca automática** pela API do iTunes/Apple Music: digite o nome do álbum e a capa, o artista, o gênero e a **prévia de áudio** são preenchidos.
+- **Descobrir 🔮**: recomendações de álbuns do seu gênero favorito (sem repetir o que você já tem) e inclusão na wishlist em um clique.
+- **Exportar PDF** da coleção e **gráficos** (gêneros do acervo e evolução ao longo do tempo).
+
+**Ouvir**
+- Ao abrir um disco, o **vinil desliza para fora da capa e gira enquanto a prévia toca**, com player próprio (progresso, ondas e tempo).
+- **"Tocando agora"**: defina o que você está ouvindo; aparece no seu menu, na comunidade, no perfil e nas conversas.
+
+**Comunidade**
+- **Timeline** com fotos, curtidas, comentários em *thread* com respostas e **#hashtags** filtráveis; página própria de cada publicação.
+- **Explorar usuários**, seguir e deixar de seguir, **perfis públicos** (acervo, classificados, publicações, seguidores e seguindo) e **selos de conquista** (Iniciante, Curador, Lenda do Vinil, Socialite).
+- **Classificados**: discos que outros colecionadores colocaram para troca ou venda, com **chat flutuante** para negociar e opção de **encaminhar um disco** na conversa.
+- **Notificações** (seguidores, curtidas, comentários, mensagens e *matches* quando alguém coloca para troca um disco da sua wishlist).
+
+**Conta e extras**
+- Cadastro em duas etapas (com foto), login, **recuperação de senha por e-mail**, edição de perfil e exclusão de conta.
+- **Tema claro e escuro**, carrossel de banners, layout responsivo, página "Sobre Nós" e formulário de feedback por e-mail.
 
 <p align="center">
-  <img src="docs/screenshots/community.png" alt="Comunidade" width="49%" />
-  <img src="docs/screenshots/market.png" alt="Classificados" width="49%" />
+  <img src="docs/screenshots/disco-tocando.png" alt="Disco tocando a prévia" width="49%" />
+  <img src="docs/screenshots/busca-automatica.png" alt="Busca automática pela API do iTunes" width="49%" />
 </p>
 <p align="center">
-  <img src="docs/screenshots/feed.png" alt="Feed" width="49%" />
-  <img src="docs/screenshots/profile.png" alt="Perfil" width="49%" />
+  <img src="docs/screenshots/descobrir.png" alt="Descobrir" width="49%" />
+  <img src="docs/screenshots/comunidade.png" alt="Comunidade" width="49%" />
+</p>
+<p align="center">
+  <img src="docs/screenshots/classificados.png" alt="Classificados" width="49%" />
+  <img src="docs/screenshots/perfil.png" alt="Perfil com gráficos" width="49%" />
+</p>
+<p align="center">
+  <img src="docs/screenshots/chat.png" alt="Chat" width="49%" />
+  <img src="docs/screenshots/modo-escuro.png" alt="Tema escuro" width="49%" />
 </p>
 
 <details>
-<summary>Versão mobile e tela de login</summary>
+<summary>Celular e tela de login</summary>
 
 <p align="center">
-  <img src="docs/screenshots/mobile.png" alt="Layout mobile" width="30%" />
-  <img src="docs/screenshots/login.png" alt="Login" width="60%" />
+  <img src="docs/screenshots/mobile.png" alt="Layout no celular" width="28%" />
+  <img src="docs/screenshots/login.png" alt="Login" width="62%" />
 </p>
 
 </details>
 
-> As capas das capturas de tela são imagens geradas para a demonstração; os dados vêm do script de seed.
+> As capas e fotos de perfil das capturas de tela são imagens geradas para a demonstração; os dados vêm do script de seed.
 
 ## Tecnologias
 
 | Camada | Stack |
 | --- | --- |
-| Frontend | React 19, React Router 7, Vite 7, Axios, Font Awesome (local), CSS puro |
+| Interface | HTML, CSS e JavaScript puros (sem etapa de build), Chart.js e html2pdf.js (embutidos em `frontend/vendor`), API pública do iTunes |
 | Backend | Node.js 22+, Express 5, `mysql2` (pool), JWT, bcrypt, Zod, Helmet, `express-rate-limit`, Nodemailer |
 | Banco | MySQL 8.4 |
-| Testes | `node:test` + Supertest (backend, contra MySQL real) · Vitest + Testing Library (frontend) |
+| Testes | `node:test` + Supertest (API, contra MySQL real) · Playwright (interface, 44 testes em navegador real) |
 | Infra | Docker, Docker Compose, nginx, GitHub Actions, GitHub Container Registry |
 
 ## Arquitetura
 
 ```mermaid
 flowchart LR
-    Browser["Navegador<br/>React + Vite"] -- "/api (JSON + JWT)" --> Nginx
+    Browser["Navegador<br/>HTML + JS"] -- "/api (JSON + JWT)" --> Nginx
+    Browser -- "busca de álbuns<br/>capas e prévias" --> iTunes["API do iTunes<br/>Apple Music"]
     subgraph Docker
-        Nginx["nginx<br/>SPA + proxy /api"] --> API["API Express 5<br/>validação · auth · regras"]
+        Nginx["nginx<br/>arquivos estáticos + proxy /api"] --> API["API Express 5<br/>validação · auth · regras"]
         API --> DB[("MySQL 8.4")]
     end
     API -. SMTP .-> Mail["Gmail"]
 ```
 
-- O navegador fala com **uma origem só** (`/api`): em produção o nginx faz o proxy; em desenvolvimento, o Vite. Por isso não há configuração de CORS para o caso comum.
-- A API é organizada em `rotas → validação (Zod) → controllers → MySQL`. Quem age é sempre o usuário do token (o servidor nunca confia em ids vindos do cliente) e todas as regras de posse (só o dono edita) são aplicadas no servidor.
+- O navegador fala com **uma origem só** (`/api`): em produção o nginx faz o proxy; em desenvolvimento, o `dev-server.js`. Por isso não há configuração de CORS para o caso comum.
+- A busca de álbuns, as capas e as prévias vêm direto da API do iTunes (o token de sessão **nunca** é enviado para ela).
+- A API é organizada em `rotas → validação (Zod) → controllers → MySQL`. Quem age é sempre o usuário do token (o servidor nunca confia em ids vindos do cliente) e as regras de posse (só o dono edita) são aplicadas no servidor.
 
 ## Como rodar
 
@@ -101,7 +123,7 @@ Abra **http://localhost:8080**. O MySQL é criado já com o schema ([`database/s
 docker compose exec backend node scripts/seed.js
 ```
 
-Entre com `ana.souza`, `bruno.lima`, `carla.dj` ou `diego.mpb`; a senha de todos é `demo1234`.
+Entre com `ana.souza`, `bruno.lima`, `carla.dj` ou `diego.mpb`; a senha de todos é `demo1234`. Ou crie a sua própria conta.
 
 > No modo padrão (`NODE_ENV=development`) os e-mails, como o de recuperação de senha, **aparecem no log** do backend em vez de serem enviados: `docker compose logs backend`.
 
@@ -116,20 +138,24 @@ cp backend/.env.example backend/.env     # defina JWT_SECRET (openssl rand -hex 
 npm run db:up                            # MySQL no Docker, porta 3307, com o schema aplicado
 npm run seed                             # opcional: dados de demonstração
 
-npm run dev                              # API em :3000 e site em http://localhost:5173
+npm run dev                              # API em :3000 e o app em http://localhost:5173
 ```
 
 Já tem um MySQL próprio? Crie o banco, rode `database/schema.sql` nele e ajuste `DB_*` no `backend/.env`.
 
 ### Atualizando um banco criado pela versão anterior
 
-Se você já tem um banco da versão antiga do projeto, **faça um backup** e aplique a migração uma única vez:
+Se você já tem um banco da versão antiga do projeto (a do servidor único, antes da refatoração), **faça um backup** e aplique a migração uma única vez:
 
 ```bash
 mysql -u <usuario> -p <banco> < database/migrations/001_upgrade_legacy_schema.sql
 ```
 
-Ela amplia o campo do token de recuperação, adiciona `ano`, `estado_capa` e `estado_disco` aos discos e cria as chaves únicas de curtidas e seguidores. Veja os comentários no arquivo (as chaves únicas falham se houver linhas duplicadas).
+Ela amplia o campo do token de recuperação, adiciona `ano`, `estado_capa` e `estado_disco` aos discos e cria as chaves únicas de curtidas e seguidores. Veja os comentários no arquivo (as chaves únicas falham se houver linhas duplicadas). Os usuários e senhas existentes continuam funcionando (as senhas já eram *hashes* bcrypt); só as **novas** senhas precisam ter 8 ou mais caracteres.
+
+### Foto da página "Sobre Nós"
+
+A foto exibida em "Sobre Nós" (`frontend/assets/iandj.jpg`) é pessoal e **não é versionada** no Git. Coloque o arquivo nessa pasta para vê-la; sem ele, a página simplesmente esconde a imagem. Para publicá-la junto ao código, use `git add -f frontend/assets/iandj.jpg`.
 
 ## Configuração
 
@@ -144,26 +170,31 @@ Variáveis do backend (`backend/.env`; modelo em [`backend/.env.example`](backen
 | `JWT_EXPIRES_IN` | `7d` | Validade do token |
 | `BCRYPT_ROUNDS` | `12` | Custo do hash de senha |
 | `CORS_ORIGIN` | `http://localhost:5173` | Origens permitidas (separadas por vírgula) |
-| `FRONTEND_URL` | `http://localhost:5173` | Base do link enviado no e-mail de recuperação |
+| `FRONTEND_URL` | `http://localhost:5173` | Endereço do app; o link do e-mail de recuperação é `<FRONTEND_URL>/?token=…` |
 | `TRUST_PROXY` | `0` | Quantos proxies existem entre a internet e a API (veja [Deploy](#deploy)) |
 | `RATE_LIMIT_ENABLED` | `true` | Liga o limite de requisições |
 | `EMAIL_USER` · `EMAIL_PASS` | vazio | Gmail e **senha de app** para enviar e-mails |
 | `FEEDBACK_TO` | `EMAIL_USER` | Destino das mensagens do formulário de feedback |
 
-O frontend não precisa de configuração. Para apontar para uma API em outro domínio, defina `VITE_API_URL` no build ([`frontend/.env.example`](frontend/.env.example)). Para o Docker Compose, veja o [`.env.example`](.env.example) da raiz.
+A interface não precisa de configuração. Ela chama a API em `/api` na mesma origem; para uma API em outro domínio, defina `window.VINYL_API_URL` antes de carregar `scripts/api.js`. Para o Docker Compose, veja o [`.env.example`](.env.example) da raiz.
 
 ## Testes e qualidade
 
 ```bash
-npm run lint     # ESLint no backend e no frontend
-npm test         # backend + frontend
-npm run build    # build de produção do frontend
+npm run lint        # ESLint no backend e no frontend
+npm test            # API: 128 testes de integração contra um MySQL real
+npm run test:e2e    # interface: 44 testes em navegador real (precisa do app rodando)
 ```
 
-- **Backend**: testes de integração com Supertest contra um **MySQL real**. Eles aplicam o `schema.sql` de verdade, cobrem autenticação, regras de posse (inclusive tentativas de acesso a recursos de outras pessoas), validação, paginação e notificações. Por padrão usam `127.0.0.1:3307` com o usuário `vinyl`; `npm run db:up` já cria o banco `vinylvault_test` (na primeira vez, com o volume vazio). Variáveis `TEST_DB_*` permitem apontar para outro MySQL.
-  > Os testes **apagam todas as tabelas** do banco que usam. Por segurança, `tests/setup.js` se recusa a rodar se o nome do banco não terminar em `_test` e nunca lê o seu `backend/.env`.
-- **Frontend**: Vitest + Testing Library cobrindo contextos, hooks, fluxos de autenticação, acervo, comunidade, feed e player.
-- O fluxo completo também foi exercitado em navegador real (cadastro, CRUD de discos, player, comunidade, classificados, feed, recuperação de senha, layout mobile) contra o ambiente Docker.
+- **API**: Supertest contra um **MySQL real**. Os testes aplicam o `schema.sql` de verdade e cobrem autenticação, regras de posse (inclusive tentativas de acesso a recursos de outras pessoas), validação, paginação, limites de requisição e notificações. Por padrão usam `127.0.0.1:3307` com o usuário `vinyl`; `npm run db:up` já cria o banco `vinylvault_test` (na primeira vez, com o volume vazio). Variáveis `TEST_DB_*` permitem apontar para outro MySQL.
+  > Os testes **apagam todas as tabelas** do banco que usam. Por segurança, `backend/tests/setup.js` se recusa a rodar se o nome do banco não terminar em `_test` e nunca lê o seu `backend/.env`.
+- **Interface (E2E)**: [Playwright](e2e) dirige o app de verdade no Chromium: cadastro e login, recuperação de senha, acervo, busca automática, o disco girando com a prévia, PDF, gráficos, timeline, comentários, comunidade, classificados, chat, notificações, perfil e exclusão de conta, além de **ataques de XSS** em todos os lugares em que o conteúdo de outras pessoas aparece. A API do iTunes, as capas e o áudio são simulados, então não precisa de internet.
+
+  ```bash
+  docker compose up -d --build            # com RATE_LIMIT_ENABLED=false no .env, pois os testes criam muitas contas
+  cd e2e && npm ci && npx playwright install chromium
+  BASE_URL=http://localhost:8080 npx playwright test
+  ```
 
 ## API
 
@@ -179,18 +210,19 @@ REST em JSON sob `/api`, autenticada com `Authorization: Bearer <token>`. Refer�
 
 ## Segurança
 
-O projeto original não tinha autenticação (qualquer pessoa podia editar ou apagar qualquer conta). A refatoração tratou isso e mais:
+A versão original não tinha autenticação (qualquer pessoa podia editar ou apagar qualquer conta) e inseria textos de outros usuários na página sem escapar. A refatoração tratou isso e mais:
 
 - **Autenticação JWT** (HS256, com expiração) e **autorização no servidor**: só o dono edita ou apaga seus recursos; o autor das ações vem do token, nunca do corpo da requisição.
+- **Proteção contra XSS**: nomes, bios, legendas, comentários, mensagens, nomes de álbuns (inclusive os que vêm da API do iTunes), links e imagens passam por funções de escape antes de entrar na página (`frontend/scripts/utils.js`), e o E2E injeta *payloads* reais em todos esses pontos.
 - **Senhas** com bcrypt; login e recuperação de senha **não revelam** se uma conta existe (mesma resposta e mesmo tempo); o token de recuperação é de uso único, expira em 60 minutos e só seu hash fica no banco.
 - **Validação** de toda entrada com Zod (tipos, tamanhos, URLs `http(s)`, imagens), consultas parametrizadas, busca com curingas escapados.
-- **HTTP**: Helmet, CORS restrito, limite de requisições (mais rígido em login e e-mail), limite de tamanho do corpo e erros que nunca vazam detalhes internos.
-- **E-mails** com todo conteúdo do usuário escapado (corrige injeção de HTML) e proteção contra injeção de cabeçalhos.
-- **Frontend**: Content-Security-Policy e demais cabeçalhos de segurança no nginx; valores de usuário nunca entram em CSS ou HTML sem tratamento.
-- **Supply chain**: `npm audit` sem vulnerabilidades conhecidas; Dependabot semanal.
+- **HTTP**: Helmet, CORS restrito, limite de requisições **por usuário** (e por IP para anônimos), mais rígido em login, cadastro e e-mail, limite de tamanho do corpo e erros que nunca vazam detalhes internos.
+- **E-mails** com todo conteúdo do usuário escapado e proteção contra injeção de cabeçalhos.
+- **Navegador**: Content-Security-Policy e demais cabeçalhos de segurança no nginx; as bibliotecas de terceiros são servidas pelo próprio app (nada de CDN) e o token nunca é enviado a outros domínios.
+- **Supply chain**: `npm audit` sem vulnerabilidades conhecidas; Dependabot.
 - O backend roda como usuário sem privilégios no container, todos os serviços têm *healthcheck* e o MySQL é publicado apenas em `127.0.0.1`.
 
-Pontos conhecidos (veja [SECURITY.md](SECURITY.md)): o token fica no `localStorage` (a CSP mitiga XSS, mas cookies `httpOnly` seriam mais robustos), não há verificação de e-mail no cadastro e o limite de requisições é por instância (para várias réplicas, use um *store* compartilhado como o Redis).
+Pontos conhecidos (veja [SECURITY.md](SECURITY.md)): o token fica no `localStorage`; a CSP precisa de `'unsafe-inline'` para scripts porque as telas usam `onclick="…"` (a defesa principal é o escape); não há verificação de e-mail no cadastro; e o limite de requisições é por instância (para várias réplicas, use um *store* compartilhado como o Redis).
 
 ## CI/CD
 
@@ -198,7 +230,7 @@ Tudo roda no GitHub Actions ([`.github/workflows`](.github/workflows)):
 
 | Workflow | Quando | O que faz |
 | --- | --- | --- |
-| **CI** (`ci.yml`) | Pull requests e pushes na `main` | ESLint, testes do backend (Node 22 e 24, MySQL 8.4 real) e do frontend, build, e um **teste de fumaça** que sobe toda a stack com `docker compose` |
+| **CI** (`ci.yml`) | Pull requests e pushes na `main` | testes da API (Node 22 e 24, MySQL 8.4 real), ESLint do backend e do front, lint, testes e build do `frontend-react`, e a **stack Docker completa** com a suíte E2E de 44 testes em navegador real |
 | **Publish images** (`publish.yml`) | CI verde na `main` | Publica as imagens multi-arquitetura (amd64/arm64) no GitHub Container Registry |
 | **Release** (`release.yml`) | Tag `v*.*.*` | Repete o CI, publica as imagens versionadas e cria a *GitHub Release* com notas geradas |
 
@@ -226,35 +258,29 @@ O caminho mais direto é um servidor (VPS) com Docker, rodando o Compose atrás 
    Como agora há **dois** proxies (Caddy e o nginx do projeto), defina `TRUST_PROXY=2`; do contrário o limite de requisições enxerga todos os visitantes como um único IP.
 4. Faça **backup** do volume do MySQL (`mysqldump`) regularmente.
 
-O frontend também pode ser publicado em hospedagem estática (`npm run build`, pasta `frontend/dist`) com a API em outro domínio: defina `VITE_API_URL` no build e inclua a origem do site em `CORS_ORIGIN`.
+Como a interface é só arquivos estáticos, ela também pode ficar em qualquer hospedagem estática, com a API em outro domínio: defina `window.VINYL_API_URL` e inclua a origem do site em `CORS_ORIGIN`.
 
 ## Estrutura do projeto
 
 ```
 vinyl-vault/
+├── frontend/                Interface (HTML + CSS + JS, sem build)
+│   ├── index.html
+│   ├── scripts/             api.js (cliente da API), utils.js (escape), acervo, comunidade, chat...
+│   ├── styles/              CSS por área (tema verde e dourado)
+│   ├── assets/              logo, banners
+│   ├── vendor/              Chart.js e html2pdf.js (com as licenças)
+│   ├── nginx/               configuração do servidor de produção (proxy /api, CSP)
+│   └── dev-server.js        servidor de desenvolvimento (estático + proxy /api)
 ├── backend/                 API Express
-│   ├── src/
-│   │   ├── config/          env validado (Zod), pool MySQL, e-mail
-│   │   ├── middlewares/     auth (JWT), validação, rate limit, erros
-│   │   ├── schemas/         schemas Zod de cada recurso
-│   │   ├── controllers/     regras de negócio
-│   │   ├── routes/          mapeamento das rotas
-│   │   ├── services/        notificações
-│   │   └── utils/           token, serializers, helpers
+│   ├── src/                 config, middlewares, schemas (Zod), controllers, rotas, serviços
 │   ├── scripts/seed.js      dados de demonstração
 │   └── tests/               unitários e de integração
-├── frontend/                React + Vite
-│   ├── src/
-│   │   ├── components/      Modal, PostCard, Player, formulários...
-│   │   ├── contexts/        autenticação e player de áudio
-│   │   ├── hooks/           useAuth, useFetch, usePagedFetch...
-│   │   ├── lib/             cliente da API e utilitários
-│   │   ├── pages/           telas
-│   │   └── styles/          CSS
-│   └── nginx/               configuração do servidor de produção
+├── e2e/                     Testes de ponta a ponta (Playwright)
 ├── database/
 │   ├── schema.sql           schema completo (idempotente)
 │   └── migrations/          migração de bancos da versão anterior
+├── frontend-react/          Migração para React (experimental, não é o app principal)
 ├── docs/                    API.md e capturas de tela
 ├── .github/                 workflows, Dependabot, template de PR
 └── docker-compose.yml
@@ -262,12 +288,12 @@ vinyl-vault/
 
 ## Roadmap
 
-- Telas de **mensagens** e **notificações** (a API e os estilos já existem).
-- Busca automática de capa, ano e preview de áudio (Spotify/iTunes) ao cadastrar um disco; hoje os links são informados manualmente.
-- Upload de imagens (hoje são URLs ou *base64*).
-- Opção de compartilhar o que você está ouvindo (`tocando_agora`), com consentimento.
+- Trocar os `onclick="…"` por *event listeners* para fechar a CSP (sem `'unsafe-inline'`).
+- Continuar a migração para React em [`frontend-react`](frontend-react) (hoje cobre só parte das telas).
+- Busca avançada por artista, ano e gravadora na busca automática; pré-visualização de várias faixas.
+- Upload de imagens para armazenamento próprio (hoje as fotos são guardadas como *base64* no banco).
 - Verificação de e-mail e sessão por cookie `httpOnly` com renovação de token.
-- Scroll infinito nas listas, PWA e internacionalização.
+- Paginação infinita nas listas, PWA e internacionalização.
 
 ## Contribuindo
 
@@ -275,4 +301,4 @@ Veja [CONTRIBUTING.md](CONTRIBUTING.md). Vulnerabilidades: [SECURITY.md](SECURIT
 
 ## Licença
 
-[ISC](LICENSE) © 2026 Isabela Ohana
+[ISC](LICENSE) © 2026 Isabela Ohana. Desenvolvido por Isabela Ohana.

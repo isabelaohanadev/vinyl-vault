@@ -1,40 +1,29 @@
 {
-  "name": "frontend",
+  "name": "vinyl-vault-frontend",
+  "version": "1.0.0",
   "private": true,
-  "version": "0.0.0",
-  "type": "module",
+  "description": "Vinyl Vault web app: plain HTML, CSS and JavaScript (no build step).",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
+    "dev": "node dev-server.js",
+    "start": "node dev-server.js",
     "lint": "eslint .",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "preview": "vite preview"
-  },
-  "dependencies": {
-    "@fortawesome/fontawesome-free": "^7.3.1",
-    "axios": "^1.13.6",
-    "react": "^19.3.1",
-    "react-dom": "^19.3.1",
-    "react-router-dom": "^7.13.1"
-  },
-  "devDependencies": {
-    "@eslint/js": "^9.39.1",
-    "@testing-library/jest-dom": "^7.0.1",
-    "@testing-library/react": "^16.3.3",
-    "@testing-library/user-event": "^14.6.8",
-    "@types/react": "^19.3.0",
-    "@types/react-dom": "^19.3.0",
-    "@vitejs/plugin-react": "^5.1.1",
-    "eslint": "^9.39.1",
-    "eslint-plugin-react-hooks": "^7.1.1",
-    "eslint-plugin-react-refresh": "^0.5.7",
-    "globals": "^16.5.0",
-    "jsdom": "^29.1.1",
-    "vite": "^7.3.1",
-    "vitest": "^5.0.5"
+    "vendor": "node tools/vendor.js"
   },
   "engines": {
     "node": ">=22"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/isabelaohanadev/vinyl-vault.git",
+    "directory": "frontend"
+  },
+  "author": "Isabela Ohana",
+  "license": "ISC",
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "chart.js": "^4.5.1",
+    "eslint": "^10.13.0",
+    "globals": "^17.13.0",
+    "html2pdf.js": "^0.14.0"
   }
 }

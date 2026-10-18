@@ -1,0 +1,605 @@
+/* =========================================
+   VARIÁVEIS E BASE
+   ========================================= */
+html { 
+    scroll-behavior: smooth; 
+}
+
+:root {
+    --primaria: #14281D; 
+    --secundaria: #355834;
+    --terciaria: #6E633D; 
+    --quaternaria: #C2A878;
+    --quinta: #F1F5F2; 
+    --spotify: #1DB954;
+}
+
+body { 
+    font-family: 'Georgia', serif; 
+    background: var(--quinta); 
+    color: var(--primaria); 
+    margin: 0; 
+    padding: 0; 
+    display: flex; 
+    flex-direction: column; 
+    min-height: 100vh;
+}
+
+main { 
+    flex: 1; 
+}
+
+.hidden { 
+    display: none !important; 
+}
+
+/* =========================================
+   NAVEGAÇÃO E CABEÇALHO
+   ========================================= */
+nav { 
+    background: var(--primaria); 
+    padding: 15px 25px; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center;
+    position: sticky; 
+    top: 0; 
+    z-index: 100; 
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.nav-logo img { 
+    height: 60px; 
+    width: auto; 
+    display: block; 
+    cursor: pointer; 
+    transition: 0.3s; 
+}
+
+.nav-logo img:hover { 
+    transform: scale(1.05); 
+}
+
+.nav-phrase { 
+    color: var(--quaternaria); 
+    font-style: italic; 
+    font-size: 0.9rem; 
+    text-align: center; 
+    flex-grow: 1; 
+    padding: 0 20px; 
+    letter-spacing: 0.5px; 
+}
+
+.nav-group { 
+    display: flex; 
+    gap: 10px; 
+    align-items: center; 
+}
+
+/* =========================================
+   AVATAR GLOBAL E COMPONENTES
+   ========================================= */
+.profile-avatar {
+    width: 38px; 
+    height: 38px; 
+    border-radius: 50%; 
+    display: flex;
+    align-items: center; 
+    justify-content: center; 
+    color: white;
+    font-weight: bold; 
+    font-size: 1.2rem; 
+    cursor: pointer;
+    background-size: cover; 
+    background-position: center;
+    border: 2px solid var(--quaternaria); 
+    transition: 0.3s; 
+    text-transform: uppercase;
+}
+
+.profile-avatar:hover { 
+    transform: scale(1.1); 
+}
+
+.nav-btn { 
+    background: transparent; 
+    border: 1px solid var(--quaternaria); 
+    font-weight: bold; 
+    cursor: pointer; 
+    color: var(--quaternaria); 
+    padding: 8px 15px; 
+    border-radius: 4px; 
+    transition: 0.2s; 
+    text-transform: uppercase; 
+    font-size: 0.7rem; 
+    letter-spacing: 1px; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+}
+
+.nav-btn.active { 
+    background: var(--quaternaria); 
+    color: var(--primaria); 
+}
+
+.nav-btn:active, .btn-save:active { 
+    transform: scale(0.96); 
+}
+
+button:disabled { 
+    opacity: 0.7; 
+    cursor: not-allowed; 
+    transform: none !important; 
+}
+
+.logout-btn { 
+    color: #ff6b6b; 
+    border-color: #ff6b6b; 
+}
+
+.container { 
+    max-width: 900px; 
+    margin: 30px auto; 
+    background: white; 
+    padding: 40px; 
+    border-radius: 8px; 
+    box-shadow: 0 10px 25px rgba(20, 40, 29, 0.1); 
+    border-top: 5px solid var(--terciaria); 
+    box-sizing: border-box;
+}
+
+input, select { 
+    width: 100%; 
+    padding: 12px; 
+    margin: 10px 0; 
+    border: 1px solid #ddd; 
+    border-radius: 4px; 
+    box-sizing: border-box; 
+    background: var(--quinta); 
+}
+
+.btn-save { 
+    background: var(--primaria); 
+    color: var(--quaternaria); 
+    width: 100%; 
+    margin-top: 20px; 
+    padding: 14px; 
+    border-radius: 4px; 
+    cursor: pointer; 
+    font-weight: bold; 
+    text-transform: uppercase; 
+    border: none; 
+    transition: 0.3s; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+}
+
+.btn-save:hover { 
+    background: var(--secundaria); 
+}
+
+/* =========================================
+   UTILITÁRIOS (Toast, Spinner, Switch)
+   ========================================= */
+#toast {
+    position: fixed; 
+    bottom: 20px; 
+    left: 50%; 
+    transform: translateX(-50%);
+    background: var(--secundaria); 
+    color: white; 
+    padding: 12px 25px;
+    border-radius: 30px; 
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2); 
+    z-index: 2000; 
+    transition: 0.5s; 
+    opacity: 0; 
+    pointer-events: none; 
+    font-size: 0.9rem; 
+    font-weight: bold; 
+    white-space: nowrap;
+}
+
+#toast.show { 
+    opacity: 1; 
+    bottom: 40px; 
+}
+
+.spinner {
+    display: inline-block; 
+    width: 14px; 
+    height: 14px; 
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%; 
+    border-top-color: white; 
+    animation: spin 1s linear infinite; 
+    margin-right: 8px;
+}
+
+@keyframes spin { 
+    to { transform: rotate(360deg); } 
+}
+
+.theme-switch-wrapper { 
+    display: flex; 
+    align-items: center; 
+    gap: 10px; 
+    margin-right: 15px; 
+}
+
+.theme-icon { 
+    font-size: 1rem; 
+    color: var(--quaternaria); 
+}
+
+.theme-switch { 
+    position: relative; 
+    display: inline-block; 
+    width: 46px; 
+    height: 24px; 
+}
+
+.theme-switch input { 
+    opacity: 0; 
+    width: 0; 
+    height: 0; 
+}
+
+.slider { 
+    position: absolute; 
+    cursor: pointer; 
+    top: 0; 
+    left: 0; 
+    right: 0; 
+    bottom: 0; 
+    background-color: var(--quaternaria); 
+    transition: .4s; 
+    border-radius: 24px; 
+}
+
+.slider:before { 
+    position: absolute; 
+    content: ""; 
+    height: 18px; 
+    width: 18px; 
+    left: 3px; 
+    bottom: 3px; 
+    background-color: var(--primaria); 
+    transition: .4s; 
+    border-radius: 50%; 
+}
+
+input:checked + .slider { 
+    background-color: var(--secundaria); 
+}
+
+input:checked + .slider:before { 
+    transform: translateX(22px); 
+    background-color: #F1F5F2; 
+}
+
+/* =========================================
+   RODAPÉ (FOOTER) E LINKS RÁPIDOS
+   ========================================= */
+footer { 
+    background: var(--primaria); 
+    color: var(--quaternaria); 
+    padding: 40px 20px 20px; 
+    font-size: 0.85rem; 
+    letter-spacing: 0.5px; 
+    border-top: 3px solid var(--terciaria); 
+    margin-top: 60px; 
+}
+
+.footer-content { 
+    max-width: 900px; 
+    margin: 0 auto; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    gap: 30px; 
+}
+
+.footer-feedback { 
+    width: 100%; 
+    max-width: 450px; 
+    text-align: center; 
+}
+
+.footer-feedback textarea { 
+    width: 100%; 
+    padding: 12px; 
+    border-radius: 4px; 
+    border: 1px solid var(--quaternaria);
+    background: rgba(255, 255, 255, 0.05); 
+    color: white; 
+    font-family: 'Georgia', serif; 
+    margin-bottom: 15px; 
+    resize: vertical; 
+    box-sizing: border-box;
+}
+
+.footer-feedback textarea::placeholder { 
+    color: rgba(255, 255, 255, 0.4); 
+}
+
+.footer-feedback textarea:focus { 
+    outline: none; 
+    border-color: var(--secundaria); 
+    background: rgba(255, 255, 255, 0.1); 
+}
+
+.footer-nav {
+    width: 100%;
+    border-top: 1px dashed rgba(194, 168, 120, 0.3);
+    padding-top: 25px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px 25px;
+}
+
+.footer-nav a {
+    color: var(--quaternaria);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.footer-nav a:hover {
+    color: white;
+    text-decoration: underline;
+    transform: translateY(-2px);
+}
+
+.footer-info { 
+    text-align: center; 
+    border-top: 1px solid rgba(194, 168, 120, 0.1); 
+    width: 100%; 
+    padding-top: 20px; 
+}
+
+/* =========================================
+   SIDEBAR E MODAIS GLOBAIS
+   ========================================= */
+.sidebar-backdrop { 
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%; 
+    background: rgba(0,0,0,0.5); 
+    z-index: 3001; 
+    opacity: 0; 
+    pointer-events: none; 
+    transition: opacity 0.3s; 
+}
+
+.sidebar-backdrop.active { 
+    opacity: 1; 
+    pointer-events: auto; 
+}
+
+.sidebar { 
+    position: fixed; 
+    top: 0; 
+    right: 0; 
+    width: 280px; 
+    height: 100%; 
+    background: var(--quinta); 
+    box-shadow: -5px 0 15px rgba(0,0,0,0.2); 
+    z-index: 3002; 
+    transform: translateX(100%); 
+    transition: transform 0.3s ease; 
+    display: flex; 
+    flex-direction: column; 
+}
+
+.sidebar.active { 
+    transform: translateX(0); 
+}
+
+.sidebar-header { 
+    padding: 40px 20px 20px; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    border-bottom: 2px solid var(--quaternaria); 
+    position: relative; 
+}
+
+.sidebar-header h3 { 
+    margin: 15px 0 0; 
+    color: var(--primaria); 
+    font-size: 1.2rem; 
+}
+
+.close-sidebar { 
+    position: absolute; 
+    top: 10px; 
+    left: 15px; 
+    font-size: 2rem; 
+    cursor: pointer; 
+    color: var(--primaria); 
+}
+
+.sidebar-menu { 
+    display: flex; 
+    flex-direction: column; 
+    padding: 20px 0; 
+    flex-grow: 1; 
+}
+
+.sidebar-menu button { 
+    background: transparent; 
+    border: none; 
+    text-align: left; 
+    padding: 15px 25px; 
+    font-size: 1rem; 
+    font-family: 'Georgia', serif; 
+    color: var(--primaria); 
+    cursor: pointer; 
+    transition: 0.2s; 
+    font-weight: bold; 
+    border-bottom: 1px solid #eee; 
+}
+
+.sidebar-menu button:hover { 
+    background: rgba(0,0,0,0.05); 
+    color: var(--secundaria); 
+    padding-left: 30px;
+}
+
+/* Classes Especiais do Menu Lateral para respeitar o Dark Mode */
+.menu-btn-market {
+    color: var(--secundaria) !important;
+}
+
+.menu-btn-about {
+    color: var(--terciaria) !important;
+}
+
+.modal-overlay {
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%; 
+    background: rgba(20, 40, 29, 0.85); 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    z-index: 2000; 
+    opacity: 0; 
+    pointer-events: none; 
+    transition: 0.3s; 
+    padding: 20px; 
+    box-sizing: border-box;
+}
+
+.modal-overlay.active { 
+    opacity: 1; 
+    pointer-events: auto; 
+}
+
+.modal-content { 
+    background: var(--quinta); 
+    max-width: 450px; 
+    width: 100%; 
+    padding: 30px; 
+    border-radius: 12px; 
+    text-align: center; 
+    position: relative; 
+    max-height: 90vh; 
+    overflow-y: auto; 
+    box-sizing: border-box; 
+}
+
+.close-modal { 
+    position: absolute; 
+    top: 10px; 
+    right: 15px; 
+    font-size: 2rem; 
+    cursor: pointer; 
+    color: var(--primaria); 
+}
+
+.modal-btn { 
+    padding: 12px; 
+    border: none; 
+    border-radius: 4px; 
+    font-weight: bold; 
+    cursor: pointer; 
+    font-size: 0.8rem; 
+    text-transform: uppercase; 
+    transition: 0.3s; 
+    width: 100%; 
+    box-sizing: border-box; 
+}
+
+#modal-actions { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 10px; 
+    margin-top: 10px; 
+}
+
+/* =========================================
+   MODO ESCURO GERAL 
+   ========================================= */
+body.dark-mode { 
+    --primaria: #F1F5F2; 
+    --quinta: #0A140E; 
+}
+
+body.dark-mode nav, 
+body.dark-mode footer, 
+body.dark-mode .btn-save { 
+    background: #14281D; 
+    color: var(--quaternaria); 
+}
+
+body.dark-mode .container, 
+body.dark-mode .modal-content, 
+body.dark-mode .sidebar { 
+    background: #172B1F; 
+    border-color: #2c4a2b; 
+}
+
+body.dark-mode input, 
+body.dark-mode select { 
+    background: #14281D; 
+    color: #F1F5F2; 
+    border-color: #355834; 
+}
+
+body.dark-mode .sidebar-header h3, 
+body.dark-mode .close-sidebar, 
+body.dark-mode .close-modal { 
+    color: var(--quinta); 
+}
+
+/* --- FIX: LETRAS DO MENU LATERAL NO MODO ESCURO --- */
+body.dark-mode .sidebar-menu button { 
+    border-bottom-color: #2c4a2b; 
+    color: #F1F5F2 !important; /* Força TODOS os botões a ficarem brancos */
+}
+
+body.dark-mode .sidebar-menu button:hover { 
+    background: rgba(255,255,255,0.05); 
+    color: var(--quaternaria) !important; /* Animação para bege mantida perfeitamente */
+}
+
+/* Mantém o botão de sair sempre vermelho para alertar o usuário */
+body.dark-mode .sidebar-menu button.logout-btn {
+    color: #ff6b6b !important; 
+}
+body.dark-mode .sidebar-menu button.logout-btn:hover {
+    color: #ff4757 !important; 
+}
+
+/* --- MÁGICA: FORÇA TEXTOS A FICAREM CLAROS NO MODO ESCURO --- */
+body.dark-mode h1, 
+body.dark-mode h2, 
+body.dark-mode h3, 
+body.dark-mode h4, 
+body.dark-mode h5, 
+body.dark-mode label {
+    color: #F1F5F2 !important;
+}
+
+body.dark-mode [style*="color: gray"], 
+body.dark-mode [style*="color:gray"] {
+    color: #aaa !important;
+}
+
+body.dark-mode [style*="color: #333"], 
+body.dark-mode [style*="color:#333"] {
+    color: #F1F5F2 !important;
+}

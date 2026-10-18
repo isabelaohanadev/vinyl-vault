@@ -1,0 +1,223 @@
+/* =========================================
+   ABA DE COMUNIDADE E BOTÕES DE TIMELINE
+   ========================================= */
+.community-tabs { 
+    display: flex; 
+    justify-content: center; 
+    gap: 15px; 
+    margin-bottom: 25px; 
+}
+
+.tab-btn { 
+    background: transparent; 
+    border: 2px solid var(--quaternaria); 
+    color: var(--primaria); 
+    font-weight: bold; 
+    padding: 10px 20px; 
+    border-radius: 25px; 
+    cursor: pointer; 
+    transition: 0.3s; 
+    font-family: 'Georgia', serif; 
+}
+
+.tab-btn.active { 
+    background: var(--quaternaria); 
+    color: white; 
+}
+
+/* =========================================
+   CARDS DE USUÁRIOS E FEED
+   ========================================= */
+.user-card {
+    background: white; 
+    padding: 20px; 
+    border-radius: 8px; 
+    border: 1px solid #eee; 
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    transition: 0.3s;
+}
+
+.user-card:hover { 
+    transform: translateY(-5px); 
+    border-color: var(--quaternaria); 
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1); 
+}
+
+.user-avatar-large { 
+    width: 80px; 
+    height: 80px; 
+    font-size: 2rem; 
+    margin-bottom: 15px; 
+    border-width: 3px; 
+}
+
+.user-card h4 { 
+    margin: 0 0 5px; 
+    font-size: 1.1rem; 
+    color: var(--primaria); 
+}
+
+.user-card span { 
+    font-size: 0.8rem; 
+    color: gray; 
+    margin-bottom: 10px; 
+    display: block; 
+}
+
+.user-card p { 
+    font-size: 0.85rem; 
+    color: var(--terciaria); 
+    margin-bottom: 20px; 
+    font-style: italic; 
+    flex-grow: 1; 
+}
+
+.btn-follow { 
+    background: var(--secundaria); 
+    color: white; 
+    border: none; 
+    padding: 10px 15px; 
+    border-radius: 4px; 
+    cursor: pointer; 
+    font-weight: bold; 
+    width: 100%; 
+    transition: 0.2s; 
+    text-transform: uppercase; 
+    font-size: 0.75rem; 
+}
+
+.btn-follow:hover { 
+    background: var(--primaria); 
+}
+
+.btn-unfollow { 
+    background: transparent; 
+    color: var(--primaria); 
+    border: 1px solid #ccc; 
+    padding: 10px 15px; 
+    border-radius: 4px; 
+    cursor: pointer; 
+    font-weight: bold; 
+    width: 100%; 
+    transition: 0.2s; 
+    text-transform: uppercase; 
+    font-size: 0.75rem; 
+}
+
+.btn-unfollow:hover { 
+    border-color: #ff6b6b; 
+    color: #ff6b6b; 
+}
+
+.conversa-item { 
+    display: flex; 
+    align-items: center; 
+    gap: 15px; 
+    background: white; 
+    padding: 15px; 
+    border-radius: 8px; 
+    border: 1px solid #eee; 
+    margin-bottom: 10px; 
+    cursor: pointer; 
+    transition: 0.2s; 
+}
+
+.conversa-item:hover { 
+    transform: translateX(5px); 
+    border-color: var(--quaternaria); 
+}
+
+/* =========================================
+   NOVO: ESTILOS DE HASHTAG E BANNER
+   ========================================= */
+.hashtag {
+    color: #3498db; /* Azul clássico de links */
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.2s;
+    text-decoration: none;
+}
+
+.hashtag:hover {
+    color: var(--terciaria);
+    text-decoration: underline;
+}
+
+.active-filter-banner {
+    background: rgba(194, 168, 120, 0.2);
+    border: 1px dashed var(--quaternaria);
+    color: var(--primaria);
+    padding: 12px 20px;
+    border-radius: 8px;
+    margin-bottom: 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.95rem;
+}
+
+.btn-clear-filter {
+    background: white;
+    border: 1px solid var(--quaternaria);
+    color: var(--primaria);
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: bold;
+    transition: 0.2s;
+}
+
+.btn-clear-filter:hover {
+    background: #ff6b6b;
+    border-color: #ff6b6b;
+    color: white;
+}
+
+/* =========================================
+   MODO ESCURO OVERRIDES
+   ========================================= */
+body.dark-mode .user-card, 
+body.dark-mode .conversa-item { 
+    background: #172B1F; 
+    border-color: #2c4a2b; 
+}
+
+body.dark-mode .user-card h4, 
+body.dark-mode .tab-btn { 
+    color: #F1F5F2; 
+}
+
+body.dark-mode .btn-unfollow { 
+    color: #F1F5F2; 
+    border-color: #555; 
+}
+
+body.dark-mode .tab-btn.active { 
+    color: var(--primaria); 
+}
+
+body.dark-mode .hashtag { 
+    color: #54a0ff; 
+}
+
+body.dark-mode .hashtag:hover { 
+    color: #fff; 
+}
+
+body.dark-mode .active-filter-banner { 
+    color: #F1F5F2; 
+}
+
+body.dark-mode .btn-clear-filter { 
+    background: #14281D; 
+    color: #F1F5F2; 
+}
+
+body.dark-mode .btn-clear-filter:hover { 
+    background: #ff6b6b; 
+}

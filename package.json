@@ -10,8 +10,8 @@
     "db:down": "docker compose stop mysql",
     "seed": "npm --prefix backend run seed",
     "lint": "npm --prefix backend run lint && npm --prefix frontend run lint",
-    "test": "npm --prefix backend test && npm --prefix frontend test",
-    "build": "npm --prefix frontend run build"
+    "test": "npm --prefix backend test",
+    "test:e2e": "npm --prefix e2e test"
   },
   "engines": {
     "node": ">=22"
@@ -24,7 +24,14 @@
     "url": "https://github.com/isabelaohanadev/vinyl-vault/issues"
   },
   "homepage": "https://github.com/isabelaohanadev/vinyl-vault#readme",
-  "keywords": ["vinyl", "music", "collection", "react", "express", "mysql"],
+  "keywords": [
+    "vinyl",
+    "music",
+    "collection",
+    "itunes",
+    "express",
+    "mysql"
+  ],
   "author": "Isabela Ohana",
   "license": "ISC",
   "devDependencies": {

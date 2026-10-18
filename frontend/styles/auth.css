@@ -1,0 +1,23 @@
+/* =========================================
+   TELAS DE AUTENTICAÇÃO (Login, Cadastro)
+   ========================================= */
+#auth-screen {
+    margin-top: 50px;
+    text-align: center;
+    max-width: 500px;
+}
+
+.login-logo { 
+    width: 140px; 
+    height: 140px; 
+    border-radius: 50%; 
+    object-fit: cover; 
+    border: 3px solid var(--quaternaria); 
+    margin-bottom: 20px; 
+}
+
+#auth-screen h1, #auth-screen h2 {
+    letter-spacing: 2px;
+    margin-top: 0;
+    color: var(--primaria);
+}

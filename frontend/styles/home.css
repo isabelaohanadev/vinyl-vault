@@ -1,0 +1,41 @@
+/* =========================================
+   CARROSSEL (HOME)
+   ========================================= */
+.carousel-container { width: 100%; position: relative; overflow: hidden; margin: 0; padding: 0; }
+.carousel-slide { display: flex; transition: transform 0.6s ease-in-out; }
+.carousel-slide img { width: 100%; min-width: 100%; height: 400px; object-fit: cover; display: block; }
+.carousel-dots { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; }
+.dot { height: 12px; width: 12px; background-color: rgba(255, 255, 255, 0.4); border-radius: 50%; cursor: pointer; transition: 0.3s; }
+.dot.active { background-color: white; }
+
+/* =========================================
+   PESQUISA E ESTATÍSTICAS
+   ========================================= */
+.search-area { max-width: 900px; margin: 40px auto 0; padding: 0 20px; box-sizing: border-box; } 
+.search-input { width: 100%; padding: 12px 20px; border-radius: 25px; border: 1px solid var(--quaternaria); outline: none; font-family: serif; font-size: 1rem; box-sizing: border-box; background: white; }
+.filter-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px; }
+
+.stats-wrapper { display: flex; justify-content: center; align-items: center; gap: 15px; margin: 20px 0; flex-wrap: wrap; }
+.stat-item { background: var(--primaria); color: var(--quaternaria); padding: 8px 15px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; }
+.btn-pdf { background: var(--quaternaria); color: var(--primaria); border: none; padding: 8px 20px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; cursor: pointer; transition: 0.3s; text-transform: uppercase; }
+
+/* =========================================
+   GRADE DE CARDS (GALERIA)
+   ========================================= */
+.main-section-title { font-size: 1.6rem; color: var(--primaria); border-bottom: 2px solid var(--quaternaria); display: block; margin: 60px 0 30px; text-align: center; }
+.genero-title { background: var(--terciaria); color: white; padding: 6px 18px; font-size: 0.85rem; margin-top: 20px; margin-bottom: 15px; display: inline-block; border-radius: 0 15px 15px 0; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 25px; padding: 0 10px; margin-bottom: 50px; }
+.card { background: white; padding: 10px; border-radius: 4px; border: 1px solid #eee; cursor: pointer; transition: 0.3s; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+.card:hover { transform: translateY(-5px); border-color: var(--quaternaria); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+.card img { width: 100%; border-radius: 2px; aspect-ratio: 1/1; object-fit: cover; }
+.card h4 { margin: 12px 0 4px; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.card p { margin: 0; color: var(--terciaria); font-size: 0.75rem; font-style: italic; }
+
+/* =========================================
+   MODO ESCURO - HOME ESPECÍFICO
+   ========================================= */
+body.dark-mode .stat-item { background: #14281D; color: var(--quaternaria); }
+body.dark-mode .search-input { background: #172B1F; color: #F1F5F2; border-color: #355834; }
+body.dark-mode .card { background: #172B1F; border-color: #2c4a2b; }
+body.dark-mode .card p { color: #A3966A; }
+body.dark-mode .card:hover { box-shadow: 0 5px 15px rgba(255,255,255,0.05); }

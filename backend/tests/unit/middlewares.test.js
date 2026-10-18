@@ -6,7 +6,7 @@ const z = require('../../src/config/zod');
 const validate = require('../../src/middlewares/validate');
 const { requireAuth, requireSelf } = require('../../src/middlewares/auth');
 const { notFoundHandler, errorHandler } = require('../../src/middlewares/errorHandler');
-const { createLimiter } = require('../../src/middlewares/rateLimit');
+const { createLimiter, keyByUserOrIp } = require('../../src/middlewares/rateLimit');
 const { signToken } = require('../../src/utils/token');
 const { forbidden, conflict } = require('../../src/utils/httpError');
 
@@ -154,6 +154,31 @@ describe('rate limiter', () => {
         const blocked = await request(app).get('/');
         assert.equal(blocked.status, 429);
         assert.match(blocked.body.error, /Muitas requisições/);
+    });
+
+    it('gives every signed-in user their own budget, even behind the same IP', async () => {
+        const app = buildApp((a) => {
+            a.use(createLimiter({ windowMs: 60000, limit: 1, keyGenerator: keyByUserOrIp }, true));
+            a.get('/', (req, res) => res.json({ ok: true }));
+        });
+        const as = (id) => ({ Authorization: `Bearer ${signToken({ id, username: `u${id}` })}` });
+
+        assert.equal((await request(app).get('/').set(as(1))).status, 200);
+        assert.equal((await request(app).get('/').set(as(1))).status, 429);
+        assert.equal((await request(app).get('/').set(as(2))).status, 200, 'another account is not affected');
+    });
+
+    it('cannot be dodged with invalid tokens: they are counted by IP', async () => {
+        const app = buildApp((a) => {
+            a.use(createLimiter({ windowMs: 60000, limit: 2, keyGenerator: keyByUserOrIp }, true));
+            a.get('/', (req, res) => res.json({ ok: true }));
+        });
+
+        for (const token of ['junk-1', 'junk-2']) {
+            assert.equal((await request(app).get('/').set('Authorization', `Bearer ${token}`)).status, 200);
+        }
+
+        assert.equal((await request(app).get('/').set('Authorization', 'Bearer junk-3')).status, 429);
     });
 
     it('is a pass-through when disabled', async () => {

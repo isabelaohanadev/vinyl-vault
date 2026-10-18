@@ -1,0 +1,74 @@
+/* =========================================
+   SISTEMA DE SELOS (GAMIFICAÇÃO)
+   ========================================= */
+
+.name-badge-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin: 10px 0 5px;
+}
+
+.badges-container {
+    display: flex;
+    gap: 4px;
+}
+
+.badge-icon {
+    font-size: 1.2rem;
+    cursor: help;
+    transition: transform 0.2s;
+}
+
+.badge-icon:hover {
+    transform: scale(1.2);
+}
+
+.info-badges-btn {
+    font-size: 1rem;
+    cursor: pointer;
+    opacity: 0.5;
+    transition: 0.2s;
+}
+
+.info-badges-btn:hover {
+    opacity: 1;
+}
+
+/* Modal de Legenda de Selos */
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 10px;
+    background: rgba(0,0,0,0.03);
+    border-radius: 8px;
+    margin-bottom: 10px;
+    text-align: left;
+}
+
+.legend-item span {
+    font-size: 1.8rem;
+}
+
+.legend-text strong {
+    display: block;
+    color: var(--primaria);
+    font-size: 1rem;
+}
+
+.legend-text p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: gray;
+}
+
+/* Modo Escuro */
+body.dark-mode .legend-item {
+    background: rgba(255,255,255,0.05);
+}
+
+body.dark-mode .legend-text strong {
+    color: #F1F5F2;
+}

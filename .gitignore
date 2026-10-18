@@ -12,6 +12,10 @@ dist-ssr/
 build/
 coverage/
 
+# Playwright output
+test-results/
+playwright-report/
+
 # Logs
 logs/
 *.log
@@ -23,3 +27,6 @@ npm-debug.log*
 .vscode/*
 !.vscode/extensions.json
 *.swp
+
+# Personal photo used by the "Sobre Nós" page. Not published: add it by hand (git add -f) if you want it public.
+frontend/assets/iandj.jpg

@@ -1,0 +1,99 @@
+/* =========================================
+   PLAYER DE ÁUDIO (PRÉVIAS DE 30s)
+   ========================================= */
+.custom-audio-player {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: rgba(194, 168, 120, 0.15);
+    padding: 10px 15px;
+    border-radius: 30px;
+    border: 1px solid var(--quaternaria);
+    margin-bottom: 20px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.player-play-btn {
+    background: var(--secundaria);
+    color: white;
+    border: none;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: transform 0.2s, background 0.2s;
+    flex-shrink: 0;
+}
+
+.player-play-btn:hover {
+    transform: scale(1.1);
+    background: var(--primaria);
+}
+
+.player-progress-bar {
+    flex-grow: 1;
+    height: 6px;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 3px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.player-progress-fill {
+    height: 100%;
+    width: 0%;
+    background: var(--secundaria);
+    border-radius: 3px;
+    transition: width 0.1s linear;
+}
+
+.player-time {
+    font-size: 0.8rem;
+    color: var(--primaria);
+    font-weight: bold;
+    min-width: 35px;
+    text-align: right;
+}
+
+/* Animação de Tocando (Ondinhas) */
+.playing-waves {
+    display: flex;
+    gap: 2px;
+    align-items: flex-end;
+    height: 15px;
+    margin-left: 5px;
+}
+
+.wave {
+    width: 3px;
+    background: var(--secundaria);
+    animation: wave-anim 1s infinite ease-in-out;
+}
+
+.wave:nth-child(2) { animation-delay: 0.2s; }
+.wave:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes wave-anim {
+    0%, 100% { height: 5px; }
+    50% { height: 15px; }
+}
+
+/* Modo Escuro */
+body.dark-mode .custom-audio-player {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: #2c4a2b;
+}
+
+body.dark-mode .player-time {
+    color: #F1F5F2;
+}
+
+body.dark-mode .player-progress-bar {
+    background: rgba(255, 255, 255, 0.1);
+}

@@ -6,6 +6,7 @@ import { renderApp } from '../test/utils';
 import { Modal } from './Modal';
 import { PrivateRoute } from './PrivateRoute';
 import { PublicOnlyRoute } from './PublicOnlyRoute';
+import { RootRedirect } from './RootRedirect';
 import { StarRating } from './StarRating';
 import { VinylCard } from './VinylCard';
 import { Avatar } from './Avatar';
@@ -39,6 +40,28 @@ describe('route guards', () => {
 
     it('PublicOnlyRoute sends signed-in users to the app', () => {
         renderApp(routes((page) => <PublicOnlyRoute>{page}</PublicOnlyRoute>), { route: '/secret' });
+
+        expect(screen.getByText('dashboard page')).toBeInTheDocument();
+    });
+});
+
+describe('RootRedirect', () => {
+    const app = (
+        <Routes>
+            <Route path="/" element={<RootRedirect />} />
+            <Route path="/dashboard" element={<p>dashboard page</p>} />
+            <Route path="/reset-password" element={<p>reset page</p>} />
+        </Routes>
+    );
+
+    it('opens the reset form when the recovery e-mail link is followed', () => {
+        renderApp(app, { route: '/?token=abc123' });
+
+        expect(screen.getByText('reset page')).toBeInTheDocument();
+    });
+
+    it('goes to the dashboard otherwise', () => {
+        renderApp(app, { route: '/' });
 
         expect(screen.getByText('dashboard page')).toBeInTheDocument();
     });

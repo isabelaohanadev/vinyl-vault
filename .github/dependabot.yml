@@ -10,7 +10,15 @@ updates:
   - package-ecosystem: npm
     directory: /frontend
     schedule:
-      interval: weekly
+      interval: monthly
+  - package-ecosystem: npm
+    directory: /e2e
+    schedule:
+      interval: monthly
+  - package-ecosystem: npm
+    directory: /frontend-react
+    schedule:
+      interval: monthly
     groups:
       minor-and-patch:
         update-types: [minor, patch]
@@ -28,5 +36,9 @@ updates:
       interval: monthly
   - package-ecosystem: docker
     directory: /frontend
+    schedule:
+      interval: monthly
+  - package-ecosystem: docker
+    directory: /frontend-react
     schedule:
       interval: monthly

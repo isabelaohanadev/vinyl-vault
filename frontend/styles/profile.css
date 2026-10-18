@@ -1,0 +1,126 @@
+/* =========================================
+   ABA DE PERFIL (MEU PERFIL E EDIÇÃO)
+   ========================================= */
+.profile-container {
+    max-width: 600px !important;
+}
+
+.profile-title {
+    text-align: center;
+    color: var(--primaria);
+    margin-top: 0;
+}
+
+.profile-avatar-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.profile-avatar-large {
+    width: 100px;
+    height: 100px;
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+.profile-upload-label {
+    font-size: 14px;
+    cursor: pointer;
+    color: var(--secundaria);
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+.form-label {
+    font-size: 12px;
+    color: gray;
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+}
+
+/* =========================================
+   ÁREA DE EDIÇÃO E ZONA DE PERIGO
+   ========================================= */
+.edit-section {
+    background: rgba(0,0,0,0.02);
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #eee;
+    margin-top: 30px;
+}
+
+.password-reset-section {
+    margin: 25px 0 15px;
+    border-top: 1px dashed #ccc;
+    padding-top: 15px;
+}
+
+.form-desc {
+    font-size: 0.85rem;
+    color: gray;
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+.btn-reset-link {
+    background: var(--terciaria);
+    color: white;
+    width: 100%;
+    padding: 12px;
+}
+
+.danger-zone {
+    margin-top: 40px;
+    border-top: 1px solid #ff6b6b;
+    padding-top: 20px;
+    text-align: center;
+}
+
+.danger-zone h3 {
+    color: #ff6b6b;
+    margin-top: 0;
+    font-size: 1rem;
+    text-transform: uppercase;
+}
+
+.danger-zone p {
+    font-size: 0.85rem;
+    color: gray;
+    margin-bottom: 15px;
+}
+
+.btn-delete-account {
+    background: transparent;
+    border: 1px solid #ff6b6b;
+    color: #ff6b6b;
+    width: 100%;
+    padding: 12px;
+}
+
+.btn-delete-account:hover {
+    background: #ff6b6b;
+    color: white;
+}
+
+/* =========================================
+   MODO ESCURO OVERRIDES
+   ========================================= */
+body.dark-mode .edit-section { 
+    background: rgba(255,255,255,0.02); 
+    border-color: #2c4a2b; 
+}
+
+body.dark-mode .form-label { 
+    color: #ccc; 
+}
+
+body.dark-mode .form-desc { 
+    color: #aaa; 
+}
+
+body.dark-mode .danger-zone p { 
+    color: #aaa; 
+}

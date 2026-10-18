@@ -130,3 +130,19 @@
     background: var(--text-light);
     cursor: pointer;
 }
+
+.btn-player:disabled,
+.btn-play-pause:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.btn-player:disabled:hover {
+    color: var(--text-light);
+}
+
+.player-title,
+.player-artist {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

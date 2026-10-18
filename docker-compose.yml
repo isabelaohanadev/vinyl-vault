@@ -50,6 +50,8 @@ services:
       # Proxies between the internet and the API: the bundled nginx is 1; add one for each
       # extra proxy in front of it (Caddy, Cloudflare...). Wrong values break per-IP rate limiting.
       TRUST_PROXY: ${TRUST_PROXY:-1}
+      # The end-to-end tests create many accounts from one IP; CI turns the limiter off (never in production).
+      RATE_LIMIT_ENABLED: ${RATE_LIMIT_ENABLED:-true}
       EMAIL_USER: ${EMAIL_USER:-}
       EMAIL_PASS: ${EMAIL_PASS:-}
       FEEDBACK_TO: ${FEEDBACK_TO:-}

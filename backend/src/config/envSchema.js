@@ -45,8 +45,12 @@ const schema = z
         }
     });
 
+// A blank value (`FEEDBACK_TO=` copied from .env.example, or `${VAR:-}` in docker-compose)
+// means "not set", so optional settings stay optional and required ones are reported.
+const withoutBlanks = (source) => Object.fromEntries(Object.entries(source).filter(([, value]) => value !== ''));
+
 const parseEnv = (source = process.env) => {
-    const result = schema.safeParse(source);
+    const result = schema.safeParse(withoutBlanks(source));
 
     if (!result.success) {
         const details = result.error.issues

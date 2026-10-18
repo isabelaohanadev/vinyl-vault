@@ -39,6 +39,19 @@ describe('parseEnv', () => {
         assert.doesNotThrow(() => parseEnv({ ...base, NODE_ENV: 'production', EMAIL_USER: 'a', EMAIL_PASS: 'b' }));
     });
 
+    it('treats blank values as unset (as in a copied .env.example or docker-compose)', () => {
+        const env = parseEnv({ ...base, EMAIL_USER: '', EMAIL_PASS: '', FEEDBACK_TO: '', PORT: '', DB_PASSWORD: '' });
+
+        assert.equal(env.EMAIL_USER, undefined);
+        assert.equal(env.FEEDBACK_TO, undefined);
+        assert.equal(env.PORT, 3000);
+        assert.equal(env.DB_PASSWORD, '');
+    });
+
+    it('still reports a blank required value', () => {
+        assert.throws(() => parseEnv({ ...base, DB_USER: '' }), /DB_USER/);
+    });
+
     it('returns a frozen object', () => {
         assert.ok(Object.isFrozen(parseEnv(base)));
     });

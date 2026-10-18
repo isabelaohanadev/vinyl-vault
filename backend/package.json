@@ -10,7 +10,8 @@
     "test": "node --test --test-concurrency=1 --require ./tests/setup.js",
     "test:coverage": "node --test --test-concurrency=1 --experimental-test-coverage --require ./tests/setup.js",
     "lint": "eslint .",
-    "seed": "node scripts/seed.js"
+    "seed": "node scripts/seed.js",
+    "db:schema": "node scripts/apply-schema.js"
   },
   "engines": {
     "node": ">=22"

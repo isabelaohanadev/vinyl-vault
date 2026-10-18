@@ -1,4 +1,6 @@
-# Vinyl Vault: Frontend
+# Vinyl Vault: migração para React (experimental)
+
+> **Esta não é a interface principal.** O app que roda em produção é o front original em HTML/JS, em [`../frontend`](../frontend). Esta pasta guarda a migração para React 19 + Vite, que cobre só parte das telas, para ser continuada quando fizer sentido.
 
 Aplicação React 19 + Vite. A visão geral, a configuração e o deploy estão no [README da raiz](../README.md).
 

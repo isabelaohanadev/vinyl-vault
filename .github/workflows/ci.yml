@@ -57,20 +57,20 @@ jobs:
       - run: npm run lint
       - run: npm test
 
-  frontend:
-    name: Frontend
+  frontend-react:
+    name: Frontend (React rewrite)
     runs-on: ubuntu-latest
     timeout-minutes: 15
     defaults:
       run:
-        working-directory: frontend
+        working-directory: frontend-react
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: npm
-          cache-dependency-path: frontend/package-lock.json
+          cache-dependency-path: frontend-react/package-lock.json
       - run: npm ci
       - run: npm run lint
       - run: npm test

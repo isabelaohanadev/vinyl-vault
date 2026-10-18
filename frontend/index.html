@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vinyl Vault | Premium Collection</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <link rel="stylesheet" href="./styles/global.css">
+    <link rel="stylesheet" href="./styles/auth.css">
+    <link rel="stylesheet" href="./styles/home.css">
+    <link rel="stylesheet" href="./styles/addvinyl.css">
+    <link rel="stylesheet" href="./styles/profile.css">
+    <link rel="stylesheet" href="./styles/community.css">
+    <link rel="stylesheet" href="./styles/social.css">
+    <link rel="stylesheet" href="./styles/market.css">
+    <link rel="stylesheet" href="./styles/dashboard.css">
+    <link rel="stylesheet" href="./styles/badges.css">
+    <link rel="stylesheet" href="./styles/aboutus.css">
+    <link rel="stylesheet" href="./styles/player.css">
+    <link rel="stylesheet" href="./styles/rating.css"> 
+    <link rel="stylesheet" href="./styles/discover.css"> 
+    <link rel="stylesheet" href="./styles/vinyl.css"> 
+    <link rel="stylesheet" href="./styles/nowplaying.css"> <link rel="stylesheet" href="./styles/responsive.css">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+
+<div id="toast">Mensagem Salva!</div>
+
+<main>
+    <div id="auth-screen" class="container" style="margin-top: 50px; text-align: center; max-width: 500px;">
+        
+        <div id="login-form">
+            <img src="./assets/VinylVault.png" alt="Vinyl Vault Logo" class="login-logo">
+            <h1 style="letter-spacing: 2px; margin-top: 0;">VINYL VAULT</h1>
+            
+            <input type="text" id="username-login" placeholder="Nome de usuário">
+            <input type="password" id="pass-login" placeholder="Senha">
+            
+            <div style="text-align: right; margin-top: -5px; margin-bottom: 15px;">
+                <a href="#" onclick="toggleAuthMode('forgot')" style="font-size: 0.8rem; color: var(--terciaria); text-decoration: none;">Esqueceu a senha?</a>
+            </div>
+
+            <button class="nav-btn" style="background:var(--secundaria); color:white; width:100%" onclick="fazerLogin()">Acessar Galeria</button>
+            
+            <p style="font-size: 0.85rem; margin-top: 25px;">
+                Não tem uma conta? <a href="#" onclick="toggleAuthMode('register')" style="color:var(--secundaria); font-weight: bold;">Cadastre-se</a>
+            </p>
+        </div>
+
+        <div id="forgot-form" class="hidden">
+            <img src="./assets/VinylVault.png" alt="Logo" class="login-logo" style="width: 80px; height: 80px; margin-bottom: 10px;">
+            <h2 style="letter-spacing: 2px; margin-top: 0; color:var(--primaria);">RECUPERAR SENHA</h2>
+            <p style="font-size: 0.9rem; color: gray; margin-bottom: 20px;">Digite seu e-mail cadastrado. Enviaremos um link seguro para você criar uma nova senha.</p>
+            
+            <input type="email" id="forgot-email" placeholder="Seu E-mail">
+            
+            <button id="btn-forgot" class="nav-btn" style="background:var(--terciaria); color:white; width:100%" onclick="enviarLinkReset()">Enviar Link</button>
+            
+            <p style="font-size: 0.85rem; margin-top: 25px;">
+                Lembrou a senha? <a href="#" onclick="toggleAuthMode('login')" style="color:var(--secundaria); font-weight: bold;">Voltar ao Login</a>
+            </p>
+        </div>
+
+        <div id="reset-form" class="hidden">
+            <img src="./assets/VinylVault.png" alt="Logo" class="login-logo" style="width: 80px; height: 80px; margin-bottom: 10px;">
+            <h2 style="letter-spacing: 2px; margin-top: 0; color:var(--primaria);">CRIAR NOVA SENHA</h2>
+            <p style="font-size: 0.9rem; color: gray; margin-bottom: 20px;">Digite a sua nova senha abaixo.</p>
+            
+            <input type="password" id="reset-nova" placeholder="Nova Senha (Mín. 6 caracteres)">
+            <input type="password" id="reset-confirma" placeholder="Confirme a Nova Senha">
+            
+            <button id="btn-reset" class="nav-btn" style="background:var(--spotify); color:white; width:100%" onclick="salvarNovaSenha()">Atualizar Senha</button>
+        </div>
+
+        <div id="register-form" class="hidden">
+            <img src="./assets/VinylVault.png" alt="Vinyl Vault Logo" class="login-logo" style="width: 80px; height: 80px; margin-bottom: 10px;">
+            <h2 style="letter-spacing: 2px; margin-top: 0; color:var(--primaria);">CRIAR CONTA</h2>
+            
+            <div id="register-step-1">
+                <input type="text" id="reg-nome" placeholder="Nome Completo">
+                <input type="email" id="reg-email" placeholder="E-mail">
+                <input type="date" id="reg-nasc" placeholder="Data de Nascimento">
+                <input type="text" id="reg-username" placeholder="Nome de usuário (sem espaços)">
+                <input type="text" id="reg-bio" placeholder="Sua Bio (Opcional)">
+                <input type="password" id="reg-pass" placeholder="Senha (Mín. 6 caracteres)">
+                <input type="password" id="reg-confirm" placeholder="Confirme a Senha">
+                
+                <button class="nav-btn" style="background:var(--terciaria); color:white; width:100%" onclick="nextStepRegister()">Próximo</button>
+                
+                <p style="font-size: 0.85rem; margin-top: 25px;">
+                    Já tem uma conta? <a href="#" onclick="toggleAuthMode('login')" style="color:var(--secundaria); font-weight: bold;">Faça Login</a>
+                </p>
+            </div>
+
+            <div id="register-step-2" class="hidden">
+                <h3 style="color:var(--terciaria);">Adicione uma foto de perfil (Opcional)</h3>
+                <label style="font-size:12px; color:gray; display:block; margin-bottom:10px;">Sua foto ajuda a personalizar a galeria.</label>
+                <input type="file" id="reg-foto" accept="image/*">
+                
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button class="nav-btn" style="background:#ccc; color:#333; flex: 1;" onclick="backStepRegister()">Voltar</button>
+                    <button class="nav-btn" style="background:var(--secundaria); color:white; flex: 2;" id="btn-finalizar-cad" onclick="fazerCadastro()">Finalizar Cadastro</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="app-screen" class="hidden">
+        <nav>
+            <div class="nav-logo">
+                <img src="./assets/VinylVault.png" alt="Logo" onclick="voltarHome()">
+            </div>
+            
+            <div class="nav-phrase">"Onde cada disco conta uma história"</div>
+            
+            <div class="nav-group">
+                
+                <div class="theme-switch-wrapper">
+                    <span class="theme-icon">☀️</span>
+                    <label class="theme-switch" for="checkbox-theme">
+                        <input type="checkbox" id="checkbox-theme" onchange="toggleTheme()">
+                        <div class="slider round"></div>
+                    </label>
+                    <span class="theme-icon">🌙</span>
+                </div>
+                
+                <div class="notif-wrapper" onclick="switchTab('notifications')">
+                    <span class="notif-icon">🔔</span>
+                    <span id="badge-notif" class="notif-badge hidden">0</span>
+                </div>
+
+                <button class="nav-btn active" id="btn-explore" onclick="switchTab('explore')">Acervo</button>
+                <button class="nav-btn" id="btn-market" onclick="switchTab('market')" style="color: var(--secundaria); border-color: var(--secundaria);">Classificados</button>
+                <button class="nav-btn" id="btn-community" onclick="switchTab('community')">Comunidade</button>
+                <button class="nav-btn" id="btn-add" onclick="switchTab('add')">Adicionar</button>
+                
+                <div id="nav-avatar" class="profile-avatar" onclick="toggleSidebar()"></div>
+            </div>
+        </nav>
+
+        <div id="tab-explore">
+            <div class="carousel-container">
+                <div class="carousel-slide" id="carousel">
+                    <img src="./assets/capa1.JPG" alt="Banner 1">
+                    <img src="./assets/capa2.JPG" alt="Banner 2">
+                </div>
+                <div class="carousel-dots">
+                    <span class="dot active" onclick="currentSlide(0)"></span>
+                    <span class="dot" onclick="currentSlide(1)"></span>
+                </div>
+            </div>
+
+            <div class="search-area">
+                <input type="text" id="busca" class="search-input" placeholder="Pesquisar por nome do álbum..." oninput="renderizar()">
+                <div class="filter-row">
+                    <select id="filtro-artista" class="search-input" style="flex: 1; border-radius: 25px;" onchange="renderizar()">
+                        <option value="">Todos os Artistas</option>
+                    </select>
+                    <select id="filtro-genero" class="search-input" style="flex: 1; border-radius: 25px;" onchange="renderizar()">
+                        <option value="">Todos os Gêneros</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="stats-wrapper">
+                <div class="stat-item">DISCOS: <span id="total-count">0</span></div>
+                <div class="stat-item">DESEJOS: <span id="wish-count">0</span></div>
+                <div class="stat-item">ACERVO: <span id="owned-count">0</span></div>
+                
+                <button class="nav-btn" style="background:var(--terciaria); color:white; border-color:var(--terciaria); margin-right: 5px;" onclick="abrirDescobrir()">Descobrir 🔮</button>
+                <button class="btn-pdf" onclick="exportarPDF()">Exportar PDF</button>
+            </div>
+            
+            <div id="catalog-container"></div>
+        </div>
+
+        <div id="tab-community" class="hidden">
+            <div class="search-area" style="text-align:center;">
+                <div class="community-tabs" style="margin-top: 25px;">
+                    <button class="tab-btn active" id="btn-tab-timeline" onclick="alternarAbaComunidade('timeline')">Timeline</button>
+                    <button class="tab-btn" id="btn-tab-usuarios" onclick="alternarAbaComunidade('usuarios')">Explorar Usuários</button>
+                    <button class="tab-btn" id="btn-tab-conversas" onclick="alternarAbaComunidade('conversas')">Mensagens Recentes</button>
+                </div>
+                
+                <input type="text" id="busca-comunidade" class="search-input hidden" placeholder="Pesquisar por nome ou @usuario..." oninput="renderizarComunidade()">
+            </div>
+            
+            <div id="timeline-container" style="max-width: 600px; margin: 30px auto; padding: 0 20px;"></div>
+            <div id="community-container" class="grid hidden" style="margin-top: 30px; padding: 0 20px;"></div>
+            <div id="conversas-container" class="hidden" style="max-width:600px; margin: 30px auto; padding: 0 20px;"></div>
+        </div>
+
+        <div id="tab-notifications" class="hidden container">
+            <h2 class="main-section-title" style="margin-top:0;">Suas Notificações</h2>
+            <div id="lista-notificacoes-page" class="notif-page-list"></div>
+        </div>
+        
+        <div id="tab-market" class="hidden">
+            <div class="search-area" style="text-align:center;">
+                <h2 class="main-section-title" style="margin-top: 30px; color: var(--secundaria);">Classificados</h2>
+                <p style="color: gray; font-size: 0.9rem; margin-top: -10px; margin-bottom: 20px;">Encontre discos disponíveis para troca ou venda na comunidade.</p>
+                <input type="text" id="busca-market" class="search-input" placeholder="Pesquisar álbuns ou artistas nos classificados..." oninput="renderizarClassificados()">
+            </div>
+            <div id="market-container" class="grid" style="margin-top: 30px; padding: 0 20px;"></div>
+        </div>
+
+        <div id="tab-public-profile" class="hidden container">
+            <button onclick="switchTab('community')" class="nav-btn" style="margin-bottom: 20px;">⬅ Voltar para Comunidade</button>
+            
+            <div class="public-header">
+                <div id="public-avatar" class="profile-avatar profile-avatar-large" style="margin: 0 auto;"></div>
+                
+                <div class="name-badge-wrapper">
+                    <h2 id="public-nome" style="margin:0;">Nome</h2>
+                    <div id="public-badges" class="badges-container"></div>
+                    <span class="info-badges-btn" onclick="abrirModalLegendaSelos()">ℹ️</span>
+                </div>
+                
+                <span id="public-user" style="color:var(--secundaria); font-weight:bold;">@user</span>
+                <p id="public-bio">Bio</p>
+                
+                <div id="public-now-playing" style="margin: 10px 0;"></div>
+                
+                <div class="profile-stats">
+                    <div class="stat-box" id="btn-public-seguidores">
+                        <strong id="public-seguidores">0</strong>
+                        <span>Seguidores</span>
+                    </div>
+                    <div class="stat-box" id="btn-public-seguindo">
+                        <strong id="public-seguindo">0</strong>
+                        <span>Seguindo</span>
+                    </div>
+                </div>
+
+                <div class="action-buttons" id="public-actions"></div>
+            </div>
+            
+            <h3 class="main-section-title">Galeria de Publicações</h3>
+            <div id="public-posts" class="posts-grid" style="max-width: 800px; margin: 0 auto;"></div>
+            
+            <h3 class="main-section-title" style="color: var(--secundaria); margin-top: 40px;">Classificados (Troca/Venda)</h3>
+            <div id="public-market-container" class="grid"></div>
+
+            <h3 class="main-section-title" style="margin-top: 40px;">Acervo do Usuário</h3>
+            <div id="public-catalog-container" class="grid"></div>
+        </div>
+
+        <div id="tab-profile-community" class="hidden container profile-container" style="max-width: 800px !important;">
+            <div class="public-header" style="border-bottom:none; padding-bottom:0;">
+                <div id="meu-avatar-comunidade" class="profile-avatar profile-avatar-large" style="margin: 0 auto;"></div>
+                
+                <div class="name-badge-wrapper">
+                    <h2 id="meu-nome-comunidade" style="margin:0;">Nome</h2>
+                    <div id="meu-badges" class="badges-container"></div>
+                    <span class="info-badges-btn" onclick="abrirModalLegendaSelos()">ℹ️</span>
+                </div>
+                
+                <div class="profile-stats">
+                    <div class="stat-box" onclick="abrirListaUsuarios('seguidores', usuarioAtual.id)">
+                        <strong id="meu-seguidores">0</strong>
+                        <span>Seguidores</span>
+                    </div>
+                    <div class="stat-box" onclick="abrirListaUsuarios('seguindo', usuarioAtual.id)">
+                        <strong id="meu-seguindo">0</strong>
+                        <span>Seguindo</span>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="main-section-title" style="font-size:1.2rem; margin-top:30px; border-top: 1px dashed var(--quaternaria); padding-top: 20px;">Estatísticas do Acervo</h3>
+            
+            <div class="dashboard-grid">
+                <div class="chart-container">
+                    <span class="chart-empty-state hidden">Cadastre discos para ver seu perfil musical.</span>
+                    <canvas id="chartGeneros"></canvas>
+                </div>
+                <div class="chart-container">
+                    <span class="chart-empty-state hidden">Acompanhe o crescimento da sua coleção aqui.</span>
+                    <canvas id="chartCrescimento"></canvas>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 25px;">
+                <button class="nav-btn" style="background:var(--secundaria); color:white; padding: 12px 25px; border-radius: 25px; font-size: 0.9rem; margin: 0 auto;" onclick="abrirModalNovoPost()">
+                    Nova Publicação
+                </button>
+            </div>
+
+            <h3 class="main-section-title" style="font-size:1.2rem; margin-top:30px;">Minha Galeria de Publicações</h3>
+            <div id="meus-posts" class="posts-grid" style="margin: 0 auto 40px;"></div>
+        </div>
+
+        <div id="tab-post-detail" class="hidden container" style="max-width: 1000px; background: transparent; box-shadow: none; padding: 0; margin-top: 30px;">
+            <button onclick="voltarDaPaginaDePost()" class="nav-btn" style="margin-bottom: 20px;">⬅ Voltar</button>
+            
+            <div class="post-page-container">
+                <div class="post-page-left">
+                    <img id="post-page-img" src="" alt="Imagem da publicação">
+                </div>
+                
+                <div class="post-page-right">
+                    
+                    <div class="post-page-header" id="post-page-header-btn">
+                        <img id="post-page-avatar" src="" style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid var(--quaternaria);">
+                        <b id="post-page-user" style="color: var(--primaria); font-size: 1.1rem;"></b>
+                    </div>
+                    
+                    <div class="post-actions" id="post-page-actions" style="border-top: none; padding-top:0;"></div>
+
+                    <div style="display:flex; justify-content: space-between; align-items: center; margin-top: 15px; margin-bottom: 10px;">
+                        <p id="post-page-legenda" style="margin: 0; color: var(--primaria); font-size: 1rem; flex: 1;"></p>
+                        <button id="btn-editar-legenda" class="btn-edit-post hidden" onclick="habilitarEdicaoLegenda()" style="margin-left: 10px;">✏️ Editar</button>
+                    </div>
+                    
+                    <div id="area-edicao-legenda" class="hidden" style="display: flex; gap: 5px; margin-bottom: 10px;">
+                        <input type="text" id="input-nova-legenda" style="margin: 0; flex: 1; padding: 10px; border-radius: 4px; border: 1px solid #ccc;">
+                        <button class="nav-btn" style="background: var(--secundaria); color: white;" onclick="salvarEdicaoLegenda()">Salvar</button>
+                    </div>
+                    
+                    <button id="btn-mobile-comments-toggle" class="nav-btn btn-show-comments-mobile" style="width:100%; margin-top: 10px; padding: 12px; background: var(--quinta);" onclick="abrirComentariosMobile()">
+                        Ver todos os comentários
+                    </button>
+
+                    <div id="comments-wrapper" class="comments-section-wrapper">
+                        <div class="mobile-comments-header">
+                            <span style="font-size: 1.2rem; cursor:pointer;" onclick="fecharComentariosMobile()">⬅ Voltar</span>
+                            <h3 style="margin:0;">Comentários</h3>
+                        </div>
+                        
+                        <h3 class="desktop-comments-title" style="color: var(--primaria); margin-top: 0;">Comentários</h3>
+
+                        <div class="post-page-comments" id="post-page-comments"></div>
+                        
+                        <div style="display:flex; gap:10px; padding-top: 5px;">
+                            <input type="hidden" id="post-page-id">
+                            <input type="hidden" id="post-page-dono-id">
+                            <input type="text" id="post-page-comment-input" placeholder="Adicione um comentário..." style="margin:0; flex:1; padding: 12px; border-radius: 25px; border: 1px solid #ccc;">
+                            <button class="nav-btn" style="background:var(--secundaria); color:white; border-radius: 25px; padding: 0 20px;" onclick="enviarComentarioNaPagina()">Enviar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-edit-profile" class="hidden container profile-container">
+            <h2 class="profile-title">Editar Perfil</h2>
+            
+            <div class="edit-section">
+                <div class="profile-avatar-wrapper">
+                    <div id="perfil-avatar-preview" class="profile-avatar profile-avatar-large"></div>
+                    <label class="profile-upload-label" style="display:block; text-align:center; margin-bottom:15px;">
+                        Trocar Foto de Perfil
+                        <input type="file" id="edit-perfil-foto" accept="image/*" style="display: none;" onchange="previewNovaFoto(event)">
+                    </label>
+                </div>
+                
+                <label class="form-label">Nome Completo</label>
+                <input type="text" id="edit-perfil-nome" placeholder="Nome Completo">
+                
+                <label class="form-label">Sua Bio</label>
+                <input type="text" id="edit-perfil-bio" placeholder="Bio">
+                
+                <div class="password-reset-section">
+                    <label class="form-label">Segurança da Conta</label>
+                    <p class="form-desc">Para alterar sua senha, enviaremos um link seguro para o seu e-mail cadastrado.</p>
+                    <button id="btn-reset-perfil" class="nav-btn btn-reset-link" onclick="enviarLinkResetPerfil()">Receber link de redefinição</button>
+                </div>
+
+                <button class="btn-save" style="margin-top: 10px;" id="btn-salvar-perfil" onclick="salvarPerfil()">Salvar Alterações</button>
+                
+                <div class="danger-zone" style="margin-top: 20px;">
+                    <h3>Zona de Perigo</h3>
+                    <p>Ao excluir sua conta, todos os seus dados e a sua coleção serão apagados <b>permanentemente</b>.</p>
+                    <button class="nav-btn btn-delete-account" onclick="excluirConta()">Excluir Minha Conta</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-add" class="hidden">
+            <div class="container">
+                <h2 style="text-align:center; color:var(--primaria);">Novo Registro de Vinil</h2>
+                
+                <div class="search-magic-area">
+                    <h3 style="font-size: 1.1rem; color: var(--secundaria); margin-top: 0; margin-bottom: 10px; text-align: center;">Busca Automática 🔍</h3>
+                    <p style="font-size: 0.8rem; color: gray; text-align: center; margin-top: 0;">Procure o álbum pelo nome e nós preenchemos a capa e as informações para você.</p>
+                    
+                    <div style="display:flex; gap:10px;">
+                        <input type="text" id="busca-album-api" placeholder="Ex: Thriller Michael Jackson" style="margin:0; flex:1;">
+                        <button class="nav-btn" style="background:var(--primaria); color:var(--quaternaria);" onclick="buscarAlbumAPI()">Buscar</button>
+                    </div>
+                    
+                    <div id="resultados-api" class="resultados-api-grid hidden"></div>
+                </div>
+
+                <div class="manual-form-divider">
+                    <span>OU PREENCHA MANUALMENTE</span>
+                </div>
+                
+                <div class="preview-capa-container">
+                    <img id="preview-capa-add" class="preview-img-add" src="./assets/VinylVault.png" alt="Preview da Capa">
+                </div>
+
+                <label style="font-size:12px; color:gray">Escolher Foto do Computador (Opcional):</label>
+                <input type="file" id="fotoFile" accept="image/*" onchange="previewCapaManual(event)">
+                
+                <input type="text" id="nome" placeholder="Nome do Álbum">
+                
+                <input list="lista-artistas" id="artista" placeholder="Nome do Artista (ou selecione existente)">
+                <datalist id="lista-artistas"></datalist>
+                
+                <input list="lista-generos" id="genero" placeholder="Gênero (ou selecione existente)">
+                <datalist id="lista-generos"></datalist>
+                
+                <input type="url" id="spotifyUrl" placeholder="Link do álbum no Spotify (Opcional)">
+                
+                <div style="margin-top: 15px; text-align: center; background: rgba(0,0,0,0.02); padding: 15px; border-radius: 8px;">
+                    <label style="font-size:12px; color:gray; font-weight: bold; text-transform: uppercase;">Dê uma nota para o disco (Opcional):</label>
+                    <div class="rating-wrapper" id="add-stars-container" style="justify-content: center;">
+                        <span class="star" onclick="setNota('add', 1)">★</span>
+                        <span class="star" onclick="setNota('add', 2)">★</span>
+                        <span class="star" onclick="setNota('add', 3)">★</span>
+                        <span class="star" onclick="setNota('add', 4)">★</span>
+                        <span class="star" onclick="setNota('add', 5)">★</span>
+                    </div>
+                    <input type="hidden" id="nota-add" value="0">
+                </div>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="jaAdquirido">
+                    <label for="jaAdquirido">Já possuo este vinil no meu acervo físico</label>
+                </div>
+
+                <div class="checkbox-container" style="background: rgba(194, 168, 120, 0.1);">
+                    <input type="checkbox" id="negociavel">
+                    <label for="negociavel" style="color: var(--secundaria);">Disponível para Troca/Venda</label>
+                </div>
+
+                <button class="btn-save" id="btnSalvar" onclick="salvarDisco()">Salvar na Nuvem</button>
+            </div>
+        </div>
+
+        <div id="tab-aboutus" class="hidden container" style="max-width: 900px;">
+            <div class="aboutus-wrapper">
+                <h2 class="aboutus-title">Sobre o Vinyl Vault</h2>
+                
+                <div class="aboutus-content">
+                    <div class="aboutus-img-container">
+                        <img src="./assets/iandj.jpg" alt="Isabela e Juan" class="aboutus-img">
+                    </div>
+                    
+                    <div class="aboutus-text">
+                        <p class="aboutus-highlight">Este projeto nasceu de um encontro.</p>
+                        
+                        <p>Antes dele, o universo dos discos de vinil não fazia parte da minha história. Eu não conhecia os sons, os rituais, nem a magia que existe em colocar um disco para tocar. Foi através do meu amado, Juan, que esse mundo se abriu para mim. A paixão que ele carrega pelos vinis acabou se tornando minha também, naturalmente, sem pressa, como a música que começa com o chiado da agulha.</p>
+                        
+                        <p>Meu primeiro disco foi um presente dele. Mais do que um objeto, foi um marco: o início de um afeto compartilhado, de descobertas em conjunto e de uma nova forma de sentir a música.</p>
+                        
+                        <p>Esta plataforma é, ao mesmo tempo, um acervo, uma rede e um sentimento. Aqui, os discos não são apenas catalogados, eles contam histórias. Cada vinil representa memórias, trocas, momentos e conexões. A ideia de transformar esse espaço também em uma rede social nasce do desejo de unir pessoas que, assim como nós, veem na música algo que vai além do som: um lugar de pertencimento.</p>
+                        
+                        <p class="aboutus-footer-text">
+                            Esse projeto foi pensado nele, em mim e em nós.<br>
+                            É sobre amor que inspira, paixão que se soma e sonhos que se constroem juntos, linha por linha, disco por disco.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-discover" class="hidden container" style="max-width: 1000px; background: transparent; box-shadow: none; padding: 0; margin-top: 20px;">
+            <button onclick="switchTab('explore')" class="nav-btn" style="margin-bottom: 10px;">⬅ Voltar para Acervo</button>
+            
+            <div class="discover-header">
+                <h2>Descobrir Novidades 🔮</h2>
+                <p id="discover-subtitle">Baseado no seu acervo, você pode gostar de ouvir...</p>
+            </div>
+            
+            <div id="discover-results" class="discover-grid"></div>
+        </div>
+    </div>
+</main>
+
+<div id="floating-chat-btn" class="hidden" onclick="abrirChatWidget()">
+    💬 Mensagens <span id="chat-unread-badge" class="hidden">0</span>
+</div>
+
+<div id="chat-window" class="chat-minimized hidden">
+    <div class="chat-header">
+        <div style="display:flex; align-items:center; gap:10px;">
+            <span id="btn-voltar-chat" class="hidden" style="cursor:pointer; font-size: 1.2rem;" onclick="voltarParaListaChat()">⬅</span>
+            <span id="chat-title" onclick="minimizarChat()" style="cursor: pointer;">Mensagens</span>
+        </div>
+        <div>
+            <span style="font-size: 1.2rem; cursor: pointer; padding: 0 10px;" onclick="minimizarChat()">➖</span>
+            <span style="font-size: 1.2rem; cursor: pointer;" onclick="fecharChatWidget()">✖</span>
+        </div>
+    </div>
+    
+    <div id="chat-list-view" style="flex: 1; overflow-y: auto;"></div>
+    
+    <div id="chat-conversation-view" class="hidden" style="flex: 1; display: flex; flex-direction: column; overflow: hidden;">
+        <div id="chat-messages" class="chat-messages"></div>
+        <div class="chat-input-area">
+            <input type="text" id="chat-input" placeholder="Digite sua mensagem...">
+            <button onclick="enviarMensagem()">➤</button>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <div class="footer-content">
+        <div class="footer-feedback">
+            <h3 style="margin-top: 0; color: var(--quaternaria); font-size: 1.1rem; text-transform: uppercase;">Envie seu Feedback</h3>
+            <p style="font-size: 0.8rem; margin-bottom: 15px; color: rgba(255,255,255,0.7);">Encontrou algum problema ou tem sugestões? Fale com a gente!</p>
+            <textarea id="feedback-msg" placeholder="Sua mensagem..." rows="3"></textarea>
+            <button id="btn-feedback" class="nav-btn" style="width: 100%; border-color: var(--quaternaria); color: var(--quaternaria);" onclick="enviarFeedback()">Enviar Mensagem</button>
+        </div>
+        
+        <div class="footer-nav">
+            <a onclick="switchTab('explore')">Meu Acervo</a>
+            <a onclick="switchTab('market')">Classificados</a>
+            <a onclick="switchTab('community')">Comunidade</a>
+            <a onclick="switchTab('add')">Adicionar Vinil</a>
+            <a onclick="switchTab('profile-community')">Perfil Comunidade</a>
+            <a onclick="switchTab('edit-profile')">Editar Perfil</a>
+            <a onclick="abrirDescobrir()">Descobrir</a>
+            <a onclick="switchTab('aboutus')">Sobre Nós</a>
+        </div>
+
+        <div class="footer-info">
+            <p style="margin: 5px 0;">Desenvolvido por Isabela Ohana</p>
+            <p style="margin: 5px 0; color: rgba(255,255,255,0.5);">Vinyl Vault | Premium Collection © 2026</p>
+        </div>
+    </div>
+</footer>
+
+<div id="modal-vinil" class="modal-overlay" onclick="fecharModal(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <span class="close-modal" onclick="fecharModal(null, true)">×</span>
+        
+        <div id="modal-view">
+            <div class="vinyl-modal-container">
+                <div class="vinyl-wrapper" id="modal-vinyl-wrapper">
+                    <div class="vinyl-record" id="modal-vinyl-record">
+                        <div class="vinyl-label" id="modal-vinyl-label"></div>
+                        <div class="vinyl-hole"></div>
+                    </div>
+                </div>
+                <img id="modal-img" class="vinyl-sleeve" src="" alt="Capa do Álbum">
+            </div>
+            
+            <div id="modal-player-container"></div>
+            
+            <div id="modal-display-stars"></div>
+            
+            <h2 id="modal-nome" style="margin: 5px 0 5px;"></h2>
+            <p id="modal-artista" style="color:var(--terciaria); margin-bottom:20px;"></p>
+        </div>
+        
+        <div id="modal-edit" class="hidden">
+            <h3 style="margin-top:0">Editar Registro</h3>
+            <label style="font-size:12px; color:gray; display:block; text-align:left; margin-bottom:5px;">Trocar Foto da Capa (Opcional):</label>
+            <input type="file" id="edit-foto" accept="image/*">
+            <input type="text" id="edit-nome" placeholder="Nome do Álbum">
+            <input type="text" id="edit-artista" placeholder="Artista">
+            <input type="text" id="edit-genero" placeholder="Gênero">
+            <input type="url" id="edit-spotify" placeholder="Link Spotify">
+            
+            <div style="margin-top: 15px;">
+                <label style="font-size:12px; color:gray; text-align: left; display: block; font-weight: bold;">Sua Avaliação:</label>
+                <div class="rating-wrapper" id="edit-stars-container">
+                    <span class="star" onclick="setNota('edit', 1)">★</span>
+                    <span class="star" onclick="setNota('edit', 2)">★</span>
+                    <span class="star" onclick="setNota('edit', 3)">★</span>
+                    <span class="star" onclick="setNota('edit', 4)">★</span>
+                    <span class="star" onclick="setNota('edit', 5)">★</span>
+                </div>
+                <input type="hidden" id="nota-edit" value="0">
+            </div>
+
+            <div class="checkbox-container" style="margin-top: 10px; background: transparent; padding: 0;">
+                <input type="checkbox" id="edit-negociavel">
+                <label for="edit-negociavel" style="font-size: 0.85rem; color: var(--secundaria);">Disponível para Troca/Venda</label>
+            </div>
+        </div>
+        
+        <div id="modal-actions"></div>
+    </div>
+</div>
+
+<div id="modal-encaminhar" class="modal-overlay" onclick="fecharModalEncaminhar(event)">
+    <div class="modal-content" onclick="event.stopPropagation()" style="max-width: 400px; padding: 20px;">
+        <span class="close-modal" onclick="fecharModalEncaminhar(null, true)">×</span>
+        <h3 style="margin-top:0; color:var(--primaria);">Encaminhar para...</h3>
+        <p style="font-size: 0.85rem; color: gray;">Escolha um colecionador para enviar este disco.</p>
+        <div id="lista-encaminhar" style="display:flex; flex-direction:column; gap:10px; margin-top:15px; max-height:300px; overflow-y:auto;"></div>
+    </div>
+</div>
+
+<div id="modal-novo-post" class="modal-overlay" onclick="fecharModalNovoPost(event)">
+    <div class="modal-content" onclick="event.stopPropagation()" style="max-width: 450px;">
+        <span class="close-modal" onclick="fecharModalNovoPost(null, true)">×</span>
+        <h3 style="color:var(--secundaria); margin-top:0;">Nova Publicação</h3>
+        <label style="font-size:12px; color:gray; display:block; text-align:left; margin-bottom:5px;">Escolha a foto do seu vinil:</label>
+        <input type="file" id="modal-post-foto" accept="image/*">
+        <input type="text" id="modal-post-legenda" placeholder="Escreva uma legenda bacana...">
+        <button class="nav-btn" style="background:var(--secundaria); color:white; width:100%; padding:12px; margin-top:15px;" onclick="salvarNovoPost()">Postar no Feed</button>
+    </div>
+</div>
+
+<div id="modal-usuarios" class="modal-overlay" onclick="fecharModalUsuarios(event)">
+    <div class="modal-content" onclick="event.stopPropagation()" style="max-width: 400px; padding: 20px;">
+        <span class="close-modal" onclick="fecharModalUsuarios(null, true)">×</span>
+        <h3 id="modal-usuarios-titulo" style="margin-top:0; color:var(--primaria);">Usuários</h3>
+        <div id="modal-usuarios-lista" style="display:flex; flex-direction:column; gap:10px; margin-top:15px; max-height:300px; overflow-y:auto;"></div>
+    </div>
+</div>
+
+<div id="modal-legenda-selos" class="modal-overlay" onclick="fecharModalLegendaSelos(event)">
+    <div class="modal-content" onclick="event.stopPropagation()" style="max-width: 400px; padding: 30px;">
+        <span class="close-modal" onclick="fecharModalLegendaSelos(null, true)">×</span>
+        <h3 style="margin-top:0; color:var(--primaria);">Conquistas e Selos 🏆</h3>
+        <p style="font-size: 0.85rem; color: gray; margin-bottom: 20px;">Ganhe selos exclusivos ao expandir o seu acervo e interagir com a comunidade!</p>
+        
+        <div class="legend-item">
+            <span>🥉</span>
+            <div class="legend-text">
+                <strong>Iniciante</strong>
+                <p>Colecionador com 50 a 99 discos cadastrados.</p>
+            </div>
+        </div>
+        
+        <div class="legend-item">
+            <span>🥈</span>
+            <div class="legend-text">
+                <strong>Curador</strong>
+                <p>Colecionador com 100 a 149 discos cadastrados.</p>
+            </div>
+        </div>
+        
+        <div class="legend-item">
+            <span>🥇</span>
+            <div class="legend-text">
+                <strong>Lenda do Vinil</strong>
+                <p>Colecionador de elite com 150 ou mais discos.</p>
+            </div>
+        </div>
+        
+        <div class="legend-item">
+            <span>🗣️</span>
+            <div class="legend-text">
+                <strong>Socialite</strong>
+                <p>Possui mais de 50 seguidores na comunidade.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="sidebar-backdrop" class="sidebar-backdrop" onclick="toggleSidebar()"></div>
+<div id="user-sidebar" class="sidebar">
+    <div class="sidebar-header">
+        <span class="close-sidebar" onclick="toggleSidebar()">×</span>
+        <div id="sidebar-avatar" class="profile-avatar" style="width: 70px; height: 70px; font-size: 2rem; border-width: 3px;"></div>
+        <h3 id="sidebar-name">Nome</h3>
+        
+        <div id="sidebar-now-playing" style="width: 100%; display: flex; justify-content: center; margin-bottom: 10px;"></div>
+    </div>
+    
+    <div class="sidebar-menu">
+        <button onclick="navFromSidebar('explore')">Meu Acervo</button>
+        <button onclick="navFromSidebar('market')" class="menu-btn-market">Classificados</button>
+        <button onclick="navFromSidebar('community')">Comunidade</button> 
+        <button onclick="navFromSidebar('add')">Adicionar Vinil</button>
+        <button onclick="navFromSidebar('profile-community')">Perfil Comunidade</button>
+        <button onclick="navFromSidebar('edit-profile')">Editar Perfil</button>
+        <button onclick="abrirDescobrir()" style="color:var(--secundaria); font-weight:bold;">Descobrir 🔮</button>
+        <button onclick="navFromSidebar('aboutus')" class="menu-btn-about">Sobre Nós</button>
+        
+        <button onclick="logout()" class="logout-btn" style="margin-top: auto; border-top: 1px solid #ccc; border-radius: 0;">Sair da Conta</button>
+    </div>
+</div>
+
+<script src="./scripts/globals.js"></script>
+<script src="./scripts/auth.js"></script>
+<script src="./scripts/player.js"></script>
+<script src="./scripts/rating.js"></script>
+<script src="./scripts/discover.js"></script>
+<script src="./scripts/nowplaying.js"></script> 
+<script src="./scripts/collection.js"></script>
+<script src="./scripts/market.js"></script>
+<script src="./scripts/badges.js"></script>
+<script src="./scripts/community.js"></script>
+<script src="./scripts/chat_notif.js"></script>
+<script src="./scripts/dashboard.js"></script>
+
+</body>
+</html>

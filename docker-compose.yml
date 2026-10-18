@@ -42,10 +42,14 @@ services:
       DB_USER: vinyl
       DB_PASSWORD: ${MYSQL_PASSWORD:-vinyl}
       DB_NAME: vinylvault
-      JWT_SECRET: "${JWT_SECRET:?Set JWT_SECRET in .env - see .env.example}"
+      # Required (32+ chars). Left blank on purpose: `docker compose up mysql` must work without it,
+      # and the API refuses to start with a clear message if it is missing.
+      JWT_SECRET: ${JWT_SECRET:-}
       CORS_ORIGIN: ${PUBLIC_URL:-http://localhost:8080}
       FRONTEND_URL: ${PUBLIC_URL:-http://localhost:8080}
-      TRUST_PROXY: 1
+      # Proxies between the internet and the API: the bundled nginx is 1; add one for each
+      # extra proxy in front of it (Caddy, Cloudflare...). Wrong values break per-IP rate limiting.
+      TRUST_PROXY: ${TRUST_PROXY:-1}
       EMAIL_USER: ${EMAIL_USER:-}
       EMAIL_PASS: ${EMAIL_PASS:-}
       FEEDBACK_TO: ${FEEDBACK_TO:-}

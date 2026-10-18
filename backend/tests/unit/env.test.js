@@ -26,6 +26,11 @@ describe('parseEnv', () => {
         );
     });
 
+    it('explains how to fix a missing or blank JWT secret', () => {
+        assert.throws(() => parseEnv({ DB_USER: 'u', DB_NAME: 'd', JWT_SECRET: '' }), /JWT_SECRET é obrigatório \(gere com: openssl rand -hex 32\)/);
+        assert.throws(() => parseEnv({ DB_USER: 'u', DB_NAME: 'd' }), /JWT_SECRET é obrigatório/);
+    });
+
     it('rejects a JWT secret shorter than 32 characters', () => {
         assert.throws(() => parseEnv({ ...base, JWT_SECRET: 'x'.repeat(31) }), /JWT_SECRET/);
     });

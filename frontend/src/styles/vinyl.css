@@ -120,7 +120,7 @@
     margin-bottom: 10px;
 }
 
-.badge-trade {
+.badge-item.badge-trade {
     background-color: var(--secondary-color);
     color: var(--text-light);
     border-color: var(--secondary-color);

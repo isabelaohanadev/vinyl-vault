@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthProvider';
 import { PlayerProvider } from './contexts/PlayerProvider';
+import { useAuth } from './hooks/useAuth';
 import { PrivateRoute } from './components/PrivateRoute';
 import { PublicOnlyRoute } from './components/PublicOnlyRoute';
 import './styles/index.js';
@@ -15,13 +16,21 @@ import Market from './pages/Market';
 import Community from './pages/Community';
 import Profile from './pages/Profile';
 
+// Remounted when the user changes (login/logout), which stops playback and clears the queue,
+// so a new session never inherits the previous user's audio.
+const SessionPlayer = ({ children }) => {
+    const { user } = useAuth();
+
+    return <PlayerProvider key={user?.id ?? 'guest'}>{children}</PlayerProvider>;
+};
+
 const priv = (page) => <PrivateRoute>{page}</PrivateRoute>;
 const publicOnly = (page) => <PublicOnlyRoute>{page}</PublicOnlyRoute>;
 
 export default function App() {
     return (
         <AuthProvider>
-            <PlayerProvider>
+            <SessionPlayer>
                 <BrowserRouter>
                     <Routes>
                         <Route path="/" element={<Navigate to="/dashboard" replace />} />
@@ -41,7 +50,7 @@ export default function App() {
                         <Route path="*" element={<Navigate to="/dashboard" replace />} />
                     </Routes>
                 </BrowserRouter>
-            </PlayerProvider>
+            </SessionPlayer>
         </AuthProvider>
     );
 }

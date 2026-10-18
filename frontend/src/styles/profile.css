@@ -104,3 +104,33 @@
     color: var(--primary-color);
     border-top-color: var(--primary-color);
 }
+
+.profile-username {
+    display: block;
+    color: var(--tertiary-color);
+    font-size: 0.95rem;
+}
+
+.profile-follow {
+    width: auto;
+    padding: 10px 24px;
+}
+
+.danger-zone {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid var(--quaternary-color);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.danger-zone h3 {
+    color: var(--secondary-color);
+    font-size: 1rem;
+}
+
+.danger-zone p {
+    color: var(--tertiary-color);
+    font-size: 0.9rem;
+}

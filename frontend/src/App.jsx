@@ -36,6 +36,7 @@ export default function App() {
                         <Route path="/market" element={priv(<Market />)} />
                         <Route path="/community" element={priv(<Community />)} />
                         <Route path="/profile" element={priv(<Profile />)} />
+                        <Route path="/users/:id" element={priv(<Profile />)} />
 
                         <Route path="*" element={<Navigate to="/dashboard" replace />} />
                     </Routes>

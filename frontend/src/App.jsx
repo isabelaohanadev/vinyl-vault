@@ -10,6 +10,7 @@ import Register from './pages/Register';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import Dashboard from './pages/Dashboard';
+import Feed from './pages/Feed';
 import Market from './pages/Market';
 import Community from './pages/Community';
 import Profile from './pages/Profile';
@@ -31,6 +32,7 @@ export default function App() {
                         <Route path="/reset-password" element={<ResetPassword />} />
 
                         <Route path="/dashboard" element={priv(<Dashboard />)} />
+                        <Route path="/feed" element={priv(<Feed />)} />
                         <Route path="/market" element={priv(<Market />)} />
                         <Route path="/community" element={priv(<Community />)} />
                         <Route path="/profile" element={priv(<Profile />)} />

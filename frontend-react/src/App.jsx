@@ -4,6 +4,7 @@ import { PlayerProvider } from './contexts/PlayerProvider';
 import { useAuth } from './hooks/useAuth';
 import { PrivateRoute } from './components/PrivateRoute';
 import { PublicOnlyRoute } from './components/PublicOnlyRoute';
+import { RootRedirect } from './components/RootRedirect';
 import './styles/index.js';
 
 import Login from './pages/Login';
@@ -33,7 +34,7 @@ export default function App() {
             <SessionPlayer>
                 <BrowserRouter>
                     <Routes>
-                        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                        <Route path="/" element={<RootRedirect />} />
 
                         <Route path="/login" element={publicOnly(<Login />)} />
                         <Route path="/register" element={publicOnly(<Register />)} />

@@ -12,6 +12,10 @@ dist-ssr/
 build/
 coverage/
 
+# Playwright output
+test-results/
+playwright-report/
+
 # Logs
 logs/
 *.log

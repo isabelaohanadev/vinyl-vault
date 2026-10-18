@@ -99,3 +99,62 @@
     background-color: var(--tertiary-color);
     color: var(--text-light);
 }
+
+.vinyl-meta-title {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    margin-bottom: 5px;
+}
+
+.vinyl-meta-artist {
+    font-size: 1.1rem;
+    color: var(--tertiary-color);
+    margin-bottom: 15px;
+}
+
+.vinyl-badges {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+}
+
+.badge-trade {
+    background-color: var(--secondary-color);
+    color: var(--text-light);
+    border-color: var(--secondary-color);
+}
+
+.vinyl-meta .rating-container {
+    justify-content: center;
+}
+
+.vinyl-owner {
+    margin-top: 10px;
+    color: var(--tertiary-color);
+}
+
+.vinyl-link {
+    display: inline-block;
+    margin-top: 10px;
+    color: var(--secondary-color);
+    font-weight: 600;
+}
+
+.vinyl-link:hover {
+    text-decoration: underline;
+}
+
+.vinyl-confirm {
+    width: 100%;
+    padding: 15px;
+    border: 1px solid var(--secondary-color);
+    border-radius: 8px;
+    text-align: center;
+}
+
+.btn-action:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

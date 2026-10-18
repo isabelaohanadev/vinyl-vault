@@ -98,3 +98,20 @@
 .main-content {
     padding-bottom: 110px;
 }
+
+
+.nav-logout {
+    margin-top: auto;
+    color: var(--secondary-color);
+    width: 100%;
+    text-align: left;
+    font-size: inherit;
+}
+
+.nav-logout:hover {
+    color: var(--text-light);
+}
+
+.user-profile-mini {
+    text-decoration: none;
+}

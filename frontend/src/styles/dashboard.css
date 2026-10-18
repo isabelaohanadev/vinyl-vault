@@ -89,3 +89,70 @@
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+.vinyl-card {
+    position: relative;
+}
+
+.vinyl-tag {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 1;
+    padding: 4px 9px;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text-light);
+}
+
+.vinyl-tag-trade {
+    background-color: var(--secondary-color);
+}
+
+.vinyl-tag-wish {
+    background-color: var(--primary-color);
+    left: auto;
+    right: 10px;
+}
+
+.state-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    padding: 50px 20px;
+    text-align: center;
+    color: var(--tertiary-color);
+}
+
+.btn-primary {
+    padding: 10px 20px;
+    border-radius: 6px;
+    background-color: var(--primary-color);
+    color: var(--text-light);
+    font-weight: 600;
+}
+
+.btn-primary:hover {
+    background-color: var(--secondary-color);
+}
+
+.btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.btn-danger {
+    background-color: var(--secondary-color);
+    color: var(--text-light);
+}
+
+.modal-error {
+    color: var(--secondary-color);
+    font-size: 0.9rem;
+    margin-top: 15px;
+    text-align: center;
+}

@@ -30,6 +30,14 @@ describe('posts', () => {
             assert.equal(res.body.post.user_liked, false);
         });
 
+        it('stamps posts with the real current time, whatever the time zones of Node and MySQL', async () => {
+            const { body } = await createPost(ana);
+
+            const ageMs = Date.now() - Date.parse(body.post.criado_em);
+
+            assert.ok(Math.abs(ageMs) < 15_000, `criado_em is ${Math.round(ageMs / 3_600_000)}h off from now (${body.post.criado_em})`);
+        });
+
         it('needs a photo or a caption and a valid photo', async () => {
             await createPost(ana, {}).expect(400);
             await createPost(ana, { legenda: '   ' }).expect(400);

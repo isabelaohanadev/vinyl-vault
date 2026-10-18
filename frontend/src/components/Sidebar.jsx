@@ -1,35 +1,30 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 
+const NAV_ITEMS = [
+    { to: '/dashboard', icon: 'fa-home', label: 'Início' },
+    { to: '/community', icon: 'fa-users', label: 'Comunidade' },
+    { to: '/market', icon: 'fa-store', label: 'Classificados' },
+    { to: '/profile', icon: 'fa-user', label: 'Meu Perfil' }
+];
+
 export const Sidebar = () => {
     const { logout } = useAuth();
-    const location = useLocation();
-
-    const isActive = (path) => location.pathname === path ? 'active' : '';
+    const { pathname } = useLocation();
 
     return (
         <aside className="sidebar">
             <img src="/assets/logo.svg" alt="Vinyl Vault" className="sidebar-logo" />
-            <nav className="nav-menu">
-                <Link to="/dashboard" className={`nav-item ${isActive('/dashboard')}`}>
-                    <i className="fas fa-home"></i>
-                    <span>Início</span>
-                </Link>
-                <Link to="/community" className={`nav-item ${isActive('/community')}`}>
-                    <i className="fas fa-users"></i>
-                    <span>Comunidade</span>
-                </Link>
-                <Link to="/market" className={`nav-item ${isActive('/market')}`}>
-                    <i className="fas fa-store"></i>
-                    <span>Classificados</span>
-                </Link>
-                <Link to="/profile" className={`nav-item ${isActive('/profile')}`}>
-                    <i className="fas fa-user"></i>
-                    <span>Meu Perfil</span>
-                </Link>
-                
-                <button onClick={logout} className="nav-item" style={{ marginTop: 'auto', color: 'var(--secondary-color)' }}>
-                    <i className="fas fa-sign-out-alt"></i>
+            <nav className="nav-menu" aria-label="Navegação principal">
+                {NAV_ITEMS.map(({ to, icon, label }) => (
+                    <Link key={to} to={to} className={`nav-item ${pathname === to ? 'active' : ''}`} aria-current={pathname === to ? 'page' : undefined} aria-label={label}>
+                        <i className={`fas ${icon}`} aria-hidden="true"></i>
+                        <span>{label}</span>
+                    </Link>
+                ))}
+
+                <button type="button" onClick={logout} className="nav-item nav-logout" aria-label="Sair">
+                    <i className="fas fa-sign-out-alt" aria-hidden="true"></i>
                     <span>Sair</span>
                 </button>
             </nav>

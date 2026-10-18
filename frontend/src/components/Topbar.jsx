@@ -1,4 +1,6 @@
+import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import { Avatar } from './Avatar';
 
 export const Topbar = () => {
     const { user } = useAuth();
@@ -6,19 +8,11 @@ export const Topbar = () => {
     return (
         <header className="topbar">
             <div></div>
-            
-            <div className="user-profile-mini">
-                <span style={{ fontWeight: 600, color: 'var(--primary-color)' }}>
-                    {user?.username || 'Colecionador'}
-                </span>
-                {user?.foto_perfil ? (
-                    <img src={user?.foto_perfil} alt="Avatar" className="avatar-mini" />
-                ) : (
-                    <div className="avatar-mini">
-                        {user?.username?.charAt(0).toUpperCase() || 'V'}
-                    </div>
-                )}
-            </div>
+
+            <Link to="/profile" className="user-profile-mini" aria-label="Meu perfil">
+                <span style={{ fontWeight: 600, color: 'var(--primary-color)' }}>{user?.username || 'Colecionador'}</span>
+                <Avatar src={user?.foto_perfil} name={user?.username} className="avatar-mini" />
+            </Link>
         </header>
     );
 };

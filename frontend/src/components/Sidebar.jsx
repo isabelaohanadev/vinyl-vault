@@ -3,6 +3,7 @@ import { useAuth } from '../hooks/useAuth';
 
 const NAV_ITEMS = [
     { to: '/dashboard', icon: 'fa-home', label: 'Início' },
+    { to: '/feed', icon: 'fa-stream', label: 'Feed' },
     { to: '/community', icon: 'fa-users', label: 'Comunidade' },
     { to: '/market', icon: 'fa-store', label: 'Classificados' },
     { to: '/profile', icon: 'fa-user', label: 'Meu Perfil' }

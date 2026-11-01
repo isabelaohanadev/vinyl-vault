@@ -11,7 +11,7 @@ ARG VITE_API_URL=
 ENV VITE_API_URL=$VITE_API_URL
 RUN npm run build
 
-FROM nginx:1.29-alpine
+FROM nginx:1.31-alpine
 # Where /api is proxied to. The nginx image fills ${API_UPSTREAM} in at start-up.
 ENV API_UPSTREAM=http://backend:3000
 COPY nginx/default.conf.template /etc/nginx/templates/default.conf.template

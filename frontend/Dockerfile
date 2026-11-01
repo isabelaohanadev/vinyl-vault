@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 # The interface is plain HTML, CSS and JavaScript: there is nothing to build.
-FROM nginx:1.29-alpine
+FROM nginx:1.31-alpine
 
 # Where /api is proxied to. The nginx image fills ${API_UPSTREAM} in at start-up.
 ENV API_UPSTREAM=http://backend:3000
